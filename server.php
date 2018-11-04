@@ -3,7 +3,7 @@ include './libs/time.php';
 include './libs/Request.php';
 defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__ . '/');
 set_time_limit(0); 
-$server = stream_socket_server("tcp://127.0.0.1:7000", $errno, $errorMessage);
+$server = stream_socket_server("https://kkutucs.herokuapp.com/7000", $errno, $errorMessage);
 
 if ($server === false)
 {
