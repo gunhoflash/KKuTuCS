@@ -63,9 +63,9 @@ class RequestParser
 		}
 
 		$this->message = $message;
-		/*if ($this->isKKuTuCSrequest())
+		if ($this->isKKuTuCSrequest())
 			$this->parseKKuTuCS();
-		else*/
+		else
 			$this->parseHttp();
 	}
 
@@ -115,6 +115,8 @@ class RequestParser
 	private function parseKKuTuCS(): void
 	{
 		$this->splitMessage();
+		if (sizeof($this->messageLines) < 2) 
+			$this->messageLines[1] = NULL;
 		switch ($this->messageLines[1])
 		{
 			case "Hello":
