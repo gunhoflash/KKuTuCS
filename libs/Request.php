@@ -16,21 +16,36 @@ class Request
 		if (!$result['success'])
 			return 'HTTP/1.0 404 파일 없음' . PHP_EOL;
 
-		if ($result['uri'] == "/")
-			$result['uri'] = "views/index.html";
+		switch ($result['type'])
+		{
+			case 'Http':
+				if ($result['uri'] == "/" || $result['uri'] == "//" || $result['uri'] == "\\")
+					$result['uri'] = "views/index.html";
 
-		$filename = PROJECT_ROOT . $result['uri'];
-		if (!($fp = fopen($filename, 'r')))
-			return 'HTTP/1.0 404 파일 없음' . PHP_EOL;
-			
-		$responseBody = fread($fp, filesize($filename));
+				$filename = PROJECT_ROOT . $result['uri'];
+				if (!($fp = fopen($filename, 'r')))
+					return 'HTTP/1.0 404 파일 없음' . PHP_EOL;
+					
+				$responseBody = fread($fp, filesize($filename));
 
-		$response = 'HTTP/1.0 200 OK' . PHP_EOL;
-		$response .= 'Content-Type: text/html' . PHP_EOL;
-		$response .= PHP_EOL;
-		$response .= $responseBody . PHP_EOL;
+				$response = 'HTTP/1.0 200 OK' . PHP_EOL;
+				$response .= 'Content-Type: text/html' . PHP_EOL;
+				$response .= PHP_EOL;
+				$response .= $responseBody . PHP_EOL;
 
-		return $response;
+				return $response;
+			break;
+
+			case 'KKuTuCS':
+				return "KKuTuCS";
+			break;
+
+			default:
+				return "bad request";
+			break;
+		}
+		
+		
 	}
 }
 
@@ -40,6 +55,7 @@ class RequestParser
 	private $messageLines = [];
 	private $result = [
 		'success' => true,
+		'type' => '',
 
 		'start_line' => '',
 		'method' => '',
@@ -64,9 +80,15 @@ class RequestParser
 
 		$this->message = $message;
 		if ($this->isKKuTuCSrequest())
+		{
+			$this->result['type'] = 'KKuTuCS';
 			$this->parseKKuTuCS();
+		}
 		else
+		{
+			$this->result['type'] = 'Http';
 			$this->parseHttp();
+		}
 	}
 
 
@@ -79,9 +101,9 @@ class RequestParser
 		return $this->result;
 	}
 
-	private function isKKuTuCSrequest(): boolval
+	private function isKKuTuCSrequest(): bool
 	{
-		return (substr($this->message, 0, 7) === "KKuTuCS");
+		return (substr($this->message, 0, 7) == "KKuTuCS");
 	}
 	
 	private function false(): void
@@ -120,11 +142,11 @@ class RequestParser
 		switch ($this->messageLines[1])
 		{
 			case "Hello":
-			$this->$result['KKuTuCS'] = "World!";
+			$this->result['KKuTuCS'] = "World!";
 			break;
 
 			default:
-			$this->$result['KKuTuCS'] = "What?";
+			$this->result['KKuTuCS'] = "What?";
 			break;
 		}
 	}
