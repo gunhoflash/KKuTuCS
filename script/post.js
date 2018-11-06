@@ -17,11 +17,19 @@ $(document).ready(function()
 });
 
 function buttonTest(str) {
-	$.post(
+	/*$.post(
 		"../client.php",
-		{ str: str },
+		{ KKuTuCS_str: str },
 		function (result) {
 			alert(result);
 		}
-	);
+	);*/
+	$.ajax({
+		url: "../client.php",
+		data: { KKuTuCS_str: str },
+		type: "KKUTUCS",
+		success: function (result) {
+			alert(result);
+		}
+	 });
 }

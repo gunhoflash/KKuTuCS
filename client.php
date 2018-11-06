@@ -1,11 +1,11 @@
 <?php
-$str = $_POST['str'];
-$client = stream_socket_client("https://kkutucs.herokuapp.com/7000", $errno, $errorMessage);
+$str = "A";//$_POST['str'];
+
+$client = stream_socket_client("tcp://127.0.0.1:7000", $errno, $errorMessage);
 if ($client === false)
 {
 	echo "Failed to connect: $errno - $errorMessage";
 	fclose($client);
-	return;
 	//throw new UnexpectedValueException("Failed to connect: $errno - $errorMessage");
 }
 else
@@ -13,26 +13,42 @@ else
 	/*
 	* generate a message
 	*/
-	$message = "KKuTuCS".PHP_EOL.$str;
+	$startLine = 'KKUTUCS / HTTP/1.0';
+	$headers = ['Host: localhost', 'Accept: */*'];
+	$header = implode(PHP_EOL, $headers);
+	$emptyLine = PHP_EOL;
+	$body = "KKuTuCS " . $str;
+	$message = implode(PHP_EOL, [
+		$startLine,
+		$header,
+		$emptyLine,
+		$body
+	]);
+
+	/*
+	* request
+	*/
 	fwrite($client, $message);
 
 	/*
 	* response
 	*/
-	while (true) {
+	$res = '';
+	while (true)
+	{
 		$response = stream_get_contents($client, 1);
-		echo $response;
+		$res .= $response;
 		$info = stream_get_meta_data($client);
 
 		if ($info['eof'] || $info['unread_bytes'] === 0)
 			break;
 	}
+	echo "??";
+	//echo $res;
 
 	/*
 	* bye bye
 	*/
 	fclose($client);
 }
-
-
 ?>

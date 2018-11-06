@@ -2,50 +2,65 @@
 
 class Request
 {
-	private $requestMessage;
+	private $result;
 
 	public function __construct(string $requestMessage)
 	{
-		$this->requestMessage = $requestMessage;
+		$this->result = (new RequestParser($requestMessage))->getResult();
+	}
+	
+	public function getRequestUri()
+	{
+		return $this->result['uri'];
+	}
+
+	public function getRequestBody()
+	{
+		return $this->result['body'];
+	}
+
+	public function getRequestMethod()
+	{
+		return $this->result['method'];
 	}
 
 	public function getResponse()
 	{
-		$result = (new RequestParser($this->requestMessage))->getResult();
-		
-		if (!$result['success'])
-			return 'HTTP/1.0 404 파일 없음' . PHP_EOL;
+		$response = "bad request" . PHP_EOL;
 
-		switch ($result['type'])
+		if ($this->result['validity'])
 		{
-			case 'Http':
-				if ($result['uri'] == "/" || $result['uri'] == "//" || $result['uri'] == "\\")
-					$result['uri'] = "views/index.html";
-
-				$filename = PROJECT_ROOT . $result['uri'];
-				if (!($fp = fopen($filename, 'r')))
-					return 'HTTP/1.0 404 파일 없음' . PHP_EOL;
-					
-				$responseBody = fread($fp, filesize($filename));
-
-				$response = 'HTTP/1.0 200 OK' . PHP_EOL;
-				$response .= 'Content-Type: text/html' . PHP_EOL;
-				$response .= PHP_EOL;
-				$response .= $responseBody . PHP_EOL;
-
-				return $response;
-			break;
-
-			case 'KKuTuCS':
-				return "KKuTuCS";
-			break;
-
-			default:
-				return "bad request";
-			break;
+			if ($this->result['method'] == 'KKUTUCS')
+				$response = $this->getKKuTuCSResponse();
+			else
+				$response = $this->getHttpResponse();
 		}
-		
-		
+
+		return $response;
+	}
+
+	private function getHttpResponse()
+	{
+		if ($this->result['uri'] == "/" || $this->result['uri'] == "//" || $this->result['uri'] == "\\")
+			$this->result['uri'] = "views/index.html";
+
+		$filename = PROJECT_ROOT . $this->result['uri'];
+		if (!($fp = fopen($filename, 'r')))
+			return 'HTTP/1.0 404 파일 없음' . PHP_EOL;
+			
+		$responseBody = fread($fp, filesize($filename));
+
+		$response = 'HTTP/1.0 200 OK' . PHP_EOL;
+		$response .= 'Content-Type: text/html' . PHP_EOL;
+		$response .= PHP_EOL;
+		$response .= $responseBody . PHP_EOL;
+
+		return $response;
+	}
+
+	private function getKKuTuCSResponse()
+	{
+		return var_dump($this->result['KKuTuCS']) . PHP_EOL;
 	}
 }
 
@@ -54,8 +69,7 @@ class RequestParser
 	private $message = '';
 	private $messageLines = [];
 	private $result = [
-		'success' => true,
-		'type' => '',
+		'validity' => true,
 
 		'start_line' => '',
 		'method' => '',
@@ -72,43 +86,18 @@ class RequestParser
 
 	public function __construct(string $message)
 	{
-		if (strlen($message) < 6)
-		{
-			false();
-			return;
-		}
-
 		$this->message = $message;
-		if ($this->isKKuTuCSrequest())
-		{
-			$this->result['type'] = 'KKuTuCS';
-			$this->parseKKuTuCS();
-		}
-		else
-		{
-			$this->result['type'] = 'Http';
-			$this->parseHttp();
-		}
+		$this->parse();
 	}
-
-
-	/**
-	 * Commons
-	 */
 
 	public function getResult(): array
 	{
 		return $this->result;
 	}
 
-	private function isKKuTuCSrequest(): bool
-	{
-		return (substr($this->message, 0, 7) == "KKuTuCS");
-	}
-	
 	private function false(): void
 	{
-		$this->result['success'] = false;
+		$this->result['validity'] = false;
 		// throwInvalidity();
 	}
 
@@ -116,6 +105,12 @@ class RequestParser
 	// {
 	// 	throw new Exception('Invalid message format.');
 	// }
+
+	private function parse(): void
+	{
+		$this->splitMessage();
+		$this->verifyStartLine();
+	}
 
 	// Split the message with ( \r\n or \n ).
 	private function splitMessage(): void
@@ -128,48 +123,20 @@ class RequestParser
 		});
 	}
 
-
-
-	/**
-	 * KKuTuCS
-	 */
-
-	private function parseKKuTuCS(): void
-	{
-		$this->splitMessage();
-		if (sizeof($this->messageLines) < 2) 
-			$this->messageLines[1] = NULL;
-		switch ($this->messageLines[1])
-		{
-			case "Hello":
-			$this->result['KKuTuCS'] = "World!";
-			break;
-
-			default:
-			$this->result['KKuTuCS'] = "What?";
-			break;
-		}
-	}
-
-
-
-	/**
-	 * Http
-	 */
-
-	private function parseHttp(): void
-	{
-		$this->splitMessage();
-		$this->verifyStartLine();
-	}
-
 	private function verifyStartLine(): void
 	{
 		$this->splitStartLine();
 
-		$this->verifyStartLineMethod();
-		$this->verifyStartLineURI();
-		$this->verifyStartLineVersion();
+		if ($this->result['method'] == 'KKUTUCS')
+		{
+			$this->result['KKuTuCS'] = $this->messageLines;
+		}
+		else
+		{
+			$this->verifyStartLineMethod();
+			$this->verifyStartLineURI();
+			$this->verifyStartLineVersion();
+		}
 	}
 
 	private function splitStartLine(): void
@@ -177,7 +144,7 @@ class RequestParser
 		// If no lines, return false.
 		if (empty($this->messageLines) || empty($this->messageLines[0]))
 		{
-			false();
+			$this->false();
 			return;
 		}
 
@@ -188,7 +155,7 @@ class RequestParser
 		// The lines should be divided into 3 pieces.
 		if (empty($startLineSplit) || count($startLineSplit) !== 3)
 		{
-			false();
+			$this->false();
 			return;
 		}
 
@@ -199,32 +166,23 @@ class RequestParser
 
 	private function verifyStartLineMethod(): void
 	{
-		$method = $this->result['method'];
-		if (empty($method) || !in_array($method, $this->supportMethods))
-		{
-			false();
-			return;
-		}
+		if (empty($this->result['method']) || !in_array($this->result['method'], $this->supportMethods))
+			$this->false();
 	}
 
 	private function verifyStartLineURI(): void
 	{
-		$uri = $this->result['uri'];
-		if (empty($uri) || strpos($uri, '/') !== 0)
-		{
-			false();
-			return;
-		}
+		if ($this->result['uri'] == "/" || $this->result['uri'] == "//" || $this->result['uri'] == "\\")
+			$this->result['uri'] = "views/index.html";
+
+		if (empty($this->result['uri']) || strpos($this->result['uri'], '/') !== 0)
+			$this->false();
 	}
 
 	private function verifyStartLineVersion(): void
 	{
-		$version = $this->result['version'];
-		if (empty($version) || !preg_match('/HTTP\/\d+.\d+/', $version))
-		{
-			false();
-			return;
-		}
+		if (empty($this->result['version']) || !preg_match('/HTTP\/\d+.\d+/', $this->result['version']))
+			$this->false();
 	}
 }
 ?>
