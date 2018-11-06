@@ -43,8 +43,8 @@ else
 		if ($info['eof'] || $info['unread_bytes'] === 0)
 			break;
 	}
-	echo "??";
-	//echo $res;
+	//echo "??";
+	echo $res;
 
 	/*
 	* bye bye
