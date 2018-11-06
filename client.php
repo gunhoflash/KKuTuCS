@@ -1,7 +1,7 @@
 <?php
 $str = "A";//$_POST['str'];
 
-$client = stream_socket_client("tcp://127.0.0.1:7000", $errno, $errorMessage);
+$client = stream_socket_client("tcp://127.0.0.1:5000", $errno, $errorMessage);
 if ($client === false)
 {
 	echo "Failed to connect: $errno - $errorMessage";
