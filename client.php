@@ -1,7 +1,7 @@
 <?php
-$str = "A";//$_POST['str'];
+$str = $_POST['str'];
 
-$client = stream_socket_client("tcp://127.0.0.1:5000", $errno, $errorMessage);
+$client = stream_socket_client("tcp://127.0.0.1:7001", $errno, $errorMessage);
 if ($client === false)
 {
 	echo "Failed to connect: $errno - $errorMessage";
@@ -13,17 +13,18 @@ else
 	/*
 	* generate a message
 	*/
-	$startLine = 'KKUTUCS / HTTP/1.0';
-	$headers = ['Host: localhost', 'Accept: */*'];
-	$header = implode(PHP_EOL, $headers);
-	$emptyLine = PHP_EOL;
-	$body = "KKuTuCS " . $str;
-	$message = implode(PHP_EOL, [
-		$startLine,
-		$header,
-		$emptyLine,
-		$body
-	]);
+	// $startLine = 'KKUTUCS / HTTP/1.0';
+	// $headers = ['Host: localhost', 'Accept: */*'];
+	// $header = implode(PHP_EOL, $headers);
+	// $emptyLine = PHP_EOL;
+	// $body = "KKuTuCS " . $str;
+	// $message = implode(PHP_EOL, [
+	// 	$startLine,
+	// 	$header,
+	// 	$emptyLine,
+	// 	$body
+	// ]);
+	$message = "KKuTuCS " . $str;
 
 	/*
 	* request
