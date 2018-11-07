@@ -1,4 +1,3 @@
-alert("Hello, JS!");
 $(document).ready(function()
 {
 	$("#A").on("click", function()
@@ -13,7 +12,6 @@ $(document).ready(function()
 	{
 		buttonTest("C");
 	});
-	alert("Hello, jQuery!");
 });
 
 /*function buttonTest(str) {
