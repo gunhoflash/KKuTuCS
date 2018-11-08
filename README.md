@@ -30,7 +30,7 @@ php socket_test.php
   │                    └ js ─ ...
   ├ script ┬ jquery-3.3.1.min.js
   │        └ post.js
-  ├ views─other.html (will be deleted)
+  ├ views ─ other.html (will be deleted)
   ├ .gitignore
   ├ favicon.ico
   ├ index.html
