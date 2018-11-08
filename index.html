@@ -1,17 +1,42 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>KKuTu CS</title>
-	<script src="script/jquery-3.3.1.min.js"></script>
-	<script src="script/post.js"></script>
-</head>
-<body>
-	<h1>Index.html</h1>
-	<button id="A">A</button>
-	<button id="B">B</button>
-	<button id="C">C</button>
-</body>
+<html class="h-100">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>KKuTu CS</title>
+	
+		<!-- CSS -->
+		<link rel="stylesheet" href="public/bootstrap/css/bootstrap.min.css">
+	
+		<!-- JS -->
+		<script src="script/jquery-3.3.1.min.js"></script>
+		<script src="script/post.js"></script>
+		<script src="public/bootstrap/js/bootstrap.min.js"></script>
+		<script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
+	</head>
+	<body class="bg-light d-flex flex-column h-100">
+		<nav class="navbar navbar-dark bg-dark">
+			<span class="navbar-brand mb-0 h1">KKuTuCS</span>
+		</nav>
+		<div class="container d-flex flex-column h-100 mb-auto my-0 py-4">
+			<h1>Index.html</h1>
+			<div class="my-3">
+				<button id="btn_test" class="btn btn-outline-secondary" type="button">Test Button</button>
+			</div>
+			<div id="chatArea" class="d-flex flex-column p-3 h-100 bg-dark text-white" style="overflow-y: auto;">
+			</div>
+			<form class="my-3">
+				<div class="form-row align-items-start">
+					<div class="col-9">
+						<input id="wordInput" type="text" class="form-control" aria-describedby="wordInputHelp" placeholder="Something here!">
+						<small id="wordInputHelp" class="form-text text-muted">Type some text and click the button!</small>
+					</div>
+					<div class="col-3">
+						<button id="btn_send" class="btn btn-primary w-100" type="button">Send</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</body>
 </html>

@@ -1,36 +1,65 @@
 $(document).ready(function()
 {
-	$("#A").on("click", function()
+	$("#btn_test").on("click", function()
 	{
-		buttonTest("A");
+		buttonTest("Button Test");
 	});
-	$("#B").on("click", function()
+	$("#btn_send").on("click", function()
 	{
-		buttonTest("B");
+		buttonTest($("#wordInput").val());
+		$("#wordInput").val("");
 	});
-	$("#C").on("click", function()
+	$("#wordInput").keypress(function(event)
 	{
-		buttonTest("C");
+		var keycode = (event.keyCode ? event.keyCode : event.which);
+		if (keycode == '13')
+		{
+			event.preventDefault();
+			$("#btn_send").click();
+		}
 	});
+
+	initializeSocket();
 });
 
-/*function buttonTest(str) {
-	$.ajax({
-		url: "../client.php",
-		data: { str: str },
-		type: "POST",
-		success: function (result) {
-			alert(result);
-		}
-	 });
-}*/
+var socketLink = "ws://"+window.location.hostname+":7002";
+var socket;
+
+function initializeSocket()
+{
+	socket = new WebSocket(socketLink);
+
+	// When the socket open
+	socket.onopen = function(event)
+	{
+		console.log("Socket opened.", event);
+	};
+
+	// When the socket receive a message
+	socket.onmessage = function(event)
+	{
+		console.log("Socket received a message.", event.data);
+		$("#chatArea").append("<p class='mb-1'>" + event.data + "</p>");
+		$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
+	};
+
+	// When the socket close
+	socket.onclose = function(event)
+	{
+		console.log("Socket closed.", event);
+		alert("Socket closed.\nPlease refresh this page to reconnect.");
+		//socket.close();
+	};
+}
+
+// Send an initial message
+// socket.send("KKuTuCS GF!");
+
+// To close the socket,
+//socket.close()
 
 function buttonTest(str)
 {
-	if (socket.readyState == socket.OPEN)
-		socket.send(str);
-	else
-		alert("Cannot send!\nsocket.readyState: " + socket.readyState);
 	/*
 	socket.readyState
 
@@ -40,32 +69,12 @@ function buttonTest(str)
 	CLOSING     2       연결이 닫히는 중 입니다.
 	CLOSED      3       연결이 종료되었거나, 연결에 실패한 경우입니다.
 	*/
+	if (socket.readyState == socket.OPEN)
+	{
+		str = "KKuTuCS\n" + str;
+		socket.send(str);
+	}
+	else
+		alert("Cannot send!\nsocket.readyState: " + socket.readyState);
+	
 }
-
-
-/**
- * Code by: Nabi KAZ <www.nabi.ir>
- */
-
-var socket = new WebSocket('ws://121.130.151.64:7002');
-
-// Open the socket
-socket.onopen = function(event) {
-	var msg = "KKuTuCS GF!";
-
-	// Send an initial message
-	socket.send(msg);
-
-	// Listen for messages
-	socket.onmessage = function(event) {
-		console.log('< ' + event.data);
-	};
-
-	// Listen for socket closes
-	socket.onclose = function(event) {
-		console.log('Client notified socket has closed', event);
-	};
-
-	// To close the socket,
-	//socket.close()
-};
