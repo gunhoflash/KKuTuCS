@@ -2,11 +2,11 @@ $(document).ready(function()
 {
 	$("#btn_test").on("click", function()
 	{
-		buttonTest("Button Test");
+		sendMessage("Button Test");
 	});
 	$("#btn_send").on("click", function()
 	{
-		buttonTest($("#wordInput").val());
+		sendMessage($("#wordInput").val());
 		$("#wordInput").val("");
 	});
 	$("#wordInput").keypress(function(event)
@@ -52,13 +52,10 @@ function initializeSocket()
 	};
 }
 
-// Send an initial message
-// socket.send("KKuTuCS GF!");
-
 // To close the socket,
 //socket.close()
 
-function buttonTest(str)
+function sendMessage(str)
 {
 	/*
 	socket.readyState
@@ -76,5 +73,4 @@ function buttonTest(str)
 	}
 	else
 		alert("Cannot send!\nsocket.readyState: " + socket.readyState);
-	
 }

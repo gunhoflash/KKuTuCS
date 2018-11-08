@@ -26,6 +26,8 @@ $timeout = 0;
 while(1)
 {
 	$read = $client;
+
+	// Socket is only to catch read-event. Write and except is always NULL.
 	$num_changed_sockets = socket_select($read, $tWrite, $tExcept, 0);
 
 	if($num_changed_sockets === false)

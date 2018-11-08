@@ -1,4 +1,9 @@
 <?php
+/**
+ * 
+ * This file will be deleted.
+ * 
+ */
 include './libs/time.php';
 include './libs/Request.php';
 defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__ . '/');

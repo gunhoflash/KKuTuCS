@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * 
+ * This file will be deleted.
+ * 
+ */
 class Request
 {
 	private $result;

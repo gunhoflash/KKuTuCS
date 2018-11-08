@@ -2,6 +2,11 @@
 University of Seoul - Internet Programming\
 Term Project by __Team 6__
 
+## Collaborators
+* 2015920003 [gunhoflash](https://github.com/gunhoflash)
+* 2017920061 [KimMalsu](https://github.com/KimMalsu)
+* 2017920049 [LeeMir](https://github.com/LeeMir)
+
 ## Implementation Test
 ### Terminal (at root of the server)
 ```
@@ -16,12 +21,29 @@ php socket_test.php
 (SERVER IP HERE):7000
 ```
 
-## Collaborators
-* 2015920003 [gunhoflash](https://github.com/gunhoflash)
-* 2017920061 [KimMalsu](https://github.com/KimMalsu)
-* 2017920049 [LeeMir](https://github.com/LeeMir)
+## Project File Overview
+```
+/ ┬ libs ┬ KKuTuCSRequest
+  │      ├ Request.php (will be deleted)
+  │      └ time.php
+  ├ public ─ bootstrap ┬ css ─ ...
+  │                    └ js ─ ...
+  ├ script ┬ jquery-3.3.1.min.js
+  │        └ post.js
+  ├ views─other.html (will be deleted)
+  ├ .gitignore
+  ├ favicon.ico
+  ├ index.html
+  ├ LICENSE
+  ├ README.md
+  ├ server.php (will be deleted)
+  ├ server2.php (will be deleted)
+  └ socket_test.php
+```
 
 ## We refered to:
+* PHP
+  * Document: [php.net](http://php.net/)
 * Websocket
   * Introduction: [NAVER D2](https://d2.naver.com/helloworld/1336)
   * Supported Browsers: [Can I use](https://caniuse.com/#search=websocket)
