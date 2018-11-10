@@ -14,7 +14,7 @@ php -S 0.0.0.0:7000
 ```
 ### Terminal (at root of the server)
 ```
-php socket_test.php
+php server.php
 ```
 ### Web Browser
 ```
@@ -23,11 +23,11 @@ php socket_test.php
 
 ## Project File Overview
 ```
-/ ┬ libs ┬ KKuTuCSRequest
-  │      ├ Request.php (will be deleted)
-  │      └ time.php
-  ├ public ─ bootstrap ┬ css ─ ...
-  │                    └ js ─ ...
+/ ┬ libs ─ KKuTuCSRequest.php
+  ├ public ┬ css ┬ bootstrap.css
+  │        │     └ bootstrap.min.css
+  │        └ js ┬ bootstrap.bundle.js
+  │             └ bootstrap.bundle.min.js
   ├ script ┬ jquery-3.3.1.min.js
   │        └ post.js
   ├ views ─ other.html (will be deleted)
@@ -36,9 +36,7 @@ php socket_test.php
   ├ index.html
   ├ LICENSE
   ├ README.md
-  ├ server.php (will be deleted)
-  ├ server2.php (will be deleted)
-  └ socket_test.php
+  └ server.php
 ```
 
 ## We refered to:

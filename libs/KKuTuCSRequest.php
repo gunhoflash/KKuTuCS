@@ -1,15 +1,22 @@
 <?php
+$VALID_START = "KKuTuCS";
+$VALID_METHOD = array(
+	"NUMBER_OF_CLIENT",
+	"SEND_WORD",
+	"READY",
+	"START"
+);
 
 class KKuTuCSRequest
 {
 	private $requestMessage;
 	private $result = [
-		'validity' => false,
-		'method' => NULL,
-		'parameter' => NULL,
-		'else' => NULL
+		"validity" => false,
+		"method" => NULL,
+		"parameter" => NULL,
+		"else" => NULL
 	];
-
+	
 	/**
 	 * Constructor
 	 */
@@ -21,7 +28,7 @@ class KKuTuCSRequest
 
 	private function parse()
 	{
-		$messages = preg_split('/(\r\n|\n)/', $this->requestMessage, 4);
+		$messages = preg_split("/(\r\n|\n)/", $this->requestMessage, 4);
 
 		// Trim
 		array_walk($messages, function (&$m) {
@@ -40,9 +47,9 @@ class KKuTuCSRequest
 			return;
 		}
 
-		if (count($messages) > 1) $this->result['method'] = $messages[1];
-		if (count($messages) > 2) $this->result['parameter'] = $messages[2];
-		if (count($messages) > 3) $this->result['else'] = $messages[3];
+		if (count($messages) > 1) $this->result["method"] = $messages[1];
+		if (count($messages) > 2) $this->result["parameter"] = $messages[2];
+		if (count($messages) > 3) $this->result["else"] = $messages[3];
 	}
 
 	/**
@@ -50,7 +57,7 @@ class KKuTuCSRequest
 	 */
 	private function setValidity(boolan $b)
 	{
-		$this->result['validity'] = $b;
+		$this->result["validity"] = $b;
 	}
 
 	/**
@@ -58,19 +65,19 @@ class KKuTuCSRequest
 	 */
 	public function getValidity()
 	{
-		return $this->result['validity'];
+		return $this->result["validity"];
 	}
 	public function getMathod()
 	{
-		return $this->result['method'];
+		return $this->result["method"];
 	}
 	public function getParameter()
 	{
-		return $this->result['parameter'];
+		return $this->result["parameter"];
 	}
 	public function getElse()
 	{
-		return $this->result['else'];
+		return $this->result["else"];
 	}
 }
 
