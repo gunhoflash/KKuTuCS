@@ -2,7 +2,7 @@
 // Server for listen KKuTuCS request.
 
 include './libs/KKuTuCSRequest.php';
-defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__ . '/');
+defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__.'/');
 
 // Don't stop, server!
 set_time_limit(0); 
@@ -16,7 +16,8 @@ $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Could not create 
 $result = socket_bind($socket, $host, $port) or die("Could not bind to socket.\n");
 $result = socket_listen($socket, 20) or die("Could not set up socket listener.\n");
 
-
+$client_main = array();
+$client_gamerooms = array();
 $client = array($socket);
 $tWrite = NULL;
 $tExcept = NULL;
@@ -28,7 +29,7 @@ while(1)
 	// Socket is only to catch read-event. Write and except is always NULL.
 	$num_changed_sockets = socket_select($read, $tWrite, $tExcept, 0);
 
-	if($num_changed_sockets === false)
+	if($num_changed_sockets === FALSE)
 		// Error
 		continue;
 	else if ($num_changed_sockets == 0)
@@ -51,7 +52,7 @@ while(1)
 		$data = @socket_read($readSocket, 4096, PHP_BINARY_READ);
 		$socketString = socketToString($readSocket);
 
-		if ($data === false)
+		if ($data === FALSE)
 		{
 			$key = array_search($readSocket, $client);
 			unset($client[$key]);
@@ -152,7 +153,7 @@ function handshake($client, $headers, $socket)
 	else
 	{
 		print("The client doesn't support WebSocket");
-		return false;
+		return FALSE;
 	}
 
 	if ($version == 13)
@@ -168,7 +169,7 @@ function handshake($client, $headers, $socket)
 			$key = $match[1];
 
 		$acceptKey = $key.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
-		$acceptKey = base64_encode(sha1($acceptKey, true));
+		$acceptKey = base64_encode(sha1($acceptKey, TRUE));
 
 		$upgrade = "HTTP/1.1 101 Switching Protocols\r\n".
 			"Upgrade: websocket\r\n".
@@ -177,11 +178,11 @@ function handshake($client, $headers, $socket)
 			"\r\n\r\n";
 
 		socket_write($client, $upgrade);
-		return true;
+		return TRUE;
 	}
 	else
 	{
 		print("WebSocket version 13 required (the client supports version {$version})");
-		return false;
+		return FALSE;
 	}
 }
