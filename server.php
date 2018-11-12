@@ -9,13 +9,11 @@ defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__.'/');
 set_time_limit(0); 
 
 // set some variables.
-$host = "0.0.0.0";
-$port = 7002;
 $NULL = NULL;
 
 // Create a socket, bind to port, and start listening for connections.
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Could not create socket.\n");
-$result = socket_bind($socket, $host, $port) or die("Could not bind to socket.\n");
+$result = socket_bind($socket, "0.0.0.0", 7002) or die("Could not bind to socket.\n");
 $result = socket_listen($socket, 20) or die("Could not set up socket listener.\n");
 
 $client_unknown = array($socket); // New client here.  
@@ -25,32 +23,28 @@ $client_room = array(
 
 while(TRUE)
 {
-
 	$read = $client_unknown;
 
 	// Socket is only to catch read-event. Write and except is always NULL.
 	$num_changed_sockets = socket_select($read, $NULL, $NULL, 0);
 
-	if ($num_changed_sockets === FALSE)
-		// Error
-		continue;
-	else if ($num_changed_sockets != 0)
-	{
-		// New client here!
+	// Error
+	if ($num_changed_sockets === FALSE) continue;
+
+	// Something new (maybe an new client)
+	if ($num_changed_sockets != 0)
 		if (in_array($socket, $read))
 		{
 			$newSocket = socket_accept($socket);
-			$client_room[0]->clientEntered($newSocket);
-			$bytes = @socket_recv($newSocket, $data, 2048, 0);
-			if ($bytes == 0) continue;
+			if (@socket_recv($newSocket, $data, 2048, 0) == 0) continue;
 			handshake($newSocket, $data, $socket);
+			$client_room[0]->clientEntered($newSocket);
 			echo "Connected: ".socketToString($newSocket)."\n";
 			$key = array_search($socket, $read);
 			unset($read[$key]);
 		}
-	}
 
-	foreach ($client_room as $room)
+	foreach ($client_room as &$room)
 	{
 		socket_read_GameRoom($room);
 	}
@@ -70,15 +64,14 @@ function socket_read_GameRoom(&$room)
 	$num_changed_sockets = socket_select($read, $NULL, $NULL, 0);
 	// Warning: $read is modified.
 
-	if ($num_changed_sockets === FALSE)
-		// Error
-		return;
-	else if ($num_changed_sockets == 0)
-		// nothing new
-		return;
+	// Error
+	if ($num_changed_sockets === FALSE) return;
+
+	// Nothing new
+	if ($num_changed_sockets == 0) return;
 
 	// Read some new datas from clients in main.
-	foreach ($read as $readSocket)
+	foreach ($read as &$readSocket)
 	{
 		echo "$roomType(".$room->getNumberOfClient().")\n";
 		$data = @socket_read($readSocket, 4096, PHP_BINARY_READ);
@@ -107,31 +100,28 @@ function socket_read_GameRoom(&$room)
 			continue;
 		}
 
-		$response = "$socketString : $parameter\n";
 		echo "  $socketString < $parameter\n";
 
 		try
 		{
-			$response = encode($response);
+			$response = encode("$socketString : $parameter\n");
 		}
 		catch (Exception $e)
 		{
 			$response = NULL;
 			echo "  Exception on encode: ".$e->getMessage()."\n";
+			continue;
 		}
-
-		if ($response == NULL) continue;
 
 		socket_write($readSocket, $response);
 
-		foreach ($room->getClientSockets() as $sendSocket)
+		foreach ($room->getClientSockets() as &$sendSocket)
 		{
 			if ($sendSocket == $readSocket) continue;
 			socket_write($sendSocket, $response);
 		}
 	}
 }
-
 
 function handshake($client, $headers, $socket)
 {

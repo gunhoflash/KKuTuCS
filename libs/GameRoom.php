@@ -1,4 +1,6 @@
 <?php
+defined('PROJECT_ROOT') or exit('No direct script access allowed');
+
 include './libs/socketHandle.php';
 
 class GameRoom
@@ -70,12 +72,12 @@ class GameRoom
 	/**
 	 * Getter
 	 */
-	public function getRoomType()       { return $this->roomType;        }
-	public function getState()          { return $this->state;           }
-	public function getName()           { return $this->name;            }
-	public function getPassword()       { return $this->password;        }
-	public function getMaximumClients() { return $this->maximumClients;  }
-	public function getClientSockets()  { return $this->clientSockets;   }
+	public function getRoomType()       { return $this->roomType;              }
+	public function getState()          { return $this->state;                 }
+	public function getName()           { return $this->name;                  }
+	public function getPassword()       { return $this->password;              }
+	public function getMaximumClients() { return $this->maximumClients;        }
+	public function getClientSockets()  { return $this->clientSockets;         }
 	public function getNumberOfClient() { return sizeof($this->clientSockets); }
 }
 

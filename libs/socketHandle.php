@@ -1,4 +1,5 @@
 <?php
+defined('PROJECT_ROOT') or exit('No direct script access allowed');
 
 // Functions for socket
 
