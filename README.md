@@ -10,7 +10,7 @@ Term Project by __Team 6__
 ## Implementation Test
 ### Terminal (at root of the server)
 ```
-php -S 0.0.0.0:7000
+php -S 0.0.0.0:{PORT}
 ```
 ### Terminal (at root of the server)
 ```
@@ -18,20 +18,28 @@ php server.php
 ```
 ### Web Browser
 ```
-(SERVER IP HERE):7000
+{SERVER IP HERE}:{PORT}
 ```
 
 ## Project File Overview
 ```
-/ ┬ libs ─ KKuTuCSRequest.php
+/ ┬ img ─ kkutucs_char.jpg
+  ├ libs ┬ Client.php
+  │      ├ GameRoom.php
+  │      ├ KKuTuCSRequest.php
+  │      ├ socketHandle.php
+  │      └ wordCheck.php
   ├ public ┬ css ┬ bootstrap.css
   │        │     └ bootstrap.min.css
   │        └ js ┬ bootstrap.bundle.js
   │             └ bootstrap.bundle.min.js
-  ├ script ┬ jquery-3.3.1.min.js
-  │        └ post.js
-  ├ views ─ other.html (will be deleted)
+  ├ script ┬ client.js
+  │        └ jquery-3.3.1.min.js
+  ├ views ┬ db.sql
+  │       ├ KKuTu.php
+  │       └ other.html (will be deleted)
   ├ .gitignore
+  ├ action_page.html
   ├ favicon.ico
   ├ index.html
   ├ LICENSE
