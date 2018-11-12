@@ -1,9 +1,9 @@
 <?php
 // Server for listen KKuTuCS request.
+defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__.'/');
 
 include './libs/GameRoom.php';
 include './libs/KKuTuCSRequest.php';
-defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__.'/');
 
 // Don't stop, server!
 set_time_limit(0); 
