@@ -2,11 +2,11 @@ $(document).ready(function()
 {
 	$("#btn_test").on("click", function()
 	{
-		sendMessage("Button Test");
+		sendMessage("SEND", "Button Test");
 	});
 	$("#btn_send").on("click", function()
 	{
-		sendMessage($("#wordInput").val());
+		sendMessage("SEND", $("#wordInput").val());
 		$("#wordInput").val("");
 	});
 	$("#wordInput").keypress(function(event)
@@ -33,6 +33,7 @@ function initializeSocket()
 	socket.onopen = function(event)
 	{
 		console.log("Socket opened.", event);
+		//sendMessage("");
 	};
 
 	// When the socket receive a message
@@ -55,7 +56,7 @@ function initializeSocket()
 // To close the socket,
 //socket.close()
 
-function sendMessage(str)
+function sendMessage(method, parameter)
 {
 	/*
 	socket.readyState
@@ -68,7 +69,7 @@ function sendMessage(str)
 	*/
 	if (socket.readyState == socket.OPEN)
 	{
-		str = "KKuTuCS\n" + str;
+		var str = "KKuTuCS\n" + method + "\n" + parameter;
 		socket.send(str);
 	}
 	else

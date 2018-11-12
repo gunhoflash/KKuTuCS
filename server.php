@@ -1,6 +1,7 @@
 <?php
 // Server for listen KKuTuCS request.
 
+include './libs/GameRoom.php';
 include './libs/KKuTuCSRequest.php';
 defined('PROJECT_ROOT') or define('PROJECT_ROOT', __DIR__.'/');
 
@@ -10,64 +11,104 @@ set_time_limit(0);
 // set some variables.
 $host = "0.0.0.0";
 $port = 7002;
+$NULL = NULL;
 
 // Create a socket, bind to port, and start listening for connections.
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Could not create socket.\n");
 $result = socket_bind($socket, $host, $port) or die("Could not bind to socket.\n");
 $result = socket_listen($socket, 20) or die("Could not set up socket listener.\n");
 
-$client_main = array();
-$client_gamerooms = array();
-$client = array($socket);
-$tWrite = NULL;
-$tExcept = NULL;
-$timeout = 0;
-while(1)
+$client_unknown = array($socket); // New client here.  
+$client_room = array(
+	new GameRoom("main", "main room", "", 0)
+); // Array of GameRooms.
+
+while(TRUE)
 {
-	$read = $client;
+
+	$read = $client_unknown;
 
 	// Socket is only to catch read-event. Write and except is always NULL.
-	$num_changed_sockets = socket_select($read, $tWrite, $tExcept, 0);
+	$num_changed_sockets = socket_select($read, $NULL, $NULL, 0);
 
-	if($num_changed_sockets === FALSE)
+	if ($num_changed_sockets === FALSE)
 		// Error
 		continue;
-	else if ($num_changed_sockets == 0)
-		// nothing new
-		continue;
-
-	if (in_array($socket, $read))
+	else if ($num_changed_sockets != 0)
 	{
-		$client[] = $newSocket = socket_accept($socket);
-		$bytes = @socket_recv($newSocket, $data, 2048, 0);
-		if ($bytes == 0) continue;
-		handshake($newSocket, $data, $socket);
-		echo "Connected: ".socketToString($newSocket)."\n";
-		$key = array_search($socket, $read);
-		unset($read[$key]);
+		// New client here!
+		if (in_array($socket, $read))
+		{
+			$newSocket = socket_accept($socket);
+			$client_room[0]->clientEntered($newSocket);
+			$bytes = @socket_recv($newSocket, $data, 2048, 0);
+			if ($bytes == 0) continue;
+			handshake($newSocket, $data, $socket);
+			echo "Connected: ".socketToString($newSocket)."\n";
+			$key = array_search($socket, $read);
+			unset($read[$key]);
+		}
 	}
 
+	foreach ($client_room as $room)
+	{
+		socket_read_GameRoom($room);
+	}
+}
+
+function socket_read_GameRoom(&$room)
+{
+	// $room must be a instance of GameRoom.
+	if (!($room instanceof GameRoom))
+		return;
+
+	if ($room->getNumberOfClient() == 0) return;
+	$roomType = $room->getRoomType();
+	$read = $room->getClientSockets();
+
+	// Socket is only to catch read-event. Write and except is always NULL.
+	$num_changed_sockets = socket_select($read, $NULL, $NULL, 0);
+	// Warning: $read is modified.
+
+	if ($num_changed_sockets === FALSE)
+		// Error
+		return;
+	else if ($num_changed_sockets == 0)
+		// nothing new
+		return;
+
+	// Read some new datas from clients in main.
 	foreach ($read as $readSocket)
 	{
+		echo "$roomType(".$room->getNumberOfClient().")\n";
 		$data = @socket_read($readSocket, 4096, PHP_BINARY_READ);
 		$socketString = socketToString($readSocket);
 
 		if ($data === FALSE)
 		{
-			$key = array_search($readSocket, $client);
-			unset($client[$key]);
-			echo "Disconnected: $socketString\n";
-			socket_close($readSocket);
+			echo "  Disconnected: $socketString\n";
+			$room->clientDisconnected($readSocket);
 			continue;
 		}
 
-		//$data = trim($data);
+		// Decode the data.
+		$decoded_data = @unmask($data);
 
-		$decoded_data = unmask($data);
-		$response = "$socketString: $decoded_data\n";
+		// Parse the data.
+		$request = new KKuTuCSRequest($decoded_data);
+		$method = $request->getMethod();
+		$parameter = $request->getParameter();
 
-		echo "$socketString < $decoded_data\n";
-		echo "$socketString > $response\n";
+		// If the given data is invalid, diconnect it.
+		if ($request->getValidity() == FALSE)
+		{
+			echo "  Disconnected: $socketString\n";
+			$room->clientDisconnected($readSocket);
+			continue;
+		}
+
+		$response = "$socketString : $parameter\n";
+		echo "  $socketString < $parameter\n";
 
 		try
 		{
@@ -76,75 +117,21 @@ while(1)
 		catch (Exception $e)
 		{
 			$response = NULL;
-			echo "Exception on encode: ".$e->getMessage()."\n";
+			echo "  Exception on encode: ".$e->getMessage()."\n";
 		}
 
 		if ($response == NULL) continue;
 
 		socket_write($readSocket, $response);
 
-		//socket_close($client);
-		foreach ($client as $sendSocket)
+		foreach ($room->getClientSockets() as $sendSocket)
 		{
-			if ($sendSocket == $readSocket || $sendSocket == $socket) continue;
+			if ($sendSocket == $readSocket) continue;
 			socket_write($sendSocket, $response);
 		}
 	}
 }
 
-function msg($msg)
-{
-	echo "SERVER >> ".$msg;
-}
-
-function socketToString($socket)
-{
-	socket_getpeername($socket, $IP, $PORT);
-	return "{".$IP.":".$PORT."}";
-}
-
-function unmask($payload)
-{
-	$length = ord($payload[1]) & 127;
-
-	if ($length == 126)
-	{
-		$masks = substr($payload, 4, 4);
-		$data = substr($payload, 8);
-	}
-	else if ($length == 127)
-	{
-		$masks = substr($payload, 10, 4);
-		$data = substr($payload, 14);
-	}
-	else
-	{
-		$masks = substr($payload, 2, 4);
-		$data = substr($payload, 6);
-	}
-
-	$text = '';
-	for ($i = 0; $i < strlen($data); ++$i)
-		$text .= $data[$i] ^ $masks[$i % 4];
-
-	return $text;
-}
-
-function encode($text)
-{
-	// 0x1 text frame (FIN + opcode)
-	$b1 = 0x80 | (0x1 & 0x0f);
-	$length = strlen($text);
-
-	if ($length <= 125)
-		$header = pack('CC', $b1, $length);
-	else if ($length > 125 && $length < 65536)
-		$header = pack('CCS', $b1, 126, $length);
-	else if ($length >= 65536)
-		$header = pack('CCN', $b1, 127, $length);
-
-	return $header.$text;
-}
 
 function handshake($client, $headers, $socket)
 {
