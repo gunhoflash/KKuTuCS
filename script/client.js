@@ -28,20 +28,21 @@ var socket;
 function initializeSocket()
 {
 	socket = new WebSocket(socketLink);
+	$("#Roomname").text("(Now connecting...)");
 
 	// When the socket open
 	socket.onopen = function(event)
 	{
 		console.log("Socket opened.", event);
-		//sendMessage("");
+		$("#Roomname").text("Main room");
+		sendMessage("ROOMLIST", "");
 	};
 
 	// When the socket receive a message
 	socket.onmessage = function(event)
 	{
 		console.log("Socket received a message.", event.data);
-		$("#chatArea").append("<p class='mb-1'>" + event.data + "</p>");
-		$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
+		parseMessage(event.data);
 	};
 
 	// When the socket close
@@ -75,4 +76,54 @@ function sendMessage(method, parameter)
 	}
 	else
 		alert("Cannot send!\nsocket.readyState: " + socket.readyState);
+}
+
+function parseMessage(data)
+{
+	var datas = data.split("\n");
+	var method = datas[0];
+	var parameter1 = datas[1];
+	var parameter2 = datas[2];
+
+	switch (method)
+	{
+		case "SEND":
+			processSEND(parameter1);
+			break;
+
+		case "JOIN":
+			// TODO: Do something according to the result of the JOIN request.
+			break;
+
+		case "DISCONNECTED":
+			// TODO: Show that someone is disconnected with this room.
+			break;
+
+		case "CONNECTED":
+			// TODO: Show that someone is connected with this room.
+			break;
+
+		case "ROOMLIST":
+			// TODO: Show the list of all rooms.
+			break;
+
+		case "ERROR":
+			alert("[Server Error] " + parameter1);
+			break;
+
+		default:
+			alert("[Unexpected Method Error] " + method);
+			break;
+	}
+}
+
+function processSEND(message)
+{
+	/**
+	 * TODO: Convert some characters.
+	 * \n      => <br>
+	 * (space) => &nbsp;
+	 */
+	$("#chatArea").append("<p class='mb-1'>" + message + "</p>");
+	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
 }
