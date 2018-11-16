@@ -6,12 +6,18 @@ include './libs/socketHandle.php';
 class GameRoom
 {
 	private $roomType = NULL; // "main" or "game"
-	private $state = "Ready";
+	private $state = "Ready"; // "Ready" or "Playing"
 	private $name = "KKuTuCS";
 	private $password = NULL; // "": no password
 	private $maximumClients = 4; // 0: no limit
+
+	// Array for Clients
 	private $clientSockets = array();
-	private $wordHistory = array();
+	private $clientReady = array(); // 0: not ready, 1: ready
+
+	private $wordHistory = array(); // String과 _로 엮어서 하나의 string으로 만드는게 더 빠를까?
+	private $lastWord = "";
+	private $nowTurn = 0; // Index of the client who has to say a word.
 	
 	/**
 	 * Constructor
@@ -27,58 +33,118 @@ class GameRoom
 	public function clientEntered(&$socket)
 	{
 		$socketString = socketToString($socket);
-		$this->sendToAll("Client {$socketString} connected.");
+		sendToSocketAll($this->clientSockets, "CONNECTED", $socketString);
 		$this->clientSockets[] = $socket;
+		$this->clientReady[] = 0;
 	}
 
 	public function clientDisconnected(&$socket)
 	{
-		$socketString = socketToString($socket);
-		$key = array_search($socket, $this->clientSockets);
-		unset($this->clientSockets[$key]);
-		socket_close($socket);
-
-		$this->sendToAll("Client {$socketString} disconnected.");
-	}
-
-	public function checkWord()
-	{
-		// TODO: Do something
-	}
-
-	public function startGame()
-	{
-		// TODO: Do something
-	}
-
-	private function sendToAll($message)
-	{
-		try
+		$index = array_search($socket, $this->clientSockets);
+		if ($index === FALSE)
 		{
-			$encodedMessage = encode($message);
-		}
-		catch (Exception $e)
-		{
-			echo "Exception on encode: ".$e->getMessage()."\n";
+			echo "  Fatal error on clientDisconnected()\n";
 			return;
 		}
 
-		foreach ($this->clientSockets as $client)
+		// Log
+		$socketString = socketToString($socket);
+		echo "  Disconnected: $socketString\n";
+
+		// Unset from arrays and close the socket.
+		unsetFromArray($NULL, $this->clientSockets, $index);
+		unsetFromArray($NULL, $this->clientReady, $index);
+		socket_close($socket);
+
+		// Send the information to other clients.
+		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
+	}
+
+	private function checkWord()
+	{
+		// TODO: You should edit wordCheck.php first.
+		// TODO: Do something
+	}
+
+	private function startGame()
+	{
+		// TODO: Do something
+	}
+
+	private function startTurn()
+	{
+		// TODO: Do something
+	}
+
+	public function checkPassword($password)
+	{
+		return ($this->password == NULL) || ($password == $this->password);
+	}
+
+	// Process data (at game room)
+	public function processData(&$socket, $method, $parameter1, $parameter2)
+	{
+		switch ($method)
 		{
-			socket_write($client, $encodedMessage);
+			case "SEND":
+				$this->processSEND($socket, $parameter1);
+				break;
+			case "READY":
+				$this->processREADY($socket, $parameter1);
+				break;
+			case "QUIT":
+				// TODO: Send the result so that the client can go back to the main (by refreshing the page).
+				break;
+			default:
+				echo "  Gameroom can't handle the new method: $method\n";
+				break;
+		}
+	}
+
+	private function processSEND(&$socket, $message)
+	{
+		$socketString = socketToString($socket);
+		sendToSocketAll($this->clientSockets, "SEND", "$socketString : $message\n");
+
+		// If the $message is a word, checkWord().
+		if ($this->state == "Playing")
+		{
+			if ($nowTurn == array_search($socket, $this->clientSockets))
+			{
+				// TODO: If it is a word, checkWord();
+			}
+		}
+	}
+
+	private function processREADY(&$socket, $flag)
+	{
+		$index = array_search($socket, $this->clientSockets);
+		if ($index === FALSE)
+		{
+			echo "  Fatal error on processREADY()\n";
+			return;
+		}
+
+		if ($flag == 1 || $flag == 0)
+		{
+			$this->clientReady[$index] = $flag;
+			// TODO: Check if all clients ready.
+			// TODO: If yes, send information to all and let's start game!
 		}
 	}
 
 	/**
 	 * Getter
 	 */
-	public function getRoomType()       { return $this->roomType;              }
-	public function getState()          { return $this->state;                 }
-	public function getName()           { return $this->name;                  }
-	public function getPassword()       { return $this->password;              }
-	public function getMaximumClients() { return $this->maximumClients;        }
-	public function getClientSockets()  { return $this->clientSockets;         }
-	public function getNumberOfClient() { return sizeof($this->clientSockets); }
+	public function getRoomType()       { return $this->roomType;                                            }
+	public function getState()          { return $this->state;                                               }
+	public function getName()           { return $this->name;                                                }
+	// public function getPassword()       { return $this->password;                                            }
+	public function getMaximumClients() { return $this->maximumClients;                                      }
+	public function getClientSockets()  { return $this->clientSockets;                                       }
+	public function getNumberOfClient() { return sizeof($this->clientSockets);                               }
+	public function isFull()            { return ($this->getNumberOfClient() >= $this->getMaximumClients()); }
+	public function isPlaying()         { return $this->state == "Playing";                                  }
 }
 
 ?>

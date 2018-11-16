@@ -70,6 +70,7 @@ function sendMessage(method, parameter)
 	if (socket.readyState == socket.OPEN)
 	{
 		var str = "KKuTuCS\n" + method + "\n" + parameter;
+		console.log(str);
 		socket.send(str);
 	}
 	else

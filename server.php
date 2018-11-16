@@ -8,9 +8,6 @@ include './libs/KKuTuCSRequest.php';
 // Don't stop, server!
 set_time_limit(0); 
 
-// set some variables.
-$NULL = NULL;
-
 // Create a socket, bind to port, and start listening for connections.
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Could not create socket.\n");
 $result = socket_bind($socket, "0.0.0.0", 7002) or die("Could not bind to socket.\n");
@@ -39,127 +36,107 @@ while(TRUE)
 			if (@socket_recv($newSocket, $data, 2048, 0) == 0) continue;
 			handshake($newSocket, $data, $socket);
 			$client_room[0]->clientEntered($newSocket);
+			
 			echo "Connected: ".socketToString($newSocket)."\n";
-			$key = array_search($socket, $read);
-			unset($read[$key]);
+			unsetFromArray($socket, $read);
 		}
 
 	foreach ($client_room as &$room)
 	{
-		socket_read_GameRoom($room);
+		if ($room->getNumberOfClient() == 0)
+		{
+			// Delete empty room.
+			if ($room->getRoomType() == "game")
+				unsetFromArray($room, $client_room);
+		}
+		else
+			socket_read_GameRoom($room);
 	}
 }
 
 function socket_read_GameRoom(&$room)
 {
-	// $room must be a instance of GameRoom.
-	if (!($room instanceof GameRoom))
-		return;
-
-	if ($room->getNumberOfClient() == 0) return;
 	$roomType = $room->getRoomType();
 	$read = $room->getClientSockets();
 
 	// Socket is only to catch read-event. Write and except is always NULL.
 	$num_changed_sockets = socket_select($read, $NULL, $NULL, 0);
 	// Warning: $read is modified.
+	
+	if ($num_changed_sockets === FALSE) return; // Error
+	if ($num_changed_sockets == 0) return; // Nothing new
 
-	// Error
-	if ($num_changed_sockets === FALSE) return;
+	echo "$roomType(".$room->getNumberOfClient().")\n";
 
-	// Nothing new
-	if ($num_changed_sockets == 0) return;
-
-	// Read some new datas from clients in main.
+	// Read some new datas from clients.
 	foreach ($read as &$readSocket)
 	{
-		echo "$roomType(".$room->getNumberOfClient().")\n";
-		$data = @socket_read($readSocket, 4096, PHP_BINARY_READ);
-		$socketString = socketToString($readSocket);
-
-		if ($data === FALSE)
-		{
-			echo "  Disconnected: $socketString\n";
+		$data = @socket_read($readSocket, 2048);
+		if ($data === FALSE || strlen($data) == 0)
 			$room->clientDisconnected($readSocket);
-			continue;
-		}
-
-		// Decode the data.
-		$decoded_data = @unmask($data);
-
-		// Parse the data.
-		$request = new KKuTuCSRequest($decoded_data);
-		$method = $request->getMethod();
-		$parameter = $request->getParameter();
-
-		// If the given data is invalid, diconnect it.
-		if ($request->getValidity() == FALSE)
+		else
 		{
-			echo "  Disconnected: $socketString\n";
-			$room->clientDisconnected($readSocket);
-			continue;
-		}
+			// Decode & Parse the data. If the data is invalid, diconnect it.
+			$request = new KKuTuCSRequest(@unmask($data));
+			if ($request->getValidity() == FALSE) continue; // Invalid Data
+			$method = $request->getMethod();
+			$parameter1 = $request->getParameter(1);
+			$parameter2 = $request->getParameter(2);
 
-		echo "  $socketString < $parameter\n";
-
-		try
-		{
-			$response = encode("$socketString : $parameter\n");
-		}
-		catch (Exception $e)
-		{
-			$response = NULL;
-			echo "  Exception on encode: ".$e->getMessage()."\n";
-			continue;
-		}
-
-		socket_write($readSocket, $response);
-
-		foreach ($room->getClientSockets() as &$sendSocket)
-		{
-			if ($sendSocket == $readSocket) continue;
-			socket_write($sendSocket, $response);
+			if ($roomType == "main")
+				processData($room, $readSocket, $method, $parameter1, $parameter2);
+			else
+				$room->processData($readSocket, $method, $parameter1, $parameter2);
 		}
 	}
 }
 
-function handshake($client, $headers, $socket)
+// Process data (at main room)
+function processData(&$mainroom, &$socket, $method, $parameter1, $parameter2)
 {
-	if (preg_match("/Sec-WebSocket-Version: (.*)\r\n/", $headers, $match))
-		$version = $match[1];
-	else
+	switch ($method)
 	{
-		print("The client doesn't support WebSocket");
-		return FALSE;
-	}
+		case "JOIN":
+			// Check the room index.
+			if ($parameter1 < 1 || $parameter1 > sizeof($client_room) - 1)
+				sendToSocket($socket, $method, "Invalid room index.");
+			else
+			{
+				$room = $client_room[$parameter1];
+				// Check the password and the number of users.
+				if ($room->isPlaying())
+					sendToSocket($socket, $method, "This room is now playing the game.");
+				else if ($room->checkPassword($parameter2) == FALSE)
+					sendToSocket($socket, $method, "Password is incorrect.");
+				else if ($room->isFull())
+					sendToSocket($socket, $method, "This room is full!");
+				else
+				{
+					$room->clientEntered($socket);
+					// TODO: Remove client from the main room.
+					sendToSocket($socket, $method, "Success.");
+				}
+			}
+			break;
 
-	if ($version == 13)
-	{
-		// Extract header variables
-		if (preg_match("/GET (.*) HTTP/", $headers, $match))
-			$root = $match[1];
-		if (preg_match("/Host: (.*)\r\n/", $headers, $match))
-			$host = $match[1];
-		if (preg_match("/Origin: (.*)\r\n/", $headers, $match))
-			$origin = $match[1];
-		if (preg_match("/Sec-WebSocket-Key: (.*)\r\n/", $headers, $match))
-			$key = $match[1];
+		case "MAKE":
+			// TODO: Make a new gameroom with given name and password.
+			// TODO: Join the client to the gameroom.
+			// TODO: Send a ROOMLIST message to all clients in the main room.
+			// TODO: Send a JOIN success message to the client.
+			break;
 
-		$acceptKey = $key.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
-		$acceptKey = base64_encode(sha1($acceptKey, TRUE));
+		case "ROOMLIST":
+			// TODO: Send a information of roomlist to all clients in the main room.
+			break;
 
-		$upgrade = "HTTP/1.1 101 Switching Protocols\r\n".
-			"Upgrade: websocket\r\n".
-			"Connection: Upgrade\r\n".
-			"Sec-WebSocket-Accept: $acceptKey".
-			"\r\n\r\n";
+		case "SEND":
+			$mainroom->processData($socket, $method, $parameter1, $parameter2);
+			break;
 
-		socket_write($client, $upgrade);
-		return TRUE;
-	}
-	else
-	{
-		print("WebSocket version 13 required (the client supports version {$version})");
-		return FALSE;
+		default:
+			sendToSocket($socket, "ERROR", "Main can't handle the new method: $method");
+			echo "  Main can't handle the new method: $method\n";
+			break;
 	}
 }
