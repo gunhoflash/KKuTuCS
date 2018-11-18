@@ -5,12 +5,13 @@ class KKuTuCSRequest
 {
 	private static $VALID_START = "KKuTuCS";
 	private static $VALID_METHOD = array(
-		"JOIN",     // (main) Enter a game.              (Syntax: JOIN roomIndex password)
-		"MAKE",     // (main) Make new room.             (Syntax: MAKE roomname password)
-		"ROOMLIST", // (main) Get a list of all rooms.   (Syntax: ROOMLIST roomIndex password)
-		"SEND",     // (main/room) Send a word or chat.  (Syntax: SEND msg)
-		"READY",    // (room) Ready to start a game.     (Syntax: READY flag)
-		"QUIT"      // (room) Quit a game while playing. (Syntax: QUIT)
+		"JOIN",     // (main) Enter a game.               (Syntax: JOIN roomIndex password)
+		"MAKE",     // (main) Make new room.              (Syntax: MAKE roomname password)
+		"ROOMLIST", // (main) Get a list of all rooms.    (Syntax: ROOMLIST roomIndex password)
+		"SEND",     // (main/room) Send a word or chat.   (Syntax: SEND msg)
+		"READY",    // (room) Ready to start a game.      (Syntax: READY flag)
+		"QUIT",     // (room) Quit a game while playing.  (Syntax: QUIT)
+		"TIMETEST"  // (main/room) Measure response-time. (Syntax: TIMETEST)
 	);
 	private $requestMessage;
 	private $result = [

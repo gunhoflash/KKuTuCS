@@ -2,7 +2,8 @@ $(document).ready(function()
 {
 	$("#btn_test").on("click", function()
 	{
-		sendMessage("SEND", "Button Test");
+		sendMessage("TIMETEST", "", "");
+		responseTime = (new Date()).getTime();
 	});
 	$("#btn_send").on("click", function()
 	{
@@ -24,6 +25,7 @@ $(document).ready(function()
 
 var socketLink = "ws://"+window.location.hostname+":7002";
 var socket;
+var responseTime = 0;
 
 function initializeSocket()
 {
@@ -114,6 +116,10 @@ function parseMessage(data)
 
 		case "ROOMLIST":
 			// TODO: Show the list of all rooms.
+			break;
+
+		case "TIMETEST":
+			console.log("response time: " + ((new Date()).getTime() - responseTime) + "ms");
 			break;
 
 		case "ERROR":

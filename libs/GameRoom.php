@@ -108,6 +108,9 @@ class GameRoom
 			case "QUIT":
 				// TODO: Send the result so that the client can go back to the main (by refreshing the page).
 				break;
+			case "TIMETEST":
+				sendToSocket($socket, $method);
+				break;
 			default:
 				echo "  Gameroom can't handle the new method: $method\n";
 				break;

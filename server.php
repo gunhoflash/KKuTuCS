@@ -115,6 +115,7 @@ function processData(&$socket, $method, $parameter1, $parameter2)
 			break;
 
 		case "SEND":
+		case "TIMETEST":
 			$client_room[0]->processData($socket, $method, $parameter1, $parameter2);
 			break;
 
