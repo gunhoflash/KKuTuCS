@@ -57,7 +57,7 @@ function initializeSocket()
 // To close the socket,
 //socket.close()
 
-function sendMessage(method, parameter)
+function sendMessage(method, parameter1, parameter2)
 {
 	/*
 	socket.readyState
@@ -68,9 +68,13 @@ function sendMessage(method, parameter)
 	CLOSING     2       연결이 닫히는 중 입니다.
 	CLOSED      3       연결이 종료되었거나, 연결에 실패한 경우입니다.
 	*/
+	
+	if (parameter1 == undefined) parameter1 = "";
+	if (parameter2 == undefined) parameter2 = "";
+
 	if (socket.readyState == socket.OPEN)
 	{
-		var str = "KKuTuCS\n" + method + "\n" + parameter;
+		var str = "KKuTuCS\n" + method + "\n" + parameter1 + "\n" + parameter2;
 		console.log(str);
 		socket.send(str);
 	}
@@ -92,6 +96,11 @@ function parseMessage(data)
 			break;
 
 		case "JOIN":
+			// JOIN [1/0] [roonname/error_message]
+			if (parameter1 == 1)
+				$("#Roomname").text(parameter2);
+			else
+				alert("Cannot join!\n" + parameter2);
 			// TODO: Do something according to the result of the JOIN request.
 			break;
 

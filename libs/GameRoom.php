@@ -8,7 +8,7 @@ class GameRoom
 	private $roomType = NULL; // "main" or "game"
 	private $state = "Ready"; // "Ready" or "Playing"
 	private $name = "KKuTuCS";
-	private $password = NULL; // "": no password
+	private $password = ""; // "": no password
 	private $maximumClients = 4; // 0: no limit
 
 	// Array for Clients
@@ -38,22 +38,35 @@ class GameRoom
 		$this->clientReady[] = 0;
 	}
 
-	public function clientDisconnected(&$socket)
+	public function clientQuitted(&$socket)
 	{
 		$index = array_search($socket, $this->clientSockets);
 		if ($index === FALSE)
 		{
-			echo "  Fatal error on clientDisconnected()\n";
+			echo "  Fatal error on clientQuitted()\n";
 			return;
 		}
 
 		// Log
 		$socketString = socketToString($socket);
-		echo "  Disconnected: $socketString\n";
+		echo "  QUITTED: $socketString\n";
 
 		// Unset from arrays and close the socket.
 		unsetFromArray($NULL, $this->clientSockets, $index);
 		unsetFromArray($NULL, $this->clientReady, $index);
+
+		// Send the information to other clients.
+		sendToSocketAll($this->clientSockets, "QUITTED", $socketString);
+	}
+
+	public function clientDisconnected(&$socket)
+	{
+		$this->clientQuitted($socket);
+
+		// Log
+		$socketString = socketToString($socket);
+		echo "  DISCONNECTED: $socketString\n";
+		
 		socket_close($socket);
 
 		// Send the information to other clients.
@@ -78,7 +91,7 @@ class GameRoom
 
 	public function checkPassword($password)
 	{
-		return ($this->password == NULL) || ($password == $this->password);
+		return ($this->password == "") || ($password == $this->password);
 	}
 
 	// Process data (at game room)

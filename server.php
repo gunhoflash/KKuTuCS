@@ -82,9 +82,13 @@ function socket_read_GameRoom(&$room)
 			$method = $request->getMethod();
 			$parameter1 = $request->getParameter(1);
 			$parameter2 = $request->getParameter(2);
+			if ($parameter1 == NULL) $parameter1 == "";
+			if ($parameter2 == NULL) $parameter2 == "";
+
+			echo "  processData: $method\n$parameter1\n$parameter2\n";
 
 			if ($roomType == "main")
-				processData($room, $readSocket, $method, $parameter1, $parameter2);
+				processData($readSocket, $method, $parameter1, $parameter2);
 			else
 				$room->processData($readSocket, $method, $parameter1, $parameter2);
 		}
@@ -92,46 +96,26 @@ function socket_read_GameRoom(&$room)
 }
 
 // Process data (at main room)
-function processData(&$mainroom, &$socket, $method, $parameter1, $parameter2)
+function processData(&$socket, $method, $parameter1, $parameter2)
 {
+	global $client_room;
+	
 	switch ($method)
 	{
 		case "JOIN":
-			// Check the room index.
-			if ($parameter1 < 1 || $parameter1 > sizeof($client_room) - 1)
-				sendToSocket($socket, $method, "Invalid room index.");
-			else
-			{
-				$room = $client_room[$parameter1];
-				// Check the password and the number of users.
-				if ($room->isPlaying())
-					sendToSocket($socket, $method, "This room is now playing the game.");
-				else if ($room->checkPassword($parameter2) == FALSE)
-					sendToSocket($socket, $method, "Password is incorrect.");
-				else if ($room->isFull())
-					sendToSocket($socket, $method, "This room is full!");
-				else
-				{
-					$room->clientEntered($socket);
-					// TODO: Remove client from the main room.
-					sendToSocket($socket, $method, "Success.");
-				}
-			}
+			processJOIN($socket, $parameter1, $parameter2);
 			break;
 
 		case "MAKE":
-			// TODO: Make a new gameroom with given name and password.
-			// TODO: Join the client to the gameroom.
-			// TODO: Send a ROOMLIST message to all clients in the main room.
-			// TODO: Send a JOIN success message to the client.
+			processMAKE($socket, $parameter1, $parameter2);
 			break;
 
 		case "ROOMLIST":
-			// TODO: Send a information of roomlist to all clients in the main room.
+			processROOMLIST($socket);
 			break;
 
 		case "SEND":
-			$mainroom->processData($socket, $method, $parameter1, $parameter2);
+			$client_room[0]->processData($socket, $method, $parameter1, $parameter2);
 			break;
 
 		default:
@@ -139,4 +123,60 @@ function processData(&$mainroom, &$socket, $method, $parameter1, $parameter2)
 			echo "  Main can't handle the new method: $method\n";
 			break;
 	}
+}
+
+function processJOIN(&$socket, $roomindex, $password)
+{
+	global $client_room;
+
+	// Check the room index.
+	if ($parameter1 < 1 || $parameter1 > sizeof($client_room) - 1)
+	sendToSocket($socket, "JOIN", "0", "Invalid room index.");
+	else
+	{
+		$room = $client_room[$parameter1];
+		// Check the password and the number of users.
+		if ($room->isPlaying())
+			sendToSocket($socket, "JOIN", "0", "This room is now playing the game.");
+		else if ($room->checkPassword($parameter2) == FALSE)
+			sendToSocket($socket, "JOIN", "0", "Password is incorrect.");
+		else if ($room->isFull())
+			sendToSocket($socket, "JOIN", "0", "This room is full!");
+		else
+		{
+			$room->clientEntered($socket);
+			// TODO: Remove client from the main room.
+			sendToSocket($socket, "JOIN", "1", $room->getName());
+		}
+	}
+}
+
+function processMAKE(&$socket, $roomname, $password)
+{
+	global $client_room;
+
+	$new_room = new GameRoom("game", $roomname, $password, 4);
+	$client_room[] = $new_room;
+
+	// Move the client from main to the new room.
+	$new_room->clientEntered($socket);
+	$client_room[0]->clientQuitted($socket);
+
+	// Send a information of roomlist to all clients in the main room.
+	foreach ($client_room[0]->getClientSockets() as &$s)
+		processROOMLIST($s);
+	
+	// Send a JOIN success message to the client.
+	sendToSocket($socket, "JOIN", "1", $new_room->getName());
+}
+
+// Send a nformation of roomlist to the client in the main room.
+function processROOMLIST(&$socket)
+{
+	global $client_room;
+	
+	// TODO: Convert $client_room to string.
+	$roomlist = sizeof($client_room);
+	
+	sendToSocket($socket, "ROOMLIST", $roomlist);
 }
