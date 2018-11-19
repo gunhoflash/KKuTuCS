@@ -91,7 +91,9 @@ class GameRoom
 	{
 		$n = 0;
 		$this->state="Playing";
-		sendToSocKetAll($this->clientSockets, "SEND", "Everyone is Ready. Game is just begun!");
+
+		// TODO: Send a GAMESTART message to all clients.
+		sendToSocketAll($this->clientSockets, "SEND", "Everyone is Ready. Game is just begun!");
 		while($this->clientReady[$n]==NULL) {
 			$this->clientReady[$n] = 0;
 			$n++;
@@ -104,7 +106,8 @@ class GameRoom
 		if($this->nowTurn >= count($this->clientSockets)) {
 			$this->nowTurn=0;
 		}
-		sendToSocKetAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
+		sendToSocketAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
+		// TODO: Send a MYTURN message to the client to tell that it is your turn.
 	}
 
 	public function checkPassword($password)
@@ -146,7 +149,9 @@ class GameRoom
 			if ($this->nowTurn == array_search($socket, $this->clientSockets))
 			{
 				if($this->checkWord($message)) {
-					sendToSocKetAll($this->clientSockets, "SEND", "$socketString typed $message");
+					// TODO: Calculate client's score.
+					// TODO: Send a 'success' message to the client.
+					sendToSocketAll($this->clientSockets, "SEND", "$socketString typed $message");
 					$this->startTurn();
 				}
 			}
@@ -162,10 +167,15 @@ class GameRoom
 			return;
 		}
 
+		// 0: not ready, 1: ready
 		if ($flag == 1 || $flag == 0)
 		{
 			$this->clientReady[$index] = $flag;
-			if(!in_array(0, $this->clientReady)) {
+
+			// If all ready, then start the game!
+			if (!in_array(0, $this->clientReady))
+			{
+				// TODO: Initialize all clients's score.
 				$this->startGame();
 			}
 		}
