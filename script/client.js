@@ -5,6 +5,14 @@ $(document).ready(function()
 		sendMessage("TIMETEST", "", "");
 		responseTime = (new Date()).getTime();
 	});
+	$("#btn_ready").on("click", function()
+	{
+		sendMessage("READY", "1");
+	});
+	$("#btn_join").on("click", function()
+	{
+		sendMessage("JOIN", "1", "");
+	});
 	$("#btn_send").on("click", function()
 	{
 		sendMessage("SEND", $("#wordInput").val());

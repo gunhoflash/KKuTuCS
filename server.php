@@ -130,7 +130,7 @@ function processData(&$socket, $method, $parameter1, $parameter2)
 	}
 }
 
-function processJOIN(&$socket, $roomindex, $password)
+function processJOIN(&$socket, $parameter1, $parameter2)
 {
 	global $client_room;
 
@@ -150,6 +150,7 @@ function processJOIN(&$socket, $roomindex, $password)
 		else
 		{
 			$room->clientEntered($socket);
+			$client_room[0]->clientQuitted($socket);
 			// TODO: Remove client from the main room.
 			sendToSocket($socket, "JOIN", "1", $room->getName());
 		}

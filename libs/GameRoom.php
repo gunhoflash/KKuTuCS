@@ -82,7 +82,6 @@ class GameRoom
 			$lowerword = strtolower($word);
 			$this->wordHistory[] = $lowerword;
 			$this->lastWord = $lowerword;
-			var_dump($this->wordHistory);
 			return TRUE;
 		}
 		else return FALSE;
@@ -90,12 +89,22 @@ class GameRoom
 
 	private function startGame()
 	{
-		// TODO: Do something
+		$n = 0;
+		$this->state="Playing";
+		sendToSocKetAll($this->clientSockets, "SEND", "Everyone is Ready. Game is just begun!");
+		while($this->clientReady[$n]==NULL) {
+			$this->clientReady[$n] = 0;
+			$n++;
+		}
 	}
 
 	private function startTurn()
 	{
-		// TODO: Do something
+		$this->nowTurn++;
+		if($this->nowTurn >= count($this->clientSockets)) {
+			$this->nowTurn=0;
+		}
+		sendToSocKetAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
 	}
 
 	public function checkPassword($password)
@@ -138,11 +147,7 @@ class GameRoom
 			{
 				if($this->checkWord($message)) {
 					sendToSocKetAll($this->clientSockets, "SEND", "$socketString typed $message");
-					++$this->nowTurn;
-					if($this->nowTurn >= count($this->clientSockets)) {
-						$this->nowTurn=0;
-					}
-					sendToSocKetAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
+					$this->startTurn();
 				}
 			}
 		}
@@ -160,8 +165,9 @@ class GameRoom
 		if ($flag == 1 || $flag == 0)
 		{
 			$this->clientReady[$index] = $flag;
-			// TODO: Check if all clients ready.
-			// TODO: If yes, send information to all and let's start game!
+			if(!in_array(0, $this->clientReady)) {
+				$this->startGame();
+			}
 		}
 	}
 

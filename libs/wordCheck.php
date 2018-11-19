@@ -16,9 +16,6 @@ function isValid($word)
  */
 function isChained($lastWord, $newWord)
 {
-	echo $newWord[0];
-	echo $lastWord;
-	echo gettype($lastWord);
 	if($lastWord=="") return TRUE;
 	return ($newWord[0] == substr($lastWord, -1));
 }
