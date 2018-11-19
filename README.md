@@ -20,6 +20,19 @@ php server.php
 ```
 {SERVER IP HERE}:{PORT}
 ```
+### SQL Data Import (by using Bitnami WAMP)
+```
+1. Launch Bitnami WAMP Stack.
+2. Type this command on WAMP Stack.
+> mysql -u root -p
+3. Create Database named entries.
+> create database entries;
+> use entries;
+4. Use Source command to import DB in your MySQL.
+   For example,
+> source c:\path\to\file.sql
+5. You should change line 22 in server.php to connect MySQL.
+```
 
 ## Project File Overview
 ```

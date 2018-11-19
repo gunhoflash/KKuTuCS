@@ -2,6 +2,7 @@
 defined('PROJECT_ROOT') or exit('No direct script access allowed');
 
 include './libs/socketHandle.php';
+include './libs/wordCheck.php';
 
 class GameRoom
 {
@@ -73,10 +74,18 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
 	}
 
-	private function checkWord()
+	private function checkWord($word)
 	{
-		// TODO: You should edit wordCheck.php first.
-		// TODO: Do something
+		global $conn;
+
+		if(isValid($word)&&isChained($this->lastWord, $word)&&isInDB($conn, $word)&&!isUsed($word, $this->wordHistory)) {
+			$lowerword = strtolower($word);
+			$this->wordHistory[] = $lowerword;
+			$this->lastWord = $lowerword;
+			var_dump($this->wordHistory);
+			return TRUE;
+		}
+		else return FALSE;
 	}
 
 	private function startGame()
@@ -125,9 +134,16 @@ class GameRoom
 		// If the $message is a word, checkWord().
 		if ($this->state == "Playing")
 		{
-			if ($nowTurn == array_search($socket, $this->clientSockets))
+			if ($this->nowTurn == array_search($socket, $this->clientSockets))
 			{
-				// TODO: If it is a word, checkWord();
+				if($this->checkWord($message)) {
+					sendToSocKetAll($this->clientSockets, "SEND", "$socketString typed $message");
+					++$this->nowTurn;
+					if($this->nowTurn >= count($this->clientSockets)) {
+						$this->nowTurn=0;
+					}
+					sendToSocKetAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
+				}
 			}
 		}
 	}

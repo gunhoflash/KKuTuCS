@@ -16,14 +16,19 @@ function isValid($word)
  */
 function isChained($lastWord, $newWord)
 {
+	echo $newWord[0];
+	echo $lastWord;
+	echo gettype($lastWord);
+	if($lastWord=="") return TRUE;
 	return ($newWord[0] == substr($lastWord, -1));
 }
 
 // TODO: Edit below functions
 
 //사전DB내에 있는지 검사
-function isInDB ($conn, $word) {
-	$re = mysqli_query($conn, "SELECT * FROM entries.entries WHERE word = '$word'");
+//있을 경우 TRUE 아니면 FALSE
+function isInDB ($connect, $word) {
+	$re = mysqli_query($connect, "SELECT * FROM entries.entries WHERE word = '$word'");
 	while($row = mysqli_fetch_array($re))
 	{
 		if($row[0]!=NULL) {
@@ -34,7 +39,18 @@ function isInDB ($conn, $word) {
 	mysqli_free_result($re);
 }
 
-//사용된 단어 DB내에 있는지 검사
+//사용됐던 단어인지 확인
+//사용된 경우 TRUE 아니면 FALSE
+//array_search가 대소문자를 구별하기때문에, 모든 단어가 소문자로 들어감.
+function isUsed ($Word, $WordHistory) {
+	if($WordHistory==NULL) return FALSE;
+	$lowerword = strtolower($Word);
+	$re = in_array($lowerword, $WordHistory); 
+	return ($re);
+}
+/*
+//이하 주석처리된 코드들은 모두 SQL 이용
+//사용됐던 단어인지 확인
 function isUsed ($conn, $word) {
 	$re = mysqli_query($conn, "SELECT * FROM entries.used WHERE used = '$word'");
 	while($row = mysqli_fetch_array($re))
@@ -46,7 +62,6 @@ function isUsed ($conn, $word) {
 	return FALSE;
 	mysqli_free_result($re);
 }
-
 //DB내로 단어 집어넣기
 function push_sql($conn, $word) {
 	$sql = "INSERT INTO entries.used VALUES (DEFAULT, '$word')";
@@ -65,4 +80,5 @@ function LastWord ($conn) {
 	echo "<br>";
 	mysqli_free_result($re);
 }
+*/
 ?>
