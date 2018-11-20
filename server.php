@@ -18,9 +18,12 @@ $client_room = array(
 	new GameRoom("main", "main room", "", 0)
 ); // Array of GameRooms.
 
-// Connecting to mysql database.
+// Connecting to MySQL database.
 $conn = mysqli_connect("p:localhost", "root", "tnals07", "entries");
-if($conn) echo "Successful connect";
+if (!$conn)
+	echo 'Connect Error ('.mysqli_connect_errno().') '.mysqli_connect_error().'\n';
+else
+	echo "Successful connect\n";
 
 while(TRUE)
 {

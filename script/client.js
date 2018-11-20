@@ -116,10 +116,12 @@ function parseMessage(data)
 
 		case "DISCONNECTED":
 			// TODO: Show that someone is disconnected with this room.
+			processSEND(parameter1 + " disconnected");
 			break;
 
 		case "CONNECTED":
 			// TODO: Show that someone is connected with this room.
+			processSEND(parameter1 + " connected");
 			break;
 
 		case "ROOMLIST":
@@ -132,6 +134,16 @@ function parseMessage(data)
 
 		case "ERROR":
 			alert("[Server Error] " + parameter1);
+			break;
+
+		case "GAMESTART":
+			// TODO: Edit here.
+			alert("Everyone is Ready. Game is just begun!");
+			break;
+
+		case "QUITTED":
+			// TODO: Edit here.
+			processSEND(parameter1 + " quitted");
 			break;
 
 		default:

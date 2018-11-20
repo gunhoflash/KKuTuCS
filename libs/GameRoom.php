@@ -11,7 +11,7 @@ class GameRoom
 	private $name = "KKuTuCS";
 	private $password = ""; // "": no password
 	private $maximumClients = 4; // 0: no limit
-
+	
 	// Array for Clients
 	private $clientSockets = array();
 	private $clientReady = array(); // 0: not ready, 1: ready
@@ -92,8 +92,7 @@ class GameRoom
 		$n = 0;
 		$this->state="Playing";
 
-		// TODO: Send a GAMESTART message to all clients.
-		sendToSocketAll($this->clientSockets, "SEND", "Everyone is Ready. Game is just begun!");
+		sendToSocketAll($this->clientSockets, "GAMESTART");
 		while($this->clientReady[$n]==NULL) {
 			$this->clientReady[$n] = 0;
 			$n++;
