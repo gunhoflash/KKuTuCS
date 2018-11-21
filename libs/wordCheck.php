@@ -25,7 +25,7 @@ function isChained($lastWord, $newWord)
 //사전DB내에 있는지 검사
 //있을 경우 TRUE 아니면 FALSE
 function isInDB ($connect, $word) {
-	$re = mysqli_query($connect, "SELECT * FROM entries.entries WHERE word = '$word'");
+	$re = mysqli_query($connect, "SELECT * FROM kkutudb.kkutu_en WHERE _id = '$word'");
 	while($row = mysqli_fetch_array($re))
 	{
 		if($row[0]!=NULL) {

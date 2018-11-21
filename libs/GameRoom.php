@@ -11,7 +11,8 @@ class GameRoom
 	private $name = "KKuTuCS";
 	private $password = ""; // "": no password
 	private $maximumClients = 4; // 0: no limit
-	
+	private $roundTime = "";
+	private $tv;
 	// Array for Clients
 	private $clientSockets = array();
 	private $clientReady = array(); // 0: not ready, 1: ready
@@ -98,6 +99,13 @@ class GameRoom
 			$n++;
 		}
 	}
+	private function getScore($text) 
+	{
+		$t = time();
+		$delay = $t-$this->tv;
+		$score = ( 2 - 0.5 * ($delay/10) ) * (pow(5 + 7 * strlen($text), 0.74));
+		return round($score);
+	}
 
 	private function startTurn()
 	{
@@ -105,6 +113,7 @@ class GameRoom
 		if($this->nowTurn >= count($this->clientSockets)) {
 			$this->nowTurn=0;
 		}
+		$this->tv = time();
 		sendToSocketAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
 		// TODO: Send a MYTURN message to the client to tell that it is your turn.
 	}
@@ -150,6 +159,8 @@ class GameRoom
 				if($this->checkWord($message)) {
 					// TODO: Calculate client's score.
 					// TODO: Send a 'success' message to the client.
+					$score = $this->getScore($message);
+					sendToSocketAll($this->clientSockets, "SEND", "$socketString get $score");
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString typed $message");
 					$this->startTurn();
 				}
@@ -176,6 +187,7 @@ class GameRoom
 			{
 				// TODO: Initialize all clients's score.
 				$this->startGame();
+				$this->tv = time();
 			}
 		}
 	}
