@@ -36,25 +36,28 @@ php server.php
 
 ## Project File Overview
 ```
-/ ┬ img ─ kkutucs_char.jpg
+/ ┬ img ┬ kkutucs_char.jpg
+  │     └ logo.png
   ├ libs ┬ Client.php
   │      ├ GameRoom.php
   │      ├ KKuTuCSRequest.php
   │      ├ socketHandle.php
   │      └ wordCheck.php
   ├ public ┬ css ┬ bootstrap.css
-  │        │     └ bootstrap.min.css
+  │        │     ├ bootstrap.min.css
+  │        │     └ signin.css
   │        └ js ┬ bootstrap.bundle.js
-  │             └ bootstrap.bundle.min.js
-  ├ script ┬ client.js
-  │        └ jquery-3.3.1.min.js
+  │             ├ bootstrap.bundle.min.js
+  ├             ├ client.js
+  │             └ jquery-3.3.1.min.js
   ├ views ┬ db.sql
-  │       ├ KKuTu.php
+  │       ├ KKuTu.php (will be deleted)
   │       └ other.html (will be deleted)
   ├ .gitignore
-  ├ action_page.html
+  ├ action_page.html (will be deleted)
   ├ favicon.ico
   ├ index.html
+  ├ KKuTuDB.sql
   ├ LICENSE
   ├ README.md
   └ server.php
