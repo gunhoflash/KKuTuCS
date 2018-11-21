@@ -146,6 +146,7 @@ function parseMessage(data)
 
 		case "GAMESTART":
 			// TODO: Edit here.
+			showTimer(10);
 			$("#chatArea").empty();
 			alert("Everyone is Ready. Game is just begun!");
 			break;
@@ -195,4 +196,24 @@ function processROOMLIST(roomlistString)
 	}
 
 	// TODO: Show the list of all rooms.
+	
+}
+function showTimer(duration) {
+    
+    var timer = duration;
+    var hours, minutes, seconds;
+    
+    var interval = setInterval(function(){
+        seconds = parseInt(timer % 60, 10);
+		
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        $('#btn_timer').text(seconds);
+
+        if (--timer < 0) {
+			timer = 0;
+			clearInterval(interval);
+			sendMessage("ROUNDOVER","","");
+        }
+    }, 1000);
 }

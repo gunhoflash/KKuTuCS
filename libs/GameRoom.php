@@ -11,11 +11,13 @@ class GameRoom
 	private $name = "KKuTuCS";
 	private $password = ""; // "": no password
 	private $maximumClients = 4; // 0: no limit
-	private $roundTime = "";
+	private $roundTime = 10;
 	private $tv;
+	private $counter = 0;
 	// Array for Clients
 	private $clientSockets = array();
 	private $clientReady = array(); // 0: not ready, 1: ready
+	private $clientScores = array();
 
 	private $wordHistory = array(); // String과 _로 엮어서 하나의 string으로 만드는게 더 빠를까?
 	private $lastWord = "";
@@ -90,21 +92,49 @@ class GameRoom
 
 	private function startGame()
 	{
+		//방과 클라이언트 설정
 		$n = 0;
+		$this->nowTurn = 0;
 		$this->state="Playing";
 
 		sendToSocketAll($this->clientSockets, "GAMESTART");
-		while($this->clientReady[$n]==NULL) {
+		while($this->clientReady[$n]!=NULL) {
 			$this->clientReady[$n] = 0;
+			$this->clientScores[$n] = 0;
 			$n++;
 		}
 	}
+
 	private function getScore($text) 
 	{
+		//tv = 턴 시작 시점의 unix time
+		//t = 점수 계산 시점의 unix time
 		$t = time();
 		$delay = $t-$this->tv;
 		$score = ( 2 - 0.5 * ($delay/10) ) * (pow(5 + 7 * strlen($text), 0.74));
+		$this->roundTime -= $delay;
 		return round($score);
+	}
+
+	private function endRound($socket)
+	{
+		$this->counter ++;
+		//접속중인 모든 소켓에게 endRound를 받았을 때,
+		if($this->counter == count($this->clientSockets))
+		{
+			$n = 0;
+			$this->state = "Ready";
+			$this->lastWord = "";
+			$this->wordHistory = array();
+			$this->counter = 0;
+			sendToSocketAll($this->clientSockets, "SEND", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
+			sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$this->nowTurn])." will lose score 100.\n");
+			$this->clientScores[$this->nowTurn] -= 100;
+			while($this->clientSockets[$n]!=NULL) {
+				sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$n])."'s score is ".$this->clientScores[$n]."\n");
+				$n ++;
+			}
+		}
 	}
 
 	private function startTurn()
@@ -140,6 +170,9 @@ class GameRoom
 			case "TIMETEST":
 				sendToSocket($socket, $method);
 				break;
+			case "ROUNDOVER":
+				$this->endRound();
+				break;
 			default:
 				echo "  Gameroom can't handle the new method: $method\n";
 				break;
@@ -161,7 +194,9 @@ class GameRoom
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString get $score");
-					sendToSocketAll($this->clientSockets, "SEND", "$socketString typed $message");
+					$sum = $this->clientScores[$this->nowTurn] += $score;
+					sendToSocketAll($this->clientSockets, "SEND", "$socketString has $sum");
+					sendToSocketAll($this->clientSockets, "SEND", "$socketString type $message");
 					$this->startTurn();
 				}
 			}
@@ -178,7 +213,7 @@ class GameRoom
 		}
 
 		// 0: not ready, 1: ready
-		if ($flag == 1 || $flag == 0)
+		if (($flag == 1 || $flag == 0) && $this->state="Ready")
 		{
 			$this->clientReady[$index] = $flag;
 
