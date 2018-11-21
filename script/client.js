@@ -133,7 +133,7 @@ function parseMessage(data)
 			break;
 
 		case "ROOMLIST":
-			// TODO: Show the list of all rooms.
+			processROOMLIST(parameter1);
 			break;
 
 		case "TIMETEST":
@@ -170,4 +170,29 @@ function processSEND(message)
 	 */
 	$("#chatArea").append("<p class='mb-1'>" + message + "</p>");
 	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
+}
+
+function processROOMLIST(roomlistString)
+{
+	/**
+	 * (roomString): roomname`isPlaying`now/max`needPassword
+	 * ex) Come on!`0`2/4`0
+	 * 
+	 * roomlistString = (roomString)``(roomString)``(roomString) ...
+	 */
+
+	var i, room, roomlist = roomlistString.split('``');
+	
+	for (i = 0; i < roomlist.length; i++)
+	{
+		room = roomlist[0].split('`');
+		console.log(
+			"Room name: " + room[0] + "\n" +
+			"State: " + (room[1] == '0' ? "Ready" : "Playing") + "\n" +
+			"Number of users: " + room[2] + "\n" +
+			"Need password: " + (room[3] == '0' ? "No" : "Yes")
+			);
+	}
+
+	// TODO: Show the list of all rooms.
 }

@@ -118,7 +118,7 @@ function processData(&$socket, $method, $parameter1, $parameter2)
 			break;
 
 		case "ROOMLIST":
-			processROOMLIST($socket);
+			processROOMLIST([$socket]);
 			break;
 
 		case "SEND":
@@ -172,20 +172,33 @@ function processMAKE(&$socket, $roomname, $password)
 	$client_room[0]->clientQuitted($socket);
 
 	// Send a information of roomlist to all clients in the main room.
-	foreach ($client_room[0]->getClientSockets() as &$s)
-		processROOMLIST($s);
+	processROOMLIST($client_room[0]->getClientSockets());
 	
 	// Send a JOIN success message to the client.
 	sendToSocket($socket, "JOIN", "1", $new_room->getName());
 }
 
-// Send a nformation of roomlist to the client in the main room.
-function processROOMLIST(&$socket)
+// Send a information of roomlist to the client in the main room.
+function processROOMLIST($socketList)
 {
+	/**
+	 * (roomString): roomname`isPlaying`now/max`needPassword
+	 * ex) Come on!`0`2/4`0
+	 * 
+	 * $str = (roomString)``(roomString)``(roomString) ...
+	 */
 	global $client_room;
-	
-	// TODO: Convert $client_room to string.
-	$roomlist = sizeof($client_room);
-	
-	sendToSocket($socket, "ROOMLIST", $roomlist);
+	$str = '';
+
+	// Convert $client_room to string.
+	for ($i = 1; $i < sizeof($client_room); $i++)
+	{
+		if ($i != 1) $str .= '``';
+		$str .= $client_room[$i]->getName().'`'
+		.($client_room[$i]->isPlaying() ? '1' : '0').'`'
+		.$client_room[$i]->getNumberOfClient().'/'.$client_room[$i]->getMaximumClients().'`'
+		.($client_room[$i]->checkPassword("") ? '0' : '1');
+	}
+
+	sendToSocketAll($socketList, "ROOMLIST", $str);
 }

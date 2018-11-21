@@ -196,7 +196,7 @@ class GameRoom
 	 * Getter
 	 */
 	public function getRoomType()       { return $this->roomType;                                            }
-	public function getState()          { return $this->state;                                               }
+	public function getState()          { return $this->state;                                               } // Not used yet.
 	public function getName()           { return $this->name;                                                }
 	// public function getPassword()       { return $this->password;                                            }
 	public function getMaximumClients() { return $this->maximumClients;                                      }
