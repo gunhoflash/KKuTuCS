@@ -21,6 +21,7 @@ $(document).ready(function()
 	$("#wordInput").keypress(function(event)
 	{
 		var keycode = (event.keyCode ? event.keyCode : event.which);
+		// TODO: Check the type of keycode: string or number.
 		if (keycode == '13')
 		{
 			event.preventDefault();
@@ -29,12 +30,24 @@ $(document).ready(function()
 	});
 
 	initializeSocket();
+	initializeVariable();
 });
 
+var uriQueries = [];
 var socketLink = "ws://"+window.location.hostname+":7002";
 var socket;
 var responseTime = 0;
 
+function initializeVariable()
+{
+	var queries = window.location.search.substr(1).split("&");
+	queries.forEach(str => {
+		var ar = str.split("=");
+		if (ar.length == 2)
+			uriQueries[ar[0]] = ar[1];
+	});
+	$("#title").text("KKuTuCS(" + uriQueries["nickname"] + ")");
+}
 function initializeSocket()
 {
 	socket = new WebSocket(socketLink);
@@ -60,12 +73,8 @@ function initializeSocket()
 	{
 		console.log("Socket closed.", event);
 		alert("Socket closed.\nPlease refresh this page to reconnect.");
-		//socket.close();
 	};
 }
-
-// To close the socket,
-//socket.close()
 
 function sendMessage(method, parameter1, parameter2)
 {
