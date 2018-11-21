@@ -1,80 +1,39 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>KKuTuCS</title>
-        <style>
-            body {
-                background-color: blanchedalmond;
-            }
-            h1 {
-                color: black;
-                text-align: center;
-            }
-            h3 {
-                text-align: center;
-            }
-            p {
-                font-family: verdana;
-                font-size: 20px;
-            }
-            input[type=text]{
-                width:80%;
-            }
-            input[type=text]:focus {
-                border: 3px solid #555;
-                width:80%;
-            }
-            input[type=submit] {
-                background-color: #4CAF50;
-                color: white;
-                padding: 10px 10px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                width:30%;
-            }
-            .centerb {
-                margin: auto;
-                width: 30%;
-                border: 3px solid #73AD21;
-                padding: 10px;
-            }
-            .row:after {
-                content: "";
-                display: table;
-                clear: both;
-            }
-            input[type=submit]:hover {
-                background-color: #45a049;
-            }
-            img {
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
-                margin-top: 100px;
-            }
-            @media screen and (max-width: 600px) {
-                input[type=submit] {
-                width: 100%;
-                margin-top: 0;
-            }
-}
-        </style>
-    </head>
-    <body>
-        <img src="img/kkutucs_char.jpg" alt="kkutucs_char" style="width:8%">
-        <h1>KKuTuCS</h1>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+    
+        <title>Welcome to KKuTuCS</title>
+    
+        <!-- CSS -->
+        <link rel="stylesheet" href="public/css/bootstrap.min.css">
 
-        <div class="centerb">
-            <h3>Hello World!</h3>
-            <form action="./action_page.html">
-                <label for="uname"><h3>What's your name?</h3></label>
-                <center><input type="text" id="uname" name="uname"></center>
-                <br>
-                <div class="row">
-                        <center><input type="submit" value="Join" onclick="alert('Hello!');" ></center>
-                </div>
-            </form>
-        </div>
+        <!-- Custom styles for this template -->
+        <link href="public/css/signin.css" rel="stylesheet">
+
+        <style>
+            form{
+                border-style: groove;
+                border-width: 4px;
+            }
+        </style>
+      </head>
+      <body class="text-center">
+        <form class="form-signin" action="./action_page.html">
+          <img class="mb-4" src="./img/logo.png" alt="logo" width="100" height="100" href="index.html">
+          <h1 class="h3 mb-3 font-weight-normal">Welcome!</h1>
+          <label for="inputname" class="sr-only">Nick-Name</label>
+          <input type="text" id="inputname" class="form-control" placeholder="NickName Here!" required="" autofocus="">
+          
+          
+          <br>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Join</button>
+          <p class="mt-5 mb-3 text-muted">© 2018 by KKuTuCS All Rights Reserved. </p>
+        </form>
+      
+    
     </body>
 </html> 
