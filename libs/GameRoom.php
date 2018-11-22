@@ -11,7 +11,7 @@ class GameRoom
 	private $name = "KKuTuCS";
 	private $password = ""; // "": no password
 	private $maximumClients = 4; // 0: no limit
-	private $roundTime = 10;
+	private $roundTime = 60; // unit: sec
 	private $tv;
 	private $counter = 0;
 	// Array for Clients
@@ -116,7 +116,7 @@ class GameRoom
 		return round($score);
 	}
 
-	private function endRound($socket)
+	private function endRound()
 	{
 		$this->counter ++;
 		//접속중인 모든 소켓에게 endRound를 받았을 때,
@@ -143,6 +143,7 @@ class GameRoom
 		if($this->nowTurn >= count($this->clientSockets)) {
 			$this->nowTurn=0;
 		}
+		sendToSocket($this->clientSockets[$this->nowTurn], "TURNSTART", 5);
 		$this->tv = time();
 		sendToSocketAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
 		// TODO: Send a MYTURN message to the client to tell that it is your turn.
@@ -193,6 +194,7 @@ class GameRoom
 					// TODO: Calculate client's score.
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
+					sendToSocket($socket, "CORRECT");
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString get $score");
 					$sum = $this->clientScores[$this->nowTurn] += $score;
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString has $sum");
