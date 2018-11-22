@@ -40,6 +40,7 @@ var responseTime = 0;
 
 function initializeVariable()
 {
+	// TODO: Handle the data as UTF-8.
 	var queries = window.location.search.substr(1).split("&");
 	queries.forEach(str => {
 		var ar = str.split("=");

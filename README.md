@@ -48,7 +48,7 @@ php server.php
   │        │     └ signin.css
   │        └ js ┬ bootstrap.bundle.js
   │             ├ bootstrap.bundle.min.js
-  ├             ├ client.js
+  │             ├ client.js
   │             └ jquery-3.3.1.min.js
   ├ views ┬ db.sql
   │       ├ KKuTu.php (will be deleted)
