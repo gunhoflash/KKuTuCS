@@ -25,9 +25,9 @@ php server.php
 1. Launch Bitnami WAMP Stack.
 2. Type this command on WAMP Stack.
 > mysql -u root -p
-3. Create Database named entries.
-> create database entries;
-> use entries;
+3. Create Database named kkutudb.
+> create database kkutudb;
+> use kkutudb;
 4. Use Source command to import DB in your MySQL.
    For example,
 > source c:\path\to\file.sql
@@ -50,8 +50,7 @@ php server.php
   │             ├ bootstrap.bundle.min.js
   │             ├ client.js
   │             └ jquery-3.3.1.min.js
-  ├ views ┬ db.sql
-  │       ├ KKuTu.php (will be deleted)
+  ├ views ┬ KKuTu.php (will be deleted)
   │       └ other.html (will be deleted)
   ├ .gitignore
   ├ action_page.html (will be deleted)

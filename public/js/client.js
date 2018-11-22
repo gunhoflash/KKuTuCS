@@ -37,6 +37,8 @@ var uriQueries = [];
 var socketLink = "ws://"+window.location.hostname+":7002";
 var socket;
 var responseTime = 0;
+var roundInterval;
+var turnInterval;
 
 function initializeVariable()
 {
@@ -147,8 +149,18 @@ function parseMessage(data)
 
 		case "GAMESTART":
 			// TODO: Edit here.
+			showRoundTimer(60);
 			$("#chatArea").empty();
 			alert("Everyone is Ready. Game is just begun!");
+			break;
+
+		case "CORRECT":
+			clearInterval(turnInterval);
+			break;
+
+		case "TURNSTART":
+			showTurnTimer(parameter1);
+			alert("It's your turn.");
 			break;
 
 		case "QUITTED":
@@ -196,4 +208,45 @@ function processROOMLIST(roomlistString)
 	}
 
 	// TODO: Show the list of all rooms.
+	
+}
+function showRoundTimer(duration) {
+    
+    var timer = duration;
+    var seconds;
+    
+    roundInterval = setInterval(function(){
+        seconds = parseInt(timer % 60, 10);
+		
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        $('#btn_timer').text(seconds);
+
+        if (--timer < 0) {
+			timer = 0;
+			clearInterval(roundInterval);
+			clearInterval(turnInterval);
+			sendMessage("ROUNDOVER","","");
+        }
+    }, 1000);
+}
+function showTurnTimer(duration) {
+    
+    var timer = duration;
+    var seconds;
+    
+    turnInterval = setInterval(function(){
+        seconds = parseInt(timer % 60, 10);
+		
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        $('#btn_Ttimer').text(seconds);
+
+        if (--timer < 0) {
+			timer = 0;
+			clearInterval(turnInterval);
+			clearInterval(roundInterval);
+			sendMessage("ROUNDOVER","","");
+        }
+    }, 1000);
 }
