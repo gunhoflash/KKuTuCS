@@ -42,8 +42,7 @@ var turnInterval;
 
 function initializeVariable()
 {
-	// TODO: Handle the data as UTF-8.
-	var queries = window.location.search.substr(1).split("&");
+	var queries = decodeURI(window.location.search).substr(1).split("&");
 	queries.forEach(str => {
 		var ar = str.split("=");
 		if (ar.length == 2)
@@ -194,11 +193,17 @@ function processROOMLIST(roomlistString)
 	 * roomlistString = (roomString)``(roomString)``(roomString) ...
 	 */
 
+	// No rooms.
+	if (roomlistString.length == 0) return;
+
 	var i, room, roomlist = roomlistString.split('``');
-	
 	for (i = 0; i < roomlist.length; i++)
 	{
 		room = roomlist[0].split('`');
+
+		// Handle wrong string.
+		if (room.length < 4) continue;
+
 		console.log(
 			"Room name: " + room[0] + "\n" +
 			"State: " + (room[1] == '0' ? "Ready" : "Playing") + "\n" +
