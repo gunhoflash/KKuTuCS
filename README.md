@@ -49,7 +49,8 @@ php server.php
   │        └ js ┬ bootstrap.bundle.js
   │             ├ bootstrap.bundle.min.js
   │             ├ client.js
-  │             └ jquery-3.3.1.min.js
+  │             ├ jquery-3.3.1.min.js
+  │             └ socketCommunicate.js
   ├ views ┬ KKuTu.php (will be deleted)
   │       └ other.html (will be deleted)
   ├ .gitignore
