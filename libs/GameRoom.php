@@ -6,31 +6,33 @@ include './libs/wordCheck.php';
 
 class GameRoom
 {
-	private $roomType = NULL; // "main" or "game"
-	private $state = "Ready"; // "Ready" or "Playing"
-	private $name = "KKuTuCS";
-	private $password = ""; // "": no password
-	private $maximumClients = 4; // 0: no limit
-	private $roundTime = 60; // unit: sec
+	private $roomType       = NULL;      // "main" or "game"
+	private $state          = "Ready";   // "Ready" or "Playing"
+	private $name           = "KKuTuCS";
+	private $password       = "";        // "": no password
+	private $maximumClients = 4;         // 0: no limit
+	
+	private $roundTime      = 60;        // unit: sec
 	private $tv;
-	private $counter = 0;
-	// Array for Clients
-	private $clientSockets = array();
-	private $clientReady = array(); // 0: not ready, 1: ready
-	private $clientScores = array();
+	private $counter        = 0;
 
-	private $wordHistory = array(); // String과 _로 엮어서 하나의 string으로 만드는게 더 빠를까?
-	private $lastWord = "";
-	private $nowTurn = 0; // Index of the client who has to say a word.
+	// Array for Clients
+	private $clientSockets  = array();
+	private $clientReady    = array();   // 0: not ready, 1: ready
+	private $clientScores   = array();
+
+	private $wordHistory    = array();   // String과 _로 엮어서 하나의 string으로 만드는게 더 빠를까?
+	private $lastWord       = "";
+	private $nowTurn        = 0;         // Index of the client who has to say a word.
 	
 	/**
 	 * Constructor
 	 */
 	public function __construct(string $roomType, string $name, string $password, int $maximumClients)
 	{
-		$this->roomType = $roomType;
-		$this->name = $name;
-		$this->password = $password;
+		$this->roomType       = $roomType;
+		$this->name           = $name;
+		$this->password       = $password;
 		$this->maximumClients = $maximumClients;
 	}
 
@@ -79,15 +81,15 @@ class GameRoom
 
 	private function checkWord($word)
 	{
-		global $conn;
-
-		if(isValid($word)&&isChained($this->lastWord, $word)&&isInDB($conn, $word)&&!isUsed($word, $this->wordHistory)) {
+		// TODO: To allow for words with spaces, this code must be modified.
+		if (isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
+		{
 			$lowerword = strtolower($word);
-			$this->wordHistory[] = $lowerword;
-			$this->lastWord = $lowerword;
+			$this->wordHistory[] = $this->lastWord = $lowerword;
 			return TRUE;
 		}
-		else return FALSE;
+		
+		return FALSE;
 	}
 
 	private function startGame()
@@ -233,9 +235,7 @@ class GameRoom
 	 * Getter
 	 */
 	public function getRoomType()       { return $this->roomType;                                            }
-	public function getState()          { return $this->state;                                               } // Not used yet.
 	public function getName()           { return $this->name;                                                }
-	// public function getPassword()       { return $this->password;                                            }
 	public function getMaximumClients() { return $this->maximumClients;                                      }
 	public function getClientSockets()  { return $this->clientSockets;                                       }
 	public function getNumberOfClient() { return sizeof($this->clientSockets);                               }

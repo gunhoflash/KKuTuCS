@@ -38,7 +38,7 @@ php server.php
 ```
 / ┬ img ┬ kkutucs_char.jpg
   │     └ logo.png
-  ├ libs ┬ Client.php
+  ├ libs ┬ Client.php (will be deleted)
   │      ├ GameRoom.php
   │      ├ KKuTuCSRequest.php
   │      ├ socketHandle.php

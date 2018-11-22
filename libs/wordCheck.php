@@ -24,16 +24,18 @@ function isChained($lastWord, $newWord)
 
 //사전DB내에 있는지 검사
 //있을 경우 TRUE 아니면 FALSE
-function isInDB ($connect, $word) {
-	$re = mysqli_query($connect, "SELECT * FROM kkutudb.kkutu_en WHERE _id = '$word'");
-	while($row = mysqli_fetch_array($re))
+function isInDB ($word)
+{
+	global $conn;
+
+	$re = mysqli_query($conn, "SELECT * FROM kkutudb.kkutu_en WHERE _id = '$word'");
+	while ($row = mysqli_fetch_array($re))
 	{
-		if($row[0]!=NULL) {
+		if ($row[0] != NULL)
 			return TRUE;
-		}
 	}
-	return FALSE;
 	mysqli_free_result($re);
+	return FALSE;
 }
 
 //사용됐던 단어인지 확인

@@ -4,20 +4,20 @@ defined('PROJECT_ROOT') or exit('No direct script access allowed');
 class KKuTuCSRequest
 {
 	private static $VALID_START = "KKuTuCS";
-	private static $VALID_METHOD = array(
-		"JOIN",     // (main) Enter a game.               (Syntax: JOIN roomIndex password)
-		"MAKE",     // (main) Make new room.              (Syntax: MAKE roomname password)
-		"ROOMLIST", // (main) Get a list of all rooms.    (Syntax: ROOMLIST roomIndex password)
-		"SEND",     // (main/room) Send a word or chat.   (Syntax: SEND msg)
-		"READY",    // (room) Ready to start a game.      (Syntax: READY flag)
-		"QUIT",     // (room) Quit a game while playing.  (Syntax: QUIT)
-		"TIMETEST",  // (main/room) Measure response-time. (Syntax: TIMETEST)
-		"ROUNDOVER" // (room) End round and calculate score.(Syntax: ROUNDOVER)
+	private static $VALID_METHODS = array(
+		"JOIN",     // (main) Enter a game.                  (Syntax: JOIN roomIndex password)
+		"MAKE",     // (main) Make new room.                 (Syntax: MAKE roomname password)
+		"ROOMLIST", // (main) Get a list of all rooms.       (Syntax: ROOMLIST roomIndex password)
+		"SEND",     // (main/room) Send a word or chat.      (Syntax: SEND msg)
+		"READY",    // (room) Ready to start a game.         (Syntax: READY flag)
+		"QUIT",     // (room) Quit a game while playing.     (Syntax: QUIT)
+		"TIMETEST", // (main/room) Measure response-time.    (Syntax: TIMETEST)
+		"ROUNDOVER" // (room) End round and calculate score. (Syntax: ROUNDOVER)
 	);
 	private $requestMessage;
 	private $result = [
-		"validity"  => FALSE,
-		"method"    => NULL,
+		"validity"   => FALSE,
+		"method"     => NULL,
 		"parameter1" => NULL,
 		"parameter2" => NULL
 	];
@@ -31,7 +31,7 @@ class KKuTuCSRequest
 		$messages = preg_split("/(\r\n|\n)/", $requestMessage, 4);
 		$numberOfMessages = count($messages);
 
-		// Trim the message. (But... is it needed?)
+		// Trim the message.
 		array_walk($messages, function (&$m) {
 			$m = trim($m);
 		});
@@ -51,7 +51,7 @@ class KKuTuCSRequest
 		}
 		
 		// Invalid method.
-		if (!in_array($messages[1], self::$VALID_METHOD))
+		if (!in_array($messages[1], self::$VALID_METHODS))
 		{
 			$this->setValidity(FALSE);
 			return;
