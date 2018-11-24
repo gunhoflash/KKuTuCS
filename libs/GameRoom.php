@@ -12,7 +12,7 @@ class GameRoom
 	private $password       = "";        // "": no password
 	private $maximumClients = 4;         // 0: no limit
 	
-	private $roundTime      = 60;        // unit: sec
+	private $roundTime      = 600;        // unit: 0.1sec
 	private $tv;
 	private $counter        = 0;
 
@@ -114,7 +114,7 @@ class GameRoom
 		$t = time();
 		$delay = $t-$this->tv;
 		$score = ( 2 - 0.5 * ($delay/10) ) * (pow(5 + 7 * strlen($text), 0.74));
-		$this->roundTime -= $delay;
+		$this->roundTime -= $delay*10;
 		return round($score);
 	}
 
@@ -129,6 +129,7 @@ class GameRoom
 			$this->lastWord = "";
 			$this->wordHistory = array();
 			$this->counter = 0;
+			$this->roundTime = 600;
 			sendToSocketAll($this->clientSockets, "SEND", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
 			sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$this->nowTurn])." will lose score 100.\n");
 			$this->clientScores[$this->nowTurn] -= 100;
@@ -145,10 +146,36 @@ class GameRoom
 		if($this->nowTurn >= count($this->clientSockets)) {
 			$this->nowTurn=0;
 		}
-		sendToSocket($this->clientSockets[$this->nowTurn], "TURNSTART", 5);
+		sendToSocketAll($this->clientSockets, "TURNSTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
 		$this->tv = time();
 		sendToSocketAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
 		// TODO: Send a MYTURN message to the client to tell that it is your turn.
+	}
+
+	private function getTurnSpeed($rt) {
+		if($rt < 50) return 15;
+
+		else if($rt < 100) return 20;
+
+		else if($rt < 150) return 30;
+
+		else if($rt < 200) return 40;
+
+		else if($rt < 250) return 50;
+
+		else if($rt < 300) return 55;
+
+		else if($rt < 350) return 60;
+
+		else if($rt < 400) return 65;
+
+		else if($rt < 450) return 70;
+
+		else if($rt < 500) return 75;
+
+		else if($rt <= 600) return 80;
+
+		else return 0;
 	}
 
 	public function checkPassword($password)
@@ -196,7 +223,7 @@ class GameRoom
 					// TODO: Calculate client's score.
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
-					sendToSocket($socket, "CORRECT");
+					sendToSocketAll($this->clientSockets, "CORRECT");
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString get $score");
 					$sum = $this->clientScores[$this->nowTurn] += $score;
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString has $sum");

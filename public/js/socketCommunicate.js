@@ -101,18 +101,20 @@ function parseMessage(data)
 
 		case "GAMESTART":
 			// TODO: Edit here.
-			showRoundTimer(60);
 			$("#chatArea").empty();
 			alert("Everyone is Ready. Game is just begun!");
+			showTurnTimer(parameter1);
+			showRoundTimer(parameter2);
 			break;
 
 		case "CORRECT":
 			clearInterval(turnInterval);
+			clearInterval(roundInterval);
 			break;
 
 		case "TURNSTART":
 			showTurnTimer(parameter1);
-			alert("It's your turn.");
+			showRoundTimer(parameter2);
 			break;
 
 		case "QUITTED":

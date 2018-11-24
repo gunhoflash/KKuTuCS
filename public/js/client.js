@@ -62,14 +62,15 @@ function initializeVariable()
 function showRoundTimer(duration) {
     
     var timer = duration;
-    var seconds;
+    var seconds, msec;
     
     roundInterval = setInterval(function(){
-        seconds = parseInt(timer % 60, 10);
+		msec = parseInt(timer%10, 10);
+		seconds = parseInt(timer/10, 10);
 		
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        $('#btn_timer').text(seconds);
+        $('#btn_timer').text(seconds+'.'+msec);
 
         if (--timer < 0) {
 			timer = 0;
@@ -77,7 +78,7 @@ function showRoundTimer(duration) {
 			clearInterval(turnInterval);
 			sendMessage("ROUNDOVER","","");
         }
-    }, 1000);
+    }, 100);
 }
 function showTurnTimer(duration) {
     
@@ -85,11 +86,12 @@ function showTurnTimer(duration) {
     var seconds;
     
     turnInterval = setInterval(function(){
-        seconds = parseInt(timer % 60, 10);
-		
+        msec = parseInt(timer%10, 10);
+		seconds = parseInt(timer/10, 10);
+
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        $('#btn_Ttimer').text(seconds);
+        $('#btn_Ttimer').text(seconds+'.'+msec);
 
         if (--timer < 0) {
 			timer = 0;
@@ -97,5 +99,5 @@ function showTurnTimer(duration) {
 			clearInterval(roundInterval);
 			sendMessage("ROUNDOVER","","");
         }
-    }, 1000);
+	}, 100);
 }
