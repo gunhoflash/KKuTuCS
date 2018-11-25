@@ -20,14 +20,18 @@ function initialize()
 	{
 		sendMessage("READY", "1");
 	});
-	$("#btn_join").on("click", function()
+	$("#btn_make").on("click", function()
 	{
-		sendMessage("JOIN", "1", "");
+		sendMessage("MAKE", "test", "");
 	});
 	$("#btn_send").on("click", function()
 	{
 		sendMessage("SEND", $("#wordInput").val());
 		$("#wordInput").val("");
+	});
+	$("#roomlistArea").on("click", ".gameroom", function()
+	{
+		sendMessage("JOIN", $(this).data("index"));
 	});
 	$("#wordInput").keypress(function(event)
 	{

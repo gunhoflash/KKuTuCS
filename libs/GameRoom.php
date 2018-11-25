@@ -6,6 +6,8 @@ include './libs/wordCheck.php';
 
 class GameRoom
 {
+	private static $room_index = 1;
+	private $index;
 	private $roomType       = NULL;      // "main" or "game"
 	private $state          = "Ready";   // "Ready" or "Playing"
 	private $name           = "KKuTuCS";
@@ -34,6 +36,7 @@ class GameRoom
 		$this->name           = $name;
 		$this->password       = $password;
 		$this->maximumClients = $maximumClients;
+		$this->index          = self::$room_index++;
 	}
 
 	public function clientEntered(&$socket)
@@ -261,6 +264,7 @@ class GameRoom
 	/**
 	 * Getter
 	 */
+	public function getIndex()          { return $this->index;                                               }
 	public function getRoomType()       { return $this->roomType;                                            }
 	public function getName()           { return $this->name;                                                }
 	public function getMaximumClients() { return $this->maximumClients;                                      }

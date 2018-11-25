@@ -142,30 +142,37 @@ function processSEND(message)
 function processROOMLIST(roomlistString)
 {
 	/**
-	 * (roomString): roomname`isPlaying`now/max`needPassword
-	 * ex) Come on!`0`2/4`0
+	 * (roomString): index`roomname`isPlaying`now/max`needPassword
+	 * ex) 133`Come on!`0`2/4`0
 	 * 
 	 * roomlistString = (roomString)``(roomString)``(roomString) ...
 	 */
 
+	// Initialize roomlist area.
+	$("#roomlistArea").html("").trigger("create");
+
 	// No rooms.
 	if (roomlistString.length == 0) return;
 
-	var i, room, roomlist = roomlistString.split('``');
+	var i, str = "", room, roomlist = roomlistString.split('``');
 	for (i = 0; i < roomlist.length; i++)
 	{
-		room = roomlist[0].split('`');
+		room = roomlist[i].split('`');
 
 		// Handle wrong string.
-		if (room.length < 4) continue;
-
-		console.log(
-			"Room name: " + room[0] + "\n" +
-			"State: " + (room[1] == '0' ? "Ready" : "Playing") + "\n" +
-			"Number of users: " + room[2] + "\n" +
-			"Need password: " + (room[3] == '0' ? "No" : "Yes")
-			);
+		if (room.length < 5) continue;
+		
+		str +=
+		"<div class='gameroom border shadow-sm px-3 py-2 mb-2' data-index="+room[0]+">"+
+			"<h6>"+room[1]+"</h6>"+
+			"<div class='d-flex'>"+
+				(room[2] == '0' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Playing")+"</span>"+
+				"<span class='text-black px-1'>"+room[3]+"</span>"+
+				"<span class='text-muted ml-auto'>"+(room[4] == '0' ? "" : "PW")+"</span>"+
+			"</div>"+
+		"</div>";
 	}
 
-	// TODO: Show the list of all rooms.
+	// Show the roomlist.
+	$("#roomlistArea").html(str).trigger("create");
 }

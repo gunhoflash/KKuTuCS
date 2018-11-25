@@ -13,7 +13,7 @@ $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Could not create 
 $result = socket_bind($socket, "0.0.0.0", 7002) or die("Could not bind to socket.\n");
 $result = socket_listen($socket, 20) or die("Could not set up socket listener.\n");
 
-$client_unknown = array($socket); // New client here.  
+$client_unknown = array($socket); // New client here.
 $client_room = array(
 	new GameRoom("main", "main room", "", 0)
 ); // Array of GameRooms.
@@ -54,7 +54,12 @@ while(TRUE)
 		{
 			// Delete empty room.
 			if ($room->getRoomType() == "game")
+			{
 				unsetFromArray($room, $client_room);
+
+				// Send ROOMLIST message to all clients in the main.
+				processROOMLIST($client_room[0]->getClientSockets());
+			}
 		}
 		else
 			socket_read_GameRoom($room);
@@ -63,6 +68,8 @@ while(TRUE)
 
 function socket_read_GameRoom(&$room)
 {
+	global $client_room;
+
 	$roomType = $room->getRoomType();
 	$read = $room->getClientSockets();
 
@@ -80,7 +87,10 @@ function socket_read_GameRoom(&$room)
 	{
 		$data = @socket_read($readSocket, 2048);
 		if ($data === FALSE || strlen($data) == 0)
+		{
 			$room->clientDisconnected($readSocket);
+			processROOMLIST($client_room[0]->getClientSockets());
+		}
 		else
 		{
 			// Decode & Parse the data. If the data is invalid, diconnect it.
@@ -138,26 +148,32 @@ function processJOIN(&$socket, $parameter1, $parameter2)
 	global $client_room;
 
 	// Check the room index.
-	if ($parameter1 < 1 || $parameter1 > sizeof($client_room) - 1)
-	sendToSocket($socket, "JOIN", "0", "Invalid room index.");
-	else
+	if ($parameter1 > 0)
 	{
-		$room = $client_room[$parameter1];
-		// Check the password and the number of users.
-		if ($room->isPlaying())
-			sendToSocket($socket, "JOIN", "0", "This room is now playing the game.");
-		else if ($room->checkPassword($parameter2) == FALSE)
-			sendToSocket($socket, "JOIN", "0", "Password is incorrect.");
-		else if ($room->isFull())
-			sendToSocket($socket, "JOIN", "0", "This room is full!");
-		else
+		foreach ($client_room as $room)
 		{
-			$room->clientEntered($socket);
-			$client_room[0]->clientQuitted($socket);
-			// TODO: Remove client from the main room.
-			sendToSocket($socket, "JOIN", "1", $room->getName());
+			if ($room->getIndex() == $parameter1)
+			{
+				// Check the password and the number of users.
+				if ($room->isPlaying())
+					sendToSocket($socket, "JOIN", "0", "This room is now playing the game.");
+				else if ($room->checkPassword($parameter2) == FALSE)
+					sendToSocket($socket, "JOIN", "0", "Password is incorrect.");
+				else if ($room->isFull())
+					sendToSocket($socket, "JOIN", "0", "This room is full!");
+				else
+				{
+					$room->clientEntered($socket);
+					$client_room[0]->clientQuitted($socket);
+					// TODO: Remove client from the main room.
+					sendToSocket($socket, "JOIN", "1", $room->getName());
+					processROOMLIST($client_room[0]->getClientSockets());
+				}
+				return;
+			}
 		}
 	}
+	sendToSocket($socket, "JOIN", "0", "Invalid room index.");
 }
 
 function processMAKE(&$socket, $roomname, $password)
@@ -189,15 +205,18 @@ function processROOMLIST($socketList)
 	 */
 	global $client_room;
 	$str = '';
-
+	
 	// Convert $client_room to string.
-	for ($i = 1; $i < sizeof($client_room); $i++)
+	foreach ($client_room as $room)
 	{
-		if ($i != 1) $str .= '``';
-		$str .= $client_room[$i]->getName().'`'
-		.($client_room[$i]->isPlaying() ? '1' : '0').'`'
-		.$client_room[$i]->getNumberOfClient().'/'.$client_room[$i]->getMaximumClients().'`'
-		.($client_room[$i]->checkPassword("") ? '0' : '1');
+		if ($room->getRoomType() == "main") continue;
+
+		if (strlen($str)) $str .= '``';
+		$str .= $room->getIndex().'`'
+		.$room->getName().'`'
+		.($room->isPlaying() ? '1' : '0').'`'
+		.$room->getNumberOfClient().'/'.$room->getMaximumClients().'`'
+		.($room->checkPassword("") ? '0' : '1');
 	}
 
 	sendToSocketAll($socketList, "ROOMLIST", $str);
