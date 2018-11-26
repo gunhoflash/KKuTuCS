@@ -128,7 +128,7 @@ function processData(&$socket, $method, $parameter1, $parameter2)
 			break;
 
 		case "ROOMLIST":
-			processROOMLIST([$socket]);
+			processROOMLIST([$socket], $parameter1);
 			break;
 
 		case "SEND":
@@ -194,7 +194,7 @@ function processMAKE(&$socket, $roomname, $password)
 }
 
 // Send a information of roomlist to the client in the main room.
-function processROOMLIST($socketList)
+function processROOMLIST($socketList,$str = '')
 {
 	/**
 	 * (roomString): roomname`isPlaying`now/max`needPassword
@@ -203,7 +203,14 @@ function processROOMLIST($socketList)
 	 * $str = (roomString)``(roomString)``(roomString) ...
 	 */
 	global $client_room;
-	$str = '';
+	
+	if($str!=''&&sizeof($socketList)==1) 
+    { 
+        socket_getpeername($socketList[0], $IP, $PORT); 
+        $IPPORT = $IP.":".$PORT; 
+        print $IPPORT; 
+        socketToString('',$IPPORT,$str); 
+	} 
 	
 	// Convert $client_room to string.
 	foreach ($client_room as $room)
