@@ -180,8 +180,8 @@ function processROOMLIST(roomlistString)
 		
 		str +=
 		"<div class='gameroom border shadow-sm px-3 py-2 mb-2' data-index="+room[0]+">"+
-			"<h6>"+room[1]+"</h6>"+
-			"<div class='d-flex'>"+
+			"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
+			"<div class='d-flex small'>"+
 				(room[2] == '0' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Playing")+"</span>"+
 				"<span class='text-black px-1'>"+room[3]+"</span>"+
 				"<span class='text-muted ml-auto'>"+(room[4] == '0' ? "" : "PW")+"</span>"+
