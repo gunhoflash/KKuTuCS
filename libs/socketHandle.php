@@ -22,12 +22,11 @@ function sendToSocketAll($socketList, $method, $parameter1 = "", $parameter2 = "
 // Unset the object from the array. Index is option that indicates the index of object.
 function unsetFromArray(&$object, &$array, $index = -1)
 {
-	$sortedArray;
-
 	if ($index == -1)
 		$index = array_search($object, $array);
 	if ($index !== FALSE)
 		unset($array[$index]);
+		$array = array_values($array);
 }
 
 // Convert the socket to a string. 
