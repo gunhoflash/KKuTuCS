@@ -70,7 +70,7 @@ function parseMessage(data)
 
 		case "JOIN":
 			// JOIN [1/0] [roonname/error_message]
-			processSEND(parameter1, parameter2);
+			processJOIN(parameter1, parameter2);
 			break;
 
 		case "DISCONNECTED":
@@ -144,8 +144,8 @@ function processJOIN(success, message)
 	}
 
 	// Join the game
-	$("#Roomname").text(message);				
-	isMain = false;
+	$("#Roomname").text(message);
+	$("*[data-ismain]").attr("data-ismain", "false");
 
 	$("#chatArea").html("").trigger("create");
 	processSEND("Welcome to " + message + "!");
