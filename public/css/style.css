@@ -1,8 +1,8 @@
-*[data-ismain="true"] *[data-show="room"]
+*[data-ismain="true"] *[data-btnshow="room"]
 {
 	display: none !important;
 }
-*[data-ismain="false"] *[data-show="main"]
+*[data-ismain="false"] *[data-btnshow="main"]
 {
 	display: none !important;
 }

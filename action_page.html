@@ -35,19 +35,20 @@
 		<script src="public/js/client.js"></script>
 		<script src="public/js/bootstrap.bundle.min.js"></script>
 	</head>
+
 	<body class="bg-light d-flex flex-column h-100">
 		<nav class="navbar navbar-dark bg-dark">
 			<span class="navbar-brand mb-0 h1">KKuTuCS - <span id="Roomname"></span></span>
 			<div data-ismain="true">
-				<button id="btn_test" class="btn btn-outline-light" type="button" data-show="both">Check RT</button>
-				<button id="btn_make" class="btn btn-outline-light" type="button" data-show="main">Make</button>
+				<button id="btn_test" class="btn btn-outline-light" type="button" data-btnshow="both">Check RT</button>
+				<button id="btn_make" class="btn btn-outline-light" type="button" data-btnshow="main" data-toggle="modal" data-target="#createRoom">Make</button>
 			</div>
 		</nav>
 		<div class="container d-flex flex-column h-100 mb-auto py-3 py-md-4 my-0">
 			<div data-ismain="true">
-				<button id="btn_ready" class="btn btn-outline-secondary" type="button" data-show="room">Ready!</button>
-				<button id="btn_timer" class="btn btn-outline-secondary" type="button" data-show="room">RTimer</button>
-				<button id="btn_Ttimer" class="btn btn-outline-secondary" type="button" data-show="room">TTimer</button>
+				<button id="btn_ready" class="btn btn-outline-secondary" type="button" data-btnshow="room">Ready!</button>
+				<button id="btn_timer" class="btn btn-outline-secondary" type="button" data-btnshow="room">RTimer</button>
+				<button id="btn_Ttimer" class="btn btn-outline-secondary" type="button" data-btnshow="room">TTimer</button>
 			</div>
 
 			<div class="d-flex flex-column flex-md-row mb-3 h-100">
@@ -68,6 +69,31 @@
 					</div>
 				</div>
 			</form>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal fade" id="createRoom" tabindex="-1" role="dialog" aria-labelledby="createRoomLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="createRoomLabel">Make Room</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form id="make">
+						<div class="modal-body">
+							Hello KKuTuCS!<br>
+							ROOM NAME : <input type="text" id="modal_id_roomName" name="modal_roomName" placeholder="Name"><br>
+							PASSWORD : <input type="text" id="modal_id_password" name="modal_password" placeholder="Password"><br>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<input type="submit" class="btn btn-primary" value="Create">
+						</div>
+					</form>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>

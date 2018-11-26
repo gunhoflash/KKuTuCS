@@ -11,6 +11,14 @@ $(document).ready(function()
 
 function initialize()
 {
+	$('#make').on('submit', function(e)
+	{
+		e.preventDefault();
+		sendMessage("MAKE", $(this).find("input[name=modal_roomName]").val(), $(this).find("input[name=modal_password]").val());
+		$('#modal_id_roomName').val("");
+		$('#modal_id_password').val("");
+		$('#createRoom').modal("hide");
+	}); 
 	$("#btn_test").on("click", function()
 	{
 		sendMessage("TIMETEST", "", "");
@@ -20,10 +28,10 @@ function initialize()
 	{
 		sendMessage("READY", "1");
 	});
-	$("#btn_make").on("click", function()
+	/*$("#btn_make").on("click", function()
 	{
 		sendMessage("MAKE", "test", "");
-	});
+	});*/
 	$("#btn_send").on("click", function()
 	{
 		sendMessage("SEND", $("#wordInput").val());
