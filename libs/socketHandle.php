@@ -30,11 +30,31 @@ function unsetFromArray(&$object, &$array, $index = -1)
 }
 
 // Convert the socket to a string. 
-function socketToString($socket)
+$client_name = array("TESTIPPORT" => "TESTNAME"); // nickname
+function socketToString($socket, $IPPORT='', $nickname = '')
 {
-	socket_getpeername($socket, $IP, $PORT);
-	return "{".$IP.":".$PORT."}";
+
+    global $client_name;
+    // case that can't find nickname 
+    if($socket!='') {
+        socket_getpeername($socket, $IP, $PORT);
+        $IPPORT = $IP.":".$PORT;
+    }
+
+    // insert nickname
+    if($nickname != '') {
+        $client_name[$IPPORT] = $nickname;
+        
+    }
+	print_r($client_name);
+    // check nickname                                                                                                                                                                                                                                                                                                                                                                        
+    if(array_key_exists($IPPORT,$client_name))
+        return "{ ".$client_name[$IPPORT]." } ";
+
+    else
+        return "{ ".$IPPORT." } ";
 }
+
 
 // Edcode the text.
 function unmask($payload)
