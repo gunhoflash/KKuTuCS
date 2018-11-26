@@ -6,12 +6,12 @@ var responseTime = 0;
 function initializeSocket()
 {
 	socket = new WebSocket(socketLink);
-	$("#Roomname").text("(Now connecting...)");
+	$("#Roomname").text("(연결중..)");
 	// When the socket open
 	socket.onopen = function(event)
 	{
 		console.log("Socket opened.", event);
-		$("#Roomname").text("Main room");
+		$("#Roomname").text("메인");
 		sendMessage("ROOMLIST", "");
 	};
 
@@ -158,6 +158,7 @@ function processJOIN(success, message)
 
 function processROOMLIST(roomlistString)
 {
+	var no_rooms = "<p class='py-3 text-center text-muted'>No rooms</p>";
 	/**
 	 * (roomString): index`roomname`isPlaying`now/max`needPassword
 	 * ex) 133`Come on!`0`2/4`0
@@ -165,11 +166,9 @@ function processROOMLIST(roomlistString)
 	 * roomlistString = (roomString)``(roomString)``(roomString) ...
 	 */
 
-	// Initialize roomlist area.
-	$("#roomlistArea").html("").trigger("create");
-
 	// No rooms.
-	if (roomlistString.length == 0) return;
+	if (roomlistString.length == 0)
+		$("#roomlistArea").html(no_rooms).trigger("create");
 
 	var i, str = "", room, roomlist = roomlistString.split('``');
 	for (i = 0; i < roomlist.length; i++)
@@ -191,7 +190,10 @@ function processROOMLIST(roomlistString)
 	}
 
 	// Show the roomlist.
-	$("#roomlistArea").html(str).trigger("create");
+	if (str.length)
+		$("#roomlistArea").html(str).trigger("create");
+	else
+		$("#roomlistArea").html(no_rooms).trigger("create");
 }
 
 function ProcessPLAYERLIST(playerlistString)

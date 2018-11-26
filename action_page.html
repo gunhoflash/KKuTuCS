@@ -37,26 +37,27 @@
 	</head>
 	<body class="bg-light d-flex flex-column h-100">
 		<nav class="navbar navbar-dark bg-dark">
-			<span class="navbar-brand mb-0 h1">KKuTuCS</span>
+			<span class="navbar-brand mb-0 h1">KKuTuCS - <span id="Roomname"></span></span>
+			<div data-ismain="true">
+				<button id="btn_test" class="btn btn-outline-light" type="button" data-show="both">Check RT</button>
+				<button id="btn_make" class="btn btn-outline-light" type="button" data-show="main">Make</button>
+			</div>
 		</nav>
-		<div class="container d-flex flex-column h-100 mb-auto my-0 py-4">
-			<h1 id="Roomname"></h1>
-			<div id="buttons" class="my-3" data-ismain="true">
-				<button id="btn_test" class="btn btn-outline-secondary" type="button" data-show="main">Check RT</button>
-				<button id="btn_make" class="btn btn-outline-secondary" type="button" data-show="main">Make</button>
+		<div class="container d-flex flex-column h-100 mb-auto py-3 py-md-4 my-0">
+			<div data-ismain="true">
 				<button id="btn_ready" class="btn btn-outline-secondary" type="button" data-show="room">Ready!</button>
 				<button id="btn_timer" class="btn btn-outline-secondary" type="button" data-show="room">RTimer</button>
 				<button id="btn_Ttimer" class="btn btn-outline-secondary" type="button" data-show="room">TTimer</button>
 			</div>
 
-			<div class="d-flex flex-column flex-md-row h-100">
-				<div class="col-md-6 d-flex flex-column p-3 mb-3 bg-dark text-white" style="overflow-y: auto;">
+			<div class="d-flex flex-column flex-md-row mb-3 h-100">
+				<div class="col-md-6 d-flex flex-column p-3 bg-dark text-white" style="overflow-y: auto;">
 					<div id="wordArea" class="text-center"> Chat Room </div>
 					<div id="chatArea" class="h-auto"></div>
 				</div>
-				<div id="roomlistArea" class="col-md-6 p-0 px-md-3 mb-3"></div>
+				<div id="roomlistArea" class="col-md-6 p-0 px-md-3"></div>
 			</div>
-			<form class="my-3">
+			<form class="">
 				<div class="form-row align-items-start">
 					<div class="col-9">
 						<input id="wordInput" type="text" class="form-control" aria-describedby="wordInputHelp" placeholder="Something here!">
