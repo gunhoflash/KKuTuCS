@@ -188,6 +188,7 @@ class GameRoom
 	{
 		$str = "";
 		$i = 0;
+		// TODO: Fix below code. Using index occur error because the array is associative array.
 		for($i = 0; $i <= count($this->clientSockets)-1; $i++)
 		{
 			if (strlen($str)) $str .= "``";

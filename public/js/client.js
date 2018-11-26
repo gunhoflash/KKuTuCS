@@ -28,10 +28,6 @@ function initialize()
 	{
 		sendMessage("READY", "1");
 	});
-	/*$("#btn_make").on("click", function()
-	{
-		sendMessage("MAKE", "test", "");
-	});*/
 	$("#btn_send").on("click", function()
 	{
 		sendMessage("SEND", $("#wordInput").val());
@@ -39,7 +35,10 @@ function initialize()
 	});
 	$("#roomlistArea").on("click", ".gameroom", function()
 	{
-		sendMessage("JOIN", $(this).data("index"));
+		var pw = "";
+		if ($(this).data("pw") == "1")
+			pw = prompt("비밀번호를 입력하세요","");
+		sendMessage("JOIN", $(this).data("index"), pw);
 	});
 	$("#wordInput").keypress(function(event)
 	{
