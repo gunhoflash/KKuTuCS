@@ -1,0 +1,8 @@
+*[data-ismain="true"] *[data-show="room"]
+{
+	display: none !important;
+}
+*[data-ismain="false"] *[data-show="main"]
+{
+	display: none !important;
+}

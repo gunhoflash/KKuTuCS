@@ -13,7 +13,6 @@ function initialize()
 {
 	$('#make').on('submit', function(e){
 		 e.preventDefault();
-		 alert($(this).find("input[name=modal_roomName]").val())
 		 sendMessage("MAKE", $(this).find("input[name=modal_roomName]").val(), $(this).find("input[name=modal_password]").val());
 		 $('#modal_id_roomName').val("");
 		 $('#modal_id_password').val("");
