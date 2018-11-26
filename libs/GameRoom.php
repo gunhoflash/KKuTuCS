@@ -17,6 +17,7 @@ class GameRoom
 	private $roundTime      = 600;        // unit: 0.1sec
 	private $tv;
 	private $counter        = 0;
+	private $currentRound   = 0;
 
 	// Array for Clients
 	private $clientSockets  = array();
@@ -90,16 +91,6 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
 	}
 
-	function unsetFromArray(&$sockets, $index) 
-	{
-		$newArray = array ();
-
-		for($i = $index; $i <= count($sockets); $i++)
-		{
-			$newArray[] = $sockets[$index];
-		}
-	}
-
 	private function checkWord($word)
 	{
 		// TODO: To allow for words with spaces, this code must be modified.
@@ -151,17 +142,24 @@ class GameRoom
 			$this->wordHistory = array();
 			$this->counter = 0;
 			$this->roundTime = 600;
+			$this->currentRound++;
+
 			sendToSocketAll($this->clientSockets, "SEND", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
 			sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$this->nowTurn])." will lose score 100.\n");
-			$this->clientScores[$this->nowTurn] -= 100;
-			while($this->clientSockets[$n]!=NULL) {
-				sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$n])."'s score is ".$this->clientScores[$n]."\n");
+			($this->clientScores[$this->nowTurn] < 100) ? $this->clientScores[$this->nowTurn] = 0 : $this->clientScores[$this->nowTurn] -= 100;
+			
+			for($n = 0; $n <= count($this->clientSockets)-1; $n++)
+			{
 				$this->clientReady[$n] = 0;
-				$n ++;
 			}
-		}
 
-		$this->refreshList();
+			$this->endGame();
+		}
+	}
+
+	private function endGame()
+	{
+		sendToSocketAll($this->clientSockets, "RESULT", $this->makePlayerList());
 	}
 
 	private function startTurn()
@@ -172,8 +170,6 @@ class GameRoom
 		}
 		sendToSocketAll($this->clientSockets, "TURNSTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
 		$this->tv = time();
-		sendToSocketAll($this->clientSockets, "SEND", "Now, ".socketToString($this->clientSockets[$this->nowTurn])."'s Turn\n");
-		// TODO: Send a MYTURN message to the client to tell that it is your turn.
 	}
 
 	private function getTurnSpeed($rt)
@@ -188,7 +184,6 @@ class GameRoom
 	{
 		$str = "";
 		$i = 0;
-		// TODO: Fix below code. Using index occur error because the array is associative array.
 		for($i = 0; $i <= count($this->clientSockets)-1; $i++)
 		{
 			if (strlen($str)) $str .= "``";

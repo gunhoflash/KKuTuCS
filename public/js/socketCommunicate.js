@@ -123,6 +123,11 @@ function parseMessage(data)
 			ProcessPLAYERLIST(parameter1);
 			break;
 
+		case "RESULT":
+			ProcessPLAYERLIST(parameter1);
+			ProcessRESULT(parameter1);
+			break;
+
 		default:
 			alert("[Unexpected Method Error] " + method);
 			break;
@@ -209,15 +214,32 @@ function ProcessPLAYERLIST(playerlistString)
 		player = playerlist[i].split("`");
 
 		str +=
-		"<div class='gameroom border shadow-sm px-3 py-2 mb-2"+(i == nowTurn ? " bg-primary" : "")+"'>"+
+		"<div class='gameroom border shadow-sm px-3 py-2 mb-2"+(i == nowTurn ? " bg-teal" : "")+"'>"+
 			"<h6>"+player[0]+"</h6>"+
 			"<div class='d-flex'>"+
 				(player[2] == '1' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Not Ready")+"</span>"+
 				"<span class='text-black px-1'>"+player[1]+"</span>"+
-				"<span class='text-black px-1'>"+(i == nowTurn ? "Now Turn" : "")+"</span>"+
 			"</div>"+
 		"</div>";
 	}
 	
 	$("#roomlistArea").html(str).trigger("create");
+}
+
+function ProcessRESULT(playerlistString)
+{
+	//clients`scores`ready``clients`scores`ready``...``nowTurn;
+	var i, str = "", playerlist = playerlistString.split("``");
+
+	for(i = 0; i < playerlist.length-1; i++)
+	{
+		player = playerlist[i].split("`");
+
+		str +=
+		player[0] + "'s score : " +player[1] + "<br>";
+	}
+
+	$("#resultScreen").modal('show');
+	$("#resultScreenBody").html(str).trigger("create");
+
 }

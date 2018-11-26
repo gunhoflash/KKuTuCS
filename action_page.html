@@ -18,6 +18,9 @@
 	  text-align: center;
 	  font-size:12px;
 	}
+	.bg-teal {
+		 background-color: #BFFF8C !important;
+	}
 </style>
 <html class="h-100">
 	<head>
@@ -71,6 +74,7 @@
 		</div>
 
 		<!-- Modal -->
+		<!-- Create Room-->
 		<div class="modal fade" id="createRoom" tabindex="-1" role="dialog" aria-labelledby="createRoomLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
@@ -82,9 +86,15 @@
 					</div>
 					<form id="make">
 						<div class="modal-body">
-							Hello KKuTuCS!<br>
-							ROOM NAME : <input type="text" id="modal_id_roomName" name="modal_roomName" placeholder="Name"><br>
-							PASSWORD : <input type="text" id="modal_id_password" name="modal_password" placeholder="Password"><br>
+							<div class="form-group">
+									<label for="inputRoomName">RoomName</label>
+									<input type="text" class="form-control" name="modal_roomName" id="modal_id_roomName" placeholder="Enter roomname">
+							</div>
+							<div class="form-group">
+									<label for="inputPassword">Password</label>
+									<input type="password" class="form-control" name="modal_password" id="modal_id_password" aria-describedby="pwdHelp" placeholder="Password">
+									<small id="pwdHelp" class="form-text text-muted">Remain this blank, if you want to make public room.</small>
+							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -94,5 +104,23 @@
 				</div>
 			</div>
 		</div>
+		<!-- Result Screen-->
+		<div class="modal fade" id="resultScreen" tabindex="-1" role="dialog" aria-labelledby="resultScreenLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="resultScreenLabel">Result</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+							<div class="modal-body" id="resultScreenBody">
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
+					</div>
+				</div>
+			</div>
 	</body>
 </html>
