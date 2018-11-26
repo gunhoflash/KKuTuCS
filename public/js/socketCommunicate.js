@@ -70,7 +70,7 @@ function parseMessage(data)
 
 		case "JOIN":
 			// JOIN [1/0] [roonname/error_message]
-			processSEND(parameter1, parameter2);
+			processJOIN(parameter1, parameter2);
 			break;
 
 		case "DISCONNECTED":

@@ -31,9 +31,37 @@
 	
 		<!-- JS -->
 		<script src="public/js/jquery-3.3.1.min.js"></script>
+		<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 		<script src="public/js/client.js"></script>
 		<script src="public/js/bootstrap.bundle.min.js"></script>
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+		<!-- Modal -->
+		<div class="modal fade" id="createRoom" tabindex="-1" role="dialog" aria-labelledby="createRoomLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <h5 class="modal-title" id="createRoomLabel">Make Room</h5>
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				  </button>
+				</div>
+				<form id="make">
+				<div class="modal-body">
+				  Hello KKuTuCS!<br>
+					ROOM NAME : <input type="text" id="modal_id_roomName" name="modal_roomName" placeholder="Name"><br>
+					PASSWORD : <input type="text" id="modal_id_password" name="modal_password" placeholder="Password"><br>
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				  <input type="submit" class="btn btn-primary">
+				</div>
+				</form>
+			  </div>
+			</div>
+		  </div>
 	</head>
+
 	<body class="bg-light d-flex flex-column h-100">
 		<nav class="navbar navbar-dark bg-dark">
 			<span class="navbar-brand mb-0 h1">KKuTuCS</span>
@@ -46,6 +74,9 @@
 				<button id="btn_ready" class="btn btn-outline-secondary" type="button">Ready!</button>
 				<button id="btn_timer" class="btn btn-outline-secondary" type="button">RTimer</button>
 				<button id="btn_Ttimer" class="btn btn-outline-secondary" type="button">TTimer</button>
+				<button class="btn btn-primary" type="button" data-toggle="modal" data-target="#createRoom">
+					Create Room
+				</button>
 			</div>
 			<div class="d-flex flex-md-row h-100">
 				<div class="col-md-6 d-flex flex-column p-3 bg-dark text-white" style="overflow-y: auto;">
