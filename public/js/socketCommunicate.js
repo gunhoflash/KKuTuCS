@@ -102,14 +102,15 @@ function parseMessage(data)
 		case "GAMESTART":
 			// TODO: Edit here.
 			$("#chatArea").empty();
-			alert("Everyone is Ready. Game is just begun!");
 			showTurnTimer(parameter1);
 			showRoundTimer(parameter2);
+			alert("Everyone is Ready. Game is just begun!");
 			break;
 
 		case "CORRECT":
 			clearInterval(turnInterval);
 			clearInterval(roundInterval);
+			$("#wordArea").text(parameter1);
 			break;
 
 		case "TURNSTART":
@@ -120,6 +121,10 @@ function parseMessage(data)
 		case "QUITTED":
 			// TODO: Edit here.
 			processSEND(parameter1 + " quitted");
+			break;
+
+		case "PLAYERLIST":
+			ProcessPLAYERLIST(parameter1);
 			break;
 
 		default:
@@ -174,5 +179,42 @@ function processROOMLIST(roomlistString)
 	}
 
 	// Show the roomlist.
+	$("#roomlistArea").html(str).trigger("create");
+}
+
+function ProcessPLAYERLIST(playerlistString)
+{
+	//clients`scores`ready``clients`scores`ready``...``nowTurn;
+	$("#roomlistArea").html("").trigger("create");
+
+	var i, str, playerlist = playerlistString.split("``");
+	var nowTurn = parseInt(playerlist.slice(-1), 10);
+
+	for(i = 0; i < playerlist.length-1; i++)
+	{
+		player = playerlist[i].split("`");
+
+		if(i== nowTurn)
+		str +=
+		"<div class='gameroom border bg-primary shadow-sm px-3 py-2 mb-2'>";
+		else
+		str +=
+		"<div class='gameroom border shadow-sm px-3 py-2 mb-2'>";
+		str +=
+			"<h6>"+player[0]+"</h6>"+
+			"<div class='d-flex'>"+
+				(player[2] == '1' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Not Ready")+"</span>"+
+				"<span class='text-black px-1'>"+player[1]+"</span>";
+		if(i == nowTurn) 
+		str += 
+				"<span class='text-black px-1'> Now Turn </span>";
+		else
+		str +=
+				"<span class='text-black px-1'> </span>";
+		str +=
+			"</div>"+
+		"</div>";
+	}
+	
 	$("#roomlistArea").html(str).trigger("create");
 }

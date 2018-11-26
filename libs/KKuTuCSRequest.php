@@ -12,7 +12,8 @@ class KKuTuCSRequest
 		"READY",    // (room) Ready to start a game.         (Syntax: READY flag)
 		"QUIT",     // (room) Quit a game while playing.     (Syntax: QUIT)
 		"TIMETEST", // (main/room) Measure response-time.    (Syntax: TIMETEST)
-		"ROUNDOVER" // (room) End round and calculate score. (Syntax: ROUNDOVER)
+		"ROUNDOVER",// (room) End round and calculate score. (Syntax: ROUNDOVER)
+		"PLAYERLIST"
 	);
 	private $requestMessage;
 	private $result = [

@@ -45,6 +45,13 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "CONNECTED", $socketString);
 		$this->clientSockets[] = $socket;
 		$this->clientReady[] = 0;
+		$this->clientScores[] = 0;
+
+		if($this->roomType == "game")
+		{
+			$str = $this->makePlayerList();
+			$this->refreshList();
+		}
 	}
 
 	public function clientQuitted(&$socket)
@@ -66,6 +73,7 @@ class GameRoom
 
 		// Send the information to other clients.
 		sendToSocketAll($this->clientSockets, "QUITTED", $socketString);
+		$this->refreshList();
 	}
 
 	public function clientDisconnected(&$socket)
@@ -80,6 +88,16 @@ class GameRoom
 
 		// Send the information to other clients.
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
+	}
+
+	function unsetFromArray(&$sockets, $index) 
+	{
+		$newArray = array ();
+
+		for($i = $index; $i <= count($sockets); $i++)
+		{
+			$newArray[] = $sockets[$index];
+		}
 	}
 
 	private function checkWord($word)
@@ -102,12 +120,12 @@ class GameRoom
 		$this->nowTurn = 0;
 		$this->state="Playing";
 
-		sendToSocketAll($this->clientSockets, "GAMESTART");
+		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
 		while($this->clientReady[$n]!=NULL) {
-			$this->clientReady[$n] = 0;
 			$this->clientScores[$n] = 0;
 			$n++;
 		}
+		$this->refreshList();
 	}
 
 	private function getScore($text) 
@@ -138,9 +156,12 @@ class GameRoom
 			$this->clientScores[$this->nowTurn] -= 100;
 			while($this->clientSockets[$n]!=NULL) {
 				sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$n])."'s score is ".$this->clientScores[$n]."\n");
+				$this->clientReady[$n] = 0;
 				$n ++;
 			}
 		}
+
+		$this->refreshList();
 	}
 
 	private function startTurn()
@@ -179,6 +200,30 @@ class GameRoom
 		else if($rt <= 600) return 80;
 
 		else return 0;
+	}
+
+	// Make String for JavaScript process
+	// ex) clientSockets`clientScores`clientReady``sockets`...``nowTurn
+	private function makePlayerList()
+	{
+		$str = "";
+		$i = 0;
+		for($i = 0; $i <= count($this->clientSockets)-1; $i++)
+		{
+			if (strlen($str)) $str .= "``";
+			$str .= socketToString($this->clientSockets[$i])."`";
+			$str .= $this->clientScores[$i]."`";
+			$str .= $this->clientReady[$i];
+		}
+		$str = $str."``".$this->nowTurn;
+
+		return $str;
+	}
+
+	// Refresh PlayerList
+	private function refreshList()
+	{
+		sendToSocketAll($this->clientSockets, "PLAYERLIST", $this->makePlayerList());
 	}
 
 	public function checkPassword($password)
@@ -226,12 +271,12 @@ class GameRoom
 					// TODO: Calculate client's score.
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
-					sendToSocketAll($this->clientSockets, "CORRECT");
+					sendToSocketAll($this->clientSockets, "CORRECT", "$message");
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString get $score");
-					$sum = $this->clientScores[$this->nowTurn] += $score;
-					sendToSocketAll($this->clientSockets, "SEND", "$socketString has $sum");
+					$this->clientScores[$this->nowTurn] += $score;
 					sendToSocketAll($this->clientSockets, "SEND", "$socketString type $message");
 					$this->startTurn();
+					$this->refreshList();
 				}
 			}
 		}
@@ -250,6 +295,7 @@ class GameRoom
 		if (($flag == 1 || $flag == 0) && $this->state="Ready")
 		{
 			$this->clientReady[$index] = $flag;
+			sendToSocketAll($this->clientSockets, "PLAYERLIST", $this->makePlayerList());
 
 			// If all ready, then start the game!
 			if (!in_array(0, $this->clientReady))
