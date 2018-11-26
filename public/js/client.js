@@ -61,13 +61,7 @@ var uriQueries = [];
 
 function initializeVariable()
 {
-	var queries = decodeURI(window.location.search).substr(1).split("&");
-	queries.forEach(str => {
-		var ar = str.split("=");
-		if (ar.length == 2)
-			uriQueries[ar[0]] = ar[1];
-	});
-	$("#title").text("KKuTuCS(" + uriQueries["nickname"] + ")");
+	// move to socketCommunicate.js
 }
 
 function showRoundTimer(duration) {
