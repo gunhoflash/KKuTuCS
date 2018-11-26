@@ -47,7 +47,7 @@ function initialize()
 	initializeSocket();
 	initializeVariable();
 }
-
+var isMain = true;
 var roundInterval;
 var turnInterval;
 var uriQueries = [];

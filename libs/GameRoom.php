@@ -176,30 +176,10 @@ class GameRoom
 		// TODO: Send a MYTURN message to the client to tell that it is your turn.
 	}
 
-	private function getTurnSpeed($rt) {
-		if($rt < 50) return 15;
-
-		else if($rt < 100) return 20;
-
-		else if($rt < 150) return 30;
-
-		else if($rt < 200) return 40;
-
-		else if($rt < 250) return 50;
-
-		else if($rt < 300) return 55;
-
-		else if($rt < 350) return 60;
-
-		else if($rt < 400) return 65;
-
-		else if($rt < 450) return 70;
-
-		else if($rt < 500) return 75;
-
-		else if($rt <= 600) return 80;
-
-		else return 0;
+	private function getTurnSpeed($rt)
+	{
+		if ($rt > 600) return 0;
+		return floor($rt / 50) * 5 + 15;
 	}
 
 	// Make String for JavaScript process

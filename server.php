@@ -165,7 +165,6 @@ function processJOIN(&$socket, $parameter1, $parameter2)
 				{
 					$room->clientEntered($socket);
 					$client_room[0]->clientQuitted($socket);
-					// TODO: Remove client from the main room.
 					sendToSocket($socket, "JOIN", "1", $room->getName());
 					processROOMLIST($client_room[0]->getClientSockets());
 				}
