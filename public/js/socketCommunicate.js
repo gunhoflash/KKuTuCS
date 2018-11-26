@@ -2,6 +2,7 @@ var socketLink = "ws://"+window.location.hostname+":7002";
 var socket;
 
 var responseTime = 0;
+var uriQueries = [];
 
 function initializeSocket()
 {
@@ -11,8 +12,18 @@ function initializeSocket()
 	socket.onopen = function(event)
 	{
 		console.log("Socket opened.", event);
-		$("#Roomname").text("메인");
-		sendMessage("ROOMLIST", "");
+        $("#Roomname").text("Main room");
+        
+        var queries = decodeURI(window.location.search).substr(1).split("&");
+        queries.forEach(str => {
+            var ar = str.split("=");
+            if (ar.length == 2)
+                uriQueries[ar[0]] = ar[1];
+        });
+
+        $("#title").text("KKuTuCS(" + uriQueries["nickname"] + ")");
+        sendMessage("ROOMLIST", uriQueries["nickname"]);
+
 	};
 
 	// When the socket receive a message
