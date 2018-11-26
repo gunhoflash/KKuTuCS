@@ -70,11 +70,7 @@ function parseMessage(data)
 
 		case "JOIN":
 			// JOIN [1/0] [roonname/error_message]
-			if (parameter1 == 1)
-				$("#Roomname").text(parameter2);
-			else
-				alert("Cannot join!\n" + parameter2);
-			// TODO: Do something according to the result of the JOIN request.
+			processSEND(parameter1, parameter2);
 			break;
 
 		case "DISCONNECTED":
@@ -137,6 +133,22 @@ function processSEND(message)
 	 */
 	$("#chatArea").append("<p class='mb-1'>" + message + "</p>");
 	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
+}
+
+function processJOIN(success, message)
+{
+	if (success != 1)
+	{
+		alert("Cannot join!\n" + message);
+		return;
+	}
+
+	// Join the game
+	$("#Roomname").text(message);				
+	isMain = false;
+
+	$("#chatArea").html("").trigger("create");
+	processSEND("Welcome to " + message + "!");
 }
 
 function processROOMLIST(roomlistString)
