@@ -41,11 +41,21 @@ function isInDB ($word)
 //사용됐던 단어인지 확인
 //사용된 경우 TRUE 아니면 FALSE
 //array_search가 대소문자를 구별하기때문에, 모든 단어가 소문자로 들어감.
-function isUsed ($Word, $WordHistory) {
-	if($WordHistory==NULL) return FALSE;
+function isUsed ($Word, $WordHistory)
+{
+	if ($WordHistory == NULL) return FALSE;
 	$lowerword = strtolower($Word);
-	$re = in_array($lowerword, $WordHistory); 
-	return ($re);
+	return in_array($lowerword, $WordHistory); 
+}
+
+// TODO: Edit here.
+function getRandomWord()
+{
+	global $conn;
+
+	$re = mysqli_query($conn, "SELECT COUNT(*) FROM kkutudb.kkutu_en");
+	$row = mysqli_fetch_all($re);
+	var_dump($row);
 }
 /*
 //이하 주석처리된 코드들은 모두 SQL 이용
