@@ -7,7 +7,7 @@ defined('PROJECT_ROOT') or exit('No direct script access allowed');
  */
 function isValid($word)
 {
-	return (strlen($word) > 0) && (preg_match("/[^a-zA-Z]/",$word) == 0);
+	return (strlen($word) > 0) && (preg_match("/[^a-zA-Z\s]/",$word) == 0);
 }
 
 /**

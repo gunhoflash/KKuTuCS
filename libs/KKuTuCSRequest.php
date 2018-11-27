@@ -5,15 +5,16 @@ class KKuTuCSRequest
 {
 	private static $VALID_START = "KKuTuCS";
 	private static $VALID_METHODS = array(
-		"JOIN",     // (main) Enter a game.                  (Syntax: JOIN roomIndex password)
-		"MAKE",     // (main) Make new room.                 (Syntax: MAKE roomname password)
-		"ROOMLIST", // (main) Get a list of all rooms.       (Syntax: ROOMLIST roomIndex password)
-		"SEND",     // (main/room) Send a word or chat.      (Syntax: SEND msg)
-		"READY",    // (room) Ready to start a game.         (Syntax: READY flag)
-		"QUIT",     // (room) Quit a game while playing.     (Syntax: QUIT)
-		"TIMETEST", // (main/room) Measure response-time.    (Syntax: TIMETEST)
-		"ROUNDOVER",// (room) End round and calculate score. (Syntax: ROUNDOVER)
-		"PLAYERLIST"
+		"JOIN",      // (main) Enter a game.                  (Syntax: JOIN roomIndex password)
+		"MAKE",      // (main) Make new room.                 (Syntax: MAKE roomname password)
+		"ROOMLIST",  // (main) Get a list of all rooms.       (Syntax: ROOMLIST roomIndex password)
+		"SEND",      // (main/room) Send a word or chat.      (Syntax: SEND msg)
+		"READY",     // (room) Ready to start a game.         (Syntax: READY flag)
+		"QUIT",      // (room) Quit a game while playing.     (Syntax: QUIT)
+		"TIMETEST",  // (main/room) Measure response-time.    (Syntax: TIMETEST)
+		"ROUNDOVER" ,// (room) End round and calculate score. (Syntax: ROUNDOVER)
+		"PLAYERLIST",// (room) Receive Playerlist from Server (Syntax: PLAYERLIST str)
+		"RESULT"     // (room) Popup Result Modal             (Syntax: RESULT str)
 	);
 	private $requestMessage;
 	private $result = [
