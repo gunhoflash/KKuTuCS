@@ -48,14 +48,14 @@ function isUsed ($Word, $WordHistory)
 	return in_array($lowerword, $WordHistory); 
 }
 
-// TODO: Edit here.
+// Get a random word in DB.
 function getRandomWord()
 {
 	global $conn;
 
-	$re = mysqli_query($conn, "SELECT COUNT(*) FROM kkutudb.kkutu_en");
-	$row = mysqli_fetch_all($re);
-	var_dump($row);
+	$re = mysqli_query($conn, "SELECT _id FROM kkutudb.kkutu_en");
+	$rows = mysqli_fetch_all($re);
+	return $rows[rand(0, sizeof($rows))][0];
 }
 /*
 //이하 주석처리된 코드들은 모두 SQL 이용
