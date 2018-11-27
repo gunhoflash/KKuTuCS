@@ -91,13 +91,13 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
 	}
 
-	private function checkWord($word)
+	private function checkWord($typed_word)
 	{
+		$word = strtolower($typed_word);
 		// TODO: To allow for words with spaces, this code must be modified.
 		if (isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
 		{
-			$lowerword = strtolower($word);
-			$this->wordHistory[] = $this->lastWord = $lowerword;
+			$this->wordHistory[] = $this->lastWord = $word;
 			return TRUE;
 		}
 		
@@ -146,20 +146,23 @@ class GameRoom
 
 			sendToSocketAll($this->clientSockets, "SEND", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
 			sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$this->nowTurn])." will lose score 100.\n");
+			sendToSocketAll($this->clientSockets, "SEND", "Push Ready to play next Round.\n");
 			($this->clientScores[$this->nowTurn] < 100) ? $this->clientScores[$this->nowTurn] = 0 : $this->clientScores[$this->nowTurn] -= 100;
 			
 			for($n = 0; $n <= count($this->clientSockets)-1; $n++)
 			{
 				$this->clientReady[$n] = 0;
 			}
-
-			$this->endGame();
+			
+			if($this->currentRound === 3) $this->endGame();
+			else $this->refreshList();
 		}
 	}
 
 	private function endGame()
 	{
 		sendToSocketAll($this->clientSockets, "RESULT", $this->makePlayerList());
+		$this->currentRound = 0;
 	}
 
 	private function startTurn()
@@ -217,6 +220,7 @@ class GameRoom
 				break;
 			case "READY":
 				$this->processREADY($socket, $parameter1);
+				sendToSocketAll($this->clientSockets, "SEND", "Current Round is { ".($this->currentRound+1)." / 3 }");
 				break;
 			case "QUIT":
 				// TODO: Send the result so that the client can go back to the main (by refreshing the page).
