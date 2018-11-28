@@ -39,16 +39,21 @@
 		<script src="public/js/bootstrap.bundle.min.js"></script>
 	</head>
 
-	<body class="bg-light d-flex flex-column h-100">
+	<body class="bg-light d-flex flex-column h-100" data-ismain="true">
 		<nav class="navbar navbar-dark bg-primary">
-			<span class="navbar-brand mb-0 h1">KKuTuCS - <span id="Roomname"></span></span>
-			<div data-ismain="true">
+			<span class="align-items-center d-flex text-white">
+				<button id="btn_quit" class="btn btn-primary px-1 px-md-2 mr-2 mr-md-3" type="button" data-btnshow="room">⮜&nbsp;<span class="d-none d-md-inline">Back</span></button>
+				<span class="align-items-baseline d-flex h5 mb-0">
+					<span>KKuTuCS&nbsp;-&nbsp;</span><span id="Roomname"></span>
+				</span>
+			</span>
+			<div>
 				<button id="btn_test" class="btn btn-outline-light" type="button" data-btnshow="both">Check RT</button>
 				<button id="btn_make" class="btn btn-outline-light" type="button" data-btnshow="main" data-toggle="modal" data-target="#createRoom">Make</button>
 			</div>
 		</nav>
 		<div class="container d-flex flex-column h-100 mb-auto py-3 py-md-5 my-0">
-			<div data-ismain="true">
+			<div>
 				<button id="btn_ready" class="btn btn-outline-secondary" type="button" data-btnshow="room">Ready!</button>
 				<button id="btn_timer" class="btn btn-outline-secondary" type="button" data-btnshow="room">RTimer</button>
 				<button id="btn_Ttimer" class="btn btn-outline-secondary" type="button" data-btnshow="room">TTimer</button>

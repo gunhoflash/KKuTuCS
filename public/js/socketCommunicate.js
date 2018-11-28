@@ -4,26 +4,31 @@ var socket;
 var responseTime = 0;
 var uriQueries = [];
 
-function initializeSocket()
+function initializeSocketAndObject()
 {
+	// Initialize views and variable
+	$("*[data-ismain]").attr("data-ismain", "true");
+	$("#chatArea").html("").trigger("create");
+	processROOMLIST("");
+
 	socket = new WebSocket(socketLink);
-	$("#Roomname").text("(연결중..)");
+	$("#Roomname").text("(Connecting..)");
+
 	// When the socket open
 	socket.onopen = function(event)
 	{
 		console.log("Socket opened.", event);
-        $("#Roomname").text("Main room");
-        
-        var queries = decodeURI(window.location.search).substr(1).split("&");
-        queries.forEach(str => {
-            var ar = str.split("=");
-            if (ar.length == 2)
-                uriQueries[ar[0]] = ar[1];
-        });
+		$("#Roomname").text("Main");
+		
+		var queries = decodeURI(window.location.search).substr(1).split("&");
+		queries.forEach(str => {
+			var ar = str.split("=");
+			if (ar.length == 2)
+				uriQueries[ar[0]] = ar[1];
+		});
 
-        $("#title").text("KKuTuCS(" + uriQueries["nickname"] + ")");
-        sendMessage("ROOMLIST", uriQueries["nickname"]);
-
+		$("#title").text("KKuTuCS(" + uriQueries["nickname"] + ")");
+		sendMessage("ROOMLIST", uriQueries["nickname"]);
 	};
 
 	// When the socket receive a message
@@ -37,7 +42,8 @@ function initializeSocket()
 	socket.onclose = function(event)
 	{
 		console.log("Socket closed.", event);
-		alert("Socket closed.\nPlease refresh this page to reconnect.");
+		initializeSocketAndObject();
+		//alert("Socket closed.\nPlease refresh this page to reconnect.");
 	};
 }
 

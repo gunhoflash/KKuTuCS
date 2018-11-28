@@ -26,7 +26,7 @@ function unsetFromArray(&$object, &$array, $index = -1)
 		$index = array_search($object, $array);
 	if ($index !== FALSE)
 		unset($array[$index]);
-		$array = array_values($array);
+	$array = array_values($array);
 }
 
 // Convert the socket to a string. 
@@ -54,7 +54,6 @@ function socketToString($socket, $IPPORT='', $nickname = '')
     else
         return "{ ".$IPPORT." } ";
 }
-
 
 // Edcode the text.
 function unmask($payload)

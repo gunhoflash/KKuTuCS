@@ -223,7 +223,8 @@ class GameRoom
 				sendToSocketAll($this->clientSockets, "SEND", "Current Round is { ".($this->currentRound+1)." / 3 }");
 				break;
 			case "QUIT":
-				// TODO: Send the result so that the client can go back to the main (by refreshing the page).
+				// Client will re-open its socket.
+				$this->clientDisconnected($socket);
 				break;
 			case "TIMETEST":
 				sendToSocket($socket, $method);

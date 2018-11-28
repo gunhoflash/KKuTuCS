@@ -2,14 +2,15 @@ $(document).ready(function()
 {
 	$.getScript("public/js/socketCommunicate.js")
 	.done(function() {
-		initialize();
+		initializeButton();
+		initializeSocketAndObject();
 	})
 	.fail(function() {
 		alert("Cannot load other js file!");
 	});
 });
 
-function initialize()
+function initializeButton()
 {
 	$('#make').on('submit', function(e)
 	{
@@ -18,7 +19,11 @@ function initialize()
 		$('#modal_id_roomName').val("");
 		$('#modal_id_password').val("");
 		$('#createRoom').modal("hide");
-	}); 
+	});
+	$("#btn_quit").on("click", function()
+	{
+		sendMessage("QUIT", "", "");
+	});
 	$("#btn_test").on("click", function()
 	{
 		sendMessage("TIMETEST", "", "");
@@ -43,26 +48,15 @@ function initialize()
 	$("#wordInput").keypress(function(event)
 	{
 		var keycode = (event.keyCode ? event.keyCode : event.which);
-		// TODO: Check the type of keycode: string or number.
 		if (keycode == '13')
 		{
 			event.preventDefault();
 			$("#btn_send").click();
 		}
 	});
-
-	initializeSocket();
-	initializeVariable();
 }
-var isMain = true;
 var roundInterval;
 var turnInterval;
-var uriQueries = [];
-
-function initializeVariable()
-{
-	// move to socketCommunicate.js
-}
 
 function showRoundTimer(duration) {
     
