@@ -153,7 +153,7 @@ function processSEND(message)
 	 * (space) => &nbsp;
 	 */
 	$("#chatArea").append("<p class='mb-1'>" + message + "</p>");
-	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
+	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
 }
 
 function processJOIN(success, message)
