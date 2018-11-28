@@ -55,6 +55,7 @@ function getRandomWord()
 
 	$re = mysqli_query($conn, "SELECT _id FROM kkutudb.kkutu_en");
 	$rows = mysqli_fetch_all($re);
+	mysqli_free_result($re);
 	return $rows[rand(0, sizeof($rows))][0];
 }
 /*

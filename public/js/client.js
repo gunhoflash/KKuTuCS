@@ -22,6 +22,8 @@ function initializeButton()
 	});
 	$("#btn_quit").on("click", function()
 	{
+		clearInterval(turnInterval);
+		clearInterval(roundInterval);
 		sendMessage("QUIT", "", "");
 	});
 	$("#btn_test").on("click", function()

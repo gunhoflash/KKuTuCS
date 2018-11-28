@@ -4,6 +4,8 @@ var socket;
 var responseTime = 0;
 var uriQueries = [];
 
+var audio = document.createElement("audio");
+
 function initializeSocketAndObject()
 {
 	// Initialize views and variable
@@ -114,9 +116,11 @@ function parseMessage(data)
 
 		case "GAMESTART":
 			// TODO: Edit here.
+			audio.pause();
 			$("#chatArea").empty();
 			showTurnTimer(parameter1);
 			showRoundTimer(parameter2);
+			processBGM("T1");
 			alert("Everyone is Ready. Game is just begun!");
 			break;
 
@@ -124,6 +128,10 @@ function parseMessage(data)
 			clearInterval(turnInterval);
 			clearInterval(roundInterval);
 			$("#wordArea").text(parameter1);
+			break;
+
+		case "PLAYBGM":
+			processBGM(parameter1, parameter2);
 			break;
 
 		case "TURNSTART":
@@ -137,12 +145,12 @@ function parseMessage(data)
 			break;
 
 		case "PLAYERLIST":
-			ProcessPLAYERLIST(parameter1);
+			processPLAYERLIST(parameter1);
 			break;
 
 		case "RESULT":
-			ProcessPLAYERLIST(parameter1);
-			ProcessRESULT(parameter1);
+			processPLAYERLIST(parameter1);
+			processRESULT(parameter1);
 			break;
 
 		default:
@@ -218,7 +226,7 @@ function processROOMLIST(roomlistString)
 		$("#roomlistArea").html(no_rooms).trigger("create");
 }
 
-function ProcessPLAYERLIST(playerlistString)
+function processPLAYERLIST(playerlistString)
 {
 	//clients`scores`ready``clients`scores`ready``...``nowTurn;
 	$("#roomlistArea").html("").trigger("create");
@@ -243,7 +251,7 @@ function ProcessPLAYERLIST(playerlistString)
 	$("#roomlistArea").html(str).trigger("create");
 }
 
-function ProcessRESULT(playerlistString)
+function processRESULT(playerlistString)
 {
 	//clients`scores`ready``clients`scores`ready``...``nowTurn;
 	var i, str = "", playerlist = playerlistString.split("``");
@@ -259,4 +267,18 @@ function ProcessRESULT(playerlistString)
 	$("#resultScreen").modal('show');
 	$("#resultScreenBody").html(str).trigger("create");
 
+}
+
+function processBGM(BGMtitle, playSpeed = 0)
+{
+	audio.pause();
+	audio.src = "libs/media/"+BGMtitle+".mp3";
+	if(BGMtitle == "LobbyBGM")
+	{
+	audio.addEventListener('ended', function () {
+		setTimeout(function () { audio.play(); }, 500);
+	}, false);       
+	}
+
+	audio.play();
 }

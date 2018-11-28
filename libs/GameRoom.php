@@ -44,6 +44,7 @@ class GameRoom
 	{
 		$socketString = socketToString($socket);
 		sendToSocketAll($this->clientSockets, "CONNECTED", $socketString);
+		if (TRUE)sendToSocket($socket, "PLAYBGM", "lobbyBGM");
 		$this->clientSockets[] = $socket;
 		$this->clientReady[] = 0;
 		$this->clientScores[] = 0;
@@ -108,9 +109,11 @@ class GameRoom
 	{
 		//방과 클라이언트 설정
 		$n = 0;
+		$word = getRandomWord();
 		$this->nowTurn = 0;
 		$this->state="Playing";
-
+		$this->lastWord=$word;
+		sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
 		while($this->clientReady[$n]!=NULL) {
 			$this->clientScores[$n] = 0;
@@ -172,6 +175,7 @@ class GameRoom
 			$this->nowTurn=0;
 		}
 		sendToSocketAll($this->clientSockets, "TURNSTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
+		sendToSocketAll($this->clientSockets, "PLAYBGM", "T1", $this->getTurnSpeed($this->roundTime));
 		$this->tv = time();
 	}
 
