@@ -13,6 +13,7 @@ class GameRoom
 	private $name           = "KKuTuCS";
 	private $password       = "";        // "": no password
 	private $maximumClients = 4;         // 0: no limit
+	private $mode           = "";        // "korean" or "english"
 	
 	private $roundTime      = 625;        // unit: 0.1sec
 	private $tv;
@@ -92,9 +93,9 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
 	}
 
-	private function checkWord($typed_word)
+	private function checkWord($word)
 	{
-		$word = strtolower($typed_word);
+		//$word = strtolower($typed_word);
 		// TODO: To allow for words with spaces, this code must be modified.
 		if (isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
 		{
@@ -216,6 +217,14 @@ class GameRoom
 		return $str;
 	}
 
+	private function checkKorean($word)
+	{
+		$last = ucord(mb_substr($word, -1, 1, 'utf-8'));
+		if($last>=45208 && $last<=45795) return '('.ucchr($last+5292).')';
+		if($last>=46972 && $last<=47559) return '('.ucchr($last+3528).')';
+		else return;
+	}
+
 	// Refresh PlayerList
 	private function refreshList()
 	{
@@ -270,7 +279,8 @@ class GameRoom
 					// TODO: Calculate client's score.
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
-					sendToSocketAll($this->clientSockets, "CORRECT", "$message");
+					$fixed_message = $message.$this->checkKorean($message);
+					sendToSocketAll($this->clientSockets, "CORRECT", "$fixed_message");
 					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString get $score");
 					$this->clientScores[$this->nowTurn] += $score;
 					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString type $message");
