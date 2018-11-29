@@ -22,12 +22,18 @@ function initializeSocketAndObject()
 		console.log("Socket opened.", event);
 		$("#Roomname").text("Main");
 		
-		var queries = decodeURI(window.location.search).substr(1).split("&");
-		queries.forEach(str => {
+		// Decode url to get the nickname.
+		decodeURI(window.location.search).substr(1).split("&").forEach(function (str)
+		{
 			var ar = str.split("=");
 			if (ar.length == 2)
-				uriQueries[ar[0]] = ar[1];
+				uriQueries[ar[0]] = ar[1]; // Save the datas to 'uriQueries'.
 		});
+		if (uriQueries["nickname"] == undefined || uriQueries["nickname"] == "")
+		{
+			alert("Error: Nickname not found.");
+			window.location.href = "http://" + window.location.host;
+		}
 
 		$("#title").text("KKuTuCS(" + uriQueries["nickname"] + ")");
 		sendMessage("ROOMLIST", uriQueries["nickname"]);
