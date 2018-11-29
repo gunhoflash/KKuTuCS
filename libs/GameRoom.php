@@ -14,7 +14,7 @@ class GameRoom
 	private $password       = "";        // "": no password
 	private $maximumClients = 4;         // 0: no limit
 	
-	private $roundTime      = 600;        // unit: 0.1sec
+	private $roundTime      = 625;        // unit: 0.1sec
 	private $tv;
 	private $counter        = 0;
 	private $currentRound   = 0;
@@ -114,6 +114,8 @@ class GameRoom
 		$this->state="Playing";
 		$this->lastWord=$word;
 		sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
+		sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
+		usleep(2500000);
 		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
 		while($this->clientReady[$n]!=NULL) {
 			$this->clientScores[$n] = 0;
@@ -144,7 +146,7 @@ class GameRoom
 			$this->lastWord = "";
 			$this->wordHistory = array();
 			$this->counter = 0;
-			$this->roundTime = 600;
+			$this->roundTime = 625;
 			$this->currentRound++;
 
 			sendToSocketAll($this->clientSockets, "SEND", "", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
@@ -159,6 +161,8 @@ class GameRoom
 			
 			if($this->currentRound === 3) $this->endGame();
 			else $this->refreshList();
+			usleep(50000);
+			sendToSocketAll($this->clientSockets, "PLAYBGM", "horror");
 		}
 	}
 
@@ -175,14 +179,23 @@ class GameRoom
 			$this->nowTurn=0;
 		}
 		sendToSocketAll($this->clientSockets, "TURNSTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
-		sendToSocketAll($this->clientSockets, "PLAYBGM", "T1", $this->getTurnSpeed($this->roundTime));
+		sendToSocketAll($this->clientSockets, "PLAYBGM", "T", $this->getTurnSpeed($this->roundTime));
 		$this->tv = time();
 	}
 
 	private function getTurnSpeed($rt)
 	{
-		if ($rt > 600) return 0;
-		return floor($rt / 50) * 5 + 15;
+		if($rt < 100) return 21;
+
+		else if($rt < 200) return 32;
+
+		else if($rt < 300) return 51;
+
+		else if($rt < 400) return 62;
+
+		else if($rt <= 650) return 80;
+
+		else return 0;
 	}
 
 	// Make String for JavaScript process
