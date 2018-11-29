@@ -49,10 +49,10 @@ function socketToString($socket, $IPPORT='', $nickname = '')
 	
     // check nickname                                                                                                                                                                                                                                                                                                                                                                        
     if(array_key_exists($IPPORT,$client_name))
-        return "<font color=DeepSkyBlue>".$client_name[$IPPORT]."</font>";
+        return $client_name[$IPPORT];
 
     else
-        return "{ ".$IPPORT." } ";
+        return "{".$IPPORT."}";
 }
 
 // Edcode the text.

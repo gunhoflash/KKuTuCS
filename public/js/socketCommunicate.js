@@ -83,8 +83,8 @@ function parseMessage(data)
 
 	switch (method)
 	{
-		case "SEND":
-			processSEND(parameter1);
+		case "SEND": // (Syntax: SEND nickname message)
+			processSEND(parameter1, parameter2);
 			break;
 
 		case "JOIN":
@@ -93,13 +93,11 @@ function parseMessage(data)
 			break;
 
 		case "DISCONNECTED":
-			// TODO: Show that someone is disconnected with this room.
-			processSEND(parameter1 + " disconnected");
+			processSEND(parameter1, "disconnected");
 			break;
 
 		case "CONNECTED":
-			// TODO: Show that someone is connected with this room.
-			processSEND(parameter1 + " connected");
+			processSEND(parameter1, "connected");
 			break;
 
 		case "ROOMLIST":
@@ -141,7 +139,7 @@ function parseMessage(data)
 
 		case "QUITTED":
 			// TODO: Edit here.
-			processSEND(parameter1 + " quitted");
+			processSEND(parameter1, "quitted");
 			break;
 
 		case "PLAYERLIST":
@@ -159,14 +157,16 @@ function parseMessage(data)
 	}
 }
 
-function processSEND(message)
+function processSEND(nickname, message)
 {
 	/**
 	 * TODO: Convert some characters.
 	 * \n      => <br>
 	 * (space) => &nbsp;
 	 */
-	$("#chatArea").append("<p class='mb-1'>" + message + "</p>");
+	nickname = (nickname == null || nickname.length == 0) ? "" : "<font color=DeepSkyBlue>" + nickname + "</font>&nbsp;:&nbsp;";
+
+	$("#chatArea").append("<p class='mb-1'>" + nickname + message + "</p>");
 	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
 }
 
@@ -183,7 +183,7 @@ function processJOIN(success, message)
 	$("*[data-ismain]").attr("data-ismain", "false");
 
 	$("#chatArea").html("").trigger("create");
-	processSEND("Welcome to " + message + "!");
+	processSEND(null, "Welcome to " + message + "!");
 }
 
 function processROOMLIST(roomlistString)

@@ -147,9 +147,9 @@ class GameRoom
 			$this->roundTime = 600;
 			$this->currentRound++;
 
-			sendToSocketAll($this->clientSockets, "SEND", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
-			sendToSocketAll($this->clientSockets, "SEND", socketToString($this->clientSockets[$this->nowTurn])." will lose score 100.\n");
-			sendToSocketAll($this->clientSockets, "SEND", "Push Ready to play next Round.\n");
+			sendToSocketAll($this->clientSockets, "SEND", "", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
+			sendToSocketAll($this->clientSockets, "SEND", "", socketToString($this->clientSockets[$this->nowTurn])." will lose score 100.\n");
+			sendToSocketAll($this->clientSockets, "SEND", "", "Push Ready to play next Round.\n");
 			($this->clientScores[$this->nowTurn] < 100) ? $this->clientScores[$this->nowTurn] = 0 : $this->clientScores[$this->nowTurn] -= 100;
 			
 			for($n = 0; $n <= count($this->clientSockets)-1; $n++)
@@ -223,8 +223,9 @@ class GameRoom
 				$this->processSEND($socket, $parameter1);
 				break;
 			case "READY":
+				if ($this->state == "Playing") break; // Ignore it because the game has already started.
 				$this->processREADY($socket, $parameter1);
-				sendToSocketAll($this->clientSockets, "SEND", "Current Round is { ".($this->currentRound+1)." / 3 }");
+				sendToSocketAll($this->clientSockets, "SEND", "", "Current Round is { ".($this->currentRound+1)." / 3 }");
 				break;
 			case "QUIT":
 				// Client will re-open its socket.
@@ -245,7 +246,7 @@ class GameRoom
 	private function processSEND(&$socket, $message)
 	{
 		$socketString = socketToString($socket);
-		sendToSocketAll($this->clientSockets, "SEND", "$socketString : $message\n");
+		sendToSocketAll($this->clientSockets, "SEND", $socketString, $message);
 
 		// If the $message is a word, checkWord().
 		if ($this->state == "Playing")
@@ -257,9 +258,9 @@ class GameRoom
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
 					sendToSocketAll($this->clientSockets, "CORRECT", "$message");
-					sendToSocketAll($this->clientSockets, "SEND", "$socketString get $score");
+					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString get $score");
 					$this->clientScores[$this->nowTurn] += $score;
-					sendToSocketAll($this->clientSockets, "SEND", "$socketString type $message");
+					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString type $message");
 					$this->startTurn();
 					$this->refreshList();
 				}
