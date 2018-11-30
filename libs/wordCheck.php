@@ -108,7 +108,7 @@ function isInDB_K ($word)
 function isUsed_K ($Word, $WordHistory)
 {
 	if ($WordHistory == NULL) return FALSE;
-	return in_array($lowerword, $WordHistory); 
+	return in_array($Word, $WordHistory); 
 }
 
 // Get a random word in DB.
