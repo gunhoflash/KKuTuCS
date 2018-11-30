@@ -97,9 +97,30 @@ class GameRoom
 	{
 		//$word = strtolower($typed_word);
 		// TODO: To allow for words with spaces, this code must be modified.
+		
 		if (isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
 		{
-			$this->wordHistory[] = $this->lastWord = $word;
+			$this->wordHistory[] = $this->lastWord = $word;	
+			$tspeed = $this->getTurnSpeed($this->roundTime);
+			switch($tspeed)
+			{
+				case 21: $ktime = 0.23; break;
+				case 32: $ktime = 0.36; break;
+				case 51: $ktime = 0.46; break;
+				case 62: $ktime = 0.57; break;
+				case 80: $ktime = 0.70; break;
+			}
+			$astime = ($ktime * 1000000 / strlen($word)) + 1000;//2.5s = 2500000 = 2.5 * 10^6
+			for($i=0;$i<strlen($word);$i++) {
+				sendToSocketAll($this->clientSockets, "PLAYBGM", "As", $tspeed);
+				usleep($astime);
+				if($i==strlen($word)-1) {
+					usleep(10000);
+					sendToSocketAll($this->clientSockets, "PLAYBGM", "K", $tspeed);
+					usleep($ktime*1000000 + 1000);
+				}
+				// TODO: when doing usleep and timer < 0, don't end the game
+			}
 			return TRUE;
 		}
 		
@@ -115,6 +136,11 @@ class GameRoom
 		$this->state="Playing";
 		$this->lastWord=$word;
 		sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
+		if($this->currentRound==0)
+		{
+			sendToSocketAll($this->clientSockets, "PLAYBGM", "game_start");
+			usleep(2500000);
+		}
 		sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 		usleep(2500000);
 		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
