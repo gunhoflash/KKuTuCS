@@ -5,6 +5,7 @@ var responseTime = 0;
 var uriQueries = [];
 
 var audio = document.createElement("audio");
+audio.prop("volume", "0.5");
 
 function initializeSocketAndObject()
 {
@@ -124,8 +125,7 @@ function parseMessage(data)
 			$("#chatArea").empty();
 			showTurnTimer(parameter1);
 			showRoundTimer(parameter2);
-			processBGM("T1");
-			alert("Everyone is Ready. Game is just begun!");
+			processBGM("T80");
 			break;
 
 		case "CORRECT":
@@ -278,6 +278,7 @@ function processRESULT(playerlistString)
 function processBGM(BGMtitle, playSpeed = 0)
 {
 	audio.pause();
+	if(playSpeed!=0) BGMtitle += playSpeed;
 	audio.src = "libs/media/"+BGMtitle+".mp3";
 	if(BGMtitle == "LobbyBGM")
 	{

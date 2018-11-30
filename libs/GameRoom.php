@@ -13,8 +13,9 @@ class GameRoom
 	private $name           = "KKuTuCS";
 	private $password       = "";        // "": no password
 	private $maximumClients = 4;         // 0: no limit
+	private $mode           = "";        // "korean" or "english"
 	
-	private $roundTime      = 600;        // unit: 0.1sec
+	private $roundTime      = 625;        // unit: 0.1sec
 	private $tv;
 	private $counter        = 0;
 	private $currentRound   = 0;
@@ -92,9 +93,9 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
 	}
 
-	private function checkWord($typed_word)
+	private function checkWord($word)
 	{
-		$word = strtolower($typed_word);
+		//$word = strtolower($typed_word);
 		// TODO: To allow for words with spaces, this code must be modified.
 		if (isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
 		{
@@ -114,6 +115,8 @@ class GameRoom
 		$this->state="Playing";
 		$this->lastWord=$word;
 		sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
+		sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
+		usleep(2500000);
 		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
 		while($this->clientReady[$n]!=NULL) {
 			$this->clientScores[$n] = 0;
@@ -144,7 +147,7 @@ class GameRoom
 			$this->lastWord = "";
 			$this->wordHistory = array();
 			$this->counter = 0;
-			$this->roundTime = 600;
+			$this->roundTime = 625;
 			$this->currentRound++;
 
 			sendToSocketAll($this->clientSockets, "SEND", "", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
@@ -159,6 +162,8 @@ class GameRoom
 			
 			if($this->currentRound === 3) $this->endGame();
 			else $this->refreshList();
+			usleep(50000);
+			sendToSocketAll($this->clientSockets, "PLAYBGM", "horror");
 		}
 	}
 
@@ -175,14 +180,23 @@ class GameRoom
 			$this->nowTurn=0;
 		}
 		sendToSocketAll($this->clientSockets, "TURNSTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
-		sendToSocketAll($this->clientSockets, "PLAYBGM", "T1", $this->getTurnSpeed($this->roundTime));
+		sendToSocketAll($this->clientSockets, "PLAYBGM", "T", $this->getTurnSpeed($this->roundTime));
 		$this->tv = time();
 	}
 
 	private function getTurnSpeed($rt)
 	{
-		if ($rt > 600) return 0;
-		return floor($rt / 50) * 5 + 15;
+		if($rt < 100) return 21;
+
+		else if($rt < 200) return 32;
+
+		else if($rt < 300) return 51;
+
+		else if($rt < 400) return 62;
+
+		else if($rt <= 650) return 80;
+
+		else return 0;
 	}
 
 	// Make String for JavaScript process
@@ -201,6 +215,14 @@ class GameRoom
 		$str = $str."``".$this->nowTurn;
 
 		return $str;
+	}
+
+	private function checkKorean($word)
+	{
+		$last = ucord(mb_substr($word, -1, 1, 'utf-8'));
+		if($last>=45208 && $last<=45795) return '('.ucchr($last+5292).')';
+		if($last>=46972 && $last<=47559) return '('.ucchr($last+3528).')';
+		else return;
 	}
 
 	// Refresh PlayerList
@@ -257,7 +279,8 @@ class GameRoom
 					// TODO: Calculate client's score.
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
-					sendToSocketAll($this->clientSockets, "CORRECT", "$message");
+					$fixed_message = $message.$this->checkKorean($message);
+					sendToSocketAll($this->clientSockets, "CORRECT", "$fixed_message");
 					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString get $score");
 					$this->clientScores[$this->nowTurn] += $score;
 					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString type $message");

@@ -129,4 +129,14 @@ else {
 }
 LastWord ($conn);
 
+//UTF-8 코드로 변환
+function ucord($uc){
+    return (((ord($uc[0]) ^ 0xe0) << 12) | ((ord($uc[1]) ^ 0x80) << 6) | (ord($uc[2]) ^ 0x80));
+}  
+//UTF-8 문자로 변환
+function ucchr($uc){
+    return chr(0xe0 | ($uc >> 12)) . chr(0x80 | (($uc & 0xfc0) >> 6)) . chr(0x80 | ($uc & 0x3f));
+}
+
+echo ord("하");
 ?>

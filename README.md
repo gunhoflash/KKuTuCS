@@ -33,6 +33,13 @@ php server.php
 > source c:\path\to\file.sql
 5. You should change line 22 in server.php to connect MySQL.
 ```
+```
+> SELECT count(*) FROM kkutudb.kkutu_ko;
+> SELECT count(*) FROM kkutudb.kkutu_en;
+
+With these commands, you can count rows in the table.
+You should have 147023 rows with english db and 430053 with korean db.
+```
 
 ## Project File Overview
 ```
