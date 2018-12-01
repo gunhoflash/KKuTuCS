@@ -84,7 +84,7 @@
 		<!-- Modal -->
 		<!-- Create Room-->
 		<div class="modal fade" id="createRoom" tabindex="-1" role="dialog" aria-labelledby="createRoomLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
+			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="createRoomLabel">Make Room</h5>
@@ -95,18 +95,29 @@
 					<form id="make">
 						<div class="modal-body">
 							<div class="form-group">
-									<label for="modal_id_roomName">RoomName</label>
-									<input type="text" class="form-control" name="modal_roomName" id="modal_id_roomName" placeholder="Enter roomname" required>
+								<label for="modal_id_roomName">RoomName</label>
+								<input type="text" class="form-control" name="roomname" id="modal_id_roomName" placeholder="Enter roomname" required>
 							</div>
 							<div class="form-group">
-									<label for="modal_id_password">Password</label>
-									<input type="password" class="form-control" name="modal_password" id="modal_id_password" aria-describedby="pwdHelp" placeholder="Password">
-									<small id="pwdHelp" class="form-text text-muted">Remain this blank, if you want to make public room.</small>
+								<label for="modal_id_password">Password</label>
+								<input type="password" class="form-control" name="password" id="modal_id_password" aria-describedby="pwdHelp" placeholder="Password">
+								<small id="pwdHelp" class="form-text text-muted">Remain this blank, if you want to make public room.</small>
+							</div>
+							<div class="form-group">
+								<label>Game mode</label>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="mode" id="modal_id_en" value="en" checked>
+									<label class="form-check-label" for="modal_id_en">en</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="mode" id="modal_id_kr" value="kr">
+									<label class="form-check-label" for="modal_id_kr">kr</label>
+								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-							<input type="submit" class="btn btn-primary" value="Create">
+							<button type="submit" class="btn btn-primary">Create</button>
 						</div>
 					</form>
 				</div>

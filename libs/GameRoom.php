@@ -13,7 +13,7 @@ class GameRoom
 	private $name           = "KKuTuCS";
 	private $password       = "";        // "": no password
 	private $maximumClients = 4;         // 0: no limit
-	private $mode           = "english";        // "korean" or "english"
+	private $mode           = "";        // "en" or "kr"
 	
 	private $roundTime      = 625;        // unit: 0.1sec
 	private $tv;
@@ -32,11 +32,12 @@ class GameRoom
 	/**
 	 * Constructor
 	 */
-	public function __construct(string $roomType, string $name, string $password, int $maximumClients)
+	public function __construct(string $roomType, string $name, string $password, string $mode, int $maximumClients)
 	{
 		$this->roomType       = $roomType;
 		$this->name           = $name;
 		$this->password       = $password;
+		$this->mode           = $mode;
 		$this->maximumClients = $maximumClients;
 		$this->index          = self::$room_index++;
 	}
@@ -98,8 +99,8 @@ class GameRoom
 		//$word = strtolower($typed_word);
 		// TODO: To allow for words with spaces, this code must be modified.
 		
-		if (($this->mode=="english" && isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
-			||($this->mode=="korean" && isValid_K($word) && isChained_K($this->lastWord, $word) && isInDB_K($word) && !isUsed($word, $this->wordHistory)))
+		if (($this->mode=="en" && isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
+			||($this->mode=="kr" && isValid_K($word) && isChained_K($this->lastWord, $word) && isInDB_K($word) && !isUsed($word, $this->wordHistory)))
 		{
 			$message = "";
 			$this->wordHistory[] = $this->lastWord = $word;	
@@ -126,7 +127,7 @@ class GameRoom
 				}
 				// TODO: when doing usleep and timer < 0, don't end the game
 			}
-			if($this->mode == "korean") sendToSocketAll($this->clientSockets, "CORRECT", "$word".checkKorean($word));
+			if($this->mode == "kr") sendToSocketAll($this->clientSockets, "CORRECT", "$word".checkKorean($word));
 			else sendToSocketAll($this->clientSockets, "CORRECT", "$word");
 			return TRUE;
 		}
@@ -138,7 +139,7 @@ class GameRoom
 	{
 		//방과 클라이언트 설정
 		$n = 0;
-		if($this->mode == "korean") $word = getRandomWord_K();
+		if($this->mode == "kr") $word = getRandomWord_K();
 		else $word = getRandomWord();
 		$this->nowTurn = 0;
 		$this->state="Playing";
@@ -272,7 +273,7 @@ class GameRoom
 	}
 
 	// Process data (at game room)
-	public function processData(&$socket, $method, $parameter1, $parameter2)
+	public function processData(&$socket, $method, $parameter1, $parameter2, $parameter3)
 	{
 		switch ($method)
 		{
@@ -354,6 +355,7 @@ class GameRoom
 	public function getIndex()          { return $this->index;                                               }
 	public function getRoomType()       { return $this->roomType;                                            }
 	public function getName()           { return $this->name;                                                }
+	public function getMode()           { return $this->mode;                                                }
 	public function getMaximumClients() { return $this->maximumClients;                                      }
 	public function getClientSockets()  { return $this->clientSockets;                                       }
 	public function getNumberOfClient() { return sizeof($this->clientSockets);                               }

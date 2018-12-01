@@ -6,7 +6,7 @@ class KKuTuCSRequest
 	private static $VALID_START   = "KKuTuCS";
 	private static $VALID_METHODS = array(
 		"JOIN",       // (main)      Enter a game.                   (Syntax: JOIN roomIndex password)
-		"MAKE",       // (main)      Make new room.                  (Syntax: MAKE roomname password)
+		"MAKE",       // (main)      Make new room.                  (Syntax: MAKE roomname password mode)
 		"ROOMLIST",   // (main)      Get a list of all rooms.        (Syntax: ROOMLIST roomIndex password)
 		"SEND",       // (main/room) Send a word or chat.            (Syntax: SEND msg)
 		"READY",      // (room)      Ready to start a game.          (Syntax: READY flag)
@@ -31,7 +31,7 @@ class KKuTuCSRequest
 	public function __construct(string $requestMessage)
 	{
 		// Split the message.
-		$messages = preg_split("/(\r\n|\n)/", $requestMessage, 4);
+		$messages = preg_split("/(\r\n|\n)/", $requestMessage, 5);
 		$numberOfMessages = count($messages);
 
 		// Trim the message.
@@ -60,12 +60,10 @@ class KKuTuCSRequest
 			return;
 		}
 
-		$this->result["method"] = $messages[1];
-		if ($numberOfMessages > 2)
-			$this->result["parameter1"] = $messages[2];
-		if ($numberOfMessages > 3)
-			$this->result["parameter2"] = $messages[3];
-
+		                           $this->result["method"]     = $messages[1];
+		if ($numberOfMessages > 2) $this->result["parameter1"] = $messages[2];
+		if ($numberOfMessages > 3) $this->result["parameter2"] = $messages[3];
+		if ($numberOfMessages > 4) $this->result["parameter3"] = $messages[4];
 		$this->setValidity(TRUE);
 	}
 

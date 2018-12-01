@@ -56,7 +56,8 @@ function initializeSocketAndObject()
 	};
 }
 
-function sendMessage(method, parameter1, parameter2)
+// TODO: If the number of parameters will be more than 3, then replace these parameters to an one array.
+function sendMessage(method, parameter1, parameter2, parameter3)
 {
 	/*
 	socket.readyState
@@ -68,12 +69,13 @@ function sendMessage(method, parameter1, parameter2)
 	CLOSED      3       연결이 종료되었거나, 연결에 실패한 경우입니다.
 	*/
 	
-	if (parameter1 == undefined) parameter1 = "";
-	if (parameter2 == undefined) parameter2 = "";
+	if (!parameter1) parameter1 = "";
+	if (!parameter2) parameter2 = "";
+	if (!parameter3) parameter3 = "";
 
 	if (socket.readyState == socket.OPEN)
 	{
-		var str = "KKuTuCS\n" + method + "\n" + parameter1 + "\n" + parameter2;
+		var str = "KKuTuCS\n" + method + "\n" + parameter1 + "\n" + parameter2 + "\n" + parameter3;
 		console.log(str);
 		socket.send(str);
 	}
@@ -218,9 +220,10 @@ function processROOMLIST(roomlistString)
 		"<div class='gameroom border shadow-sm px-3 py-2 mb-2' data-index="+room[0]+" data-pw="+room[4]+">"+
 			"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
 			"<div class='d-flex small'>"+
-				(room[2] == '0' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Playing")+"</span>"+
-				"<span class='text-black px-1'>"+room[3]+"</span>"+
-				"<span class='text-muted ml-auto'>"+(room[4] == '0' ? "" : "PW")+"</span>"+
+				"<span class='text-muted'>"+(room[2] == 'en' ? "En" : "한")+"</span>"+
+				(room[3] == '0' ? "<span class='text-success px-1'>Ready" : "<span class='text-warning px-1'>Playing")+"</span>"+
+				"<span class='text-black'>"+room[4]+"</span>"+
+				"<span class='text-muted ml-auto'>"+(room[5] == '0' ? "" : "PW")+"</span>"+
 			"</div>"+
 		"</div>";
 	}

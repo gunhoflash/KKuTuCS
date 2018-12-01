@@ -15,7 +15,7 @@ $result = socket_listen($socket, 20) or die("Could not set up socket listener.\n
 
 $client_unknown = array($socket); // New client here.
 $client_room = array(
-	new GameRoom("main", "main room", "", 0)
+	new GameRoom("main", "main room", "", "", 0)
 ); // Array of GameRooms.
 
 // Connecting to MySQL database.
@@ -99,21 +99,23 @@ function socket_read_GameRoom(&$room)
 			$method = $request->getMethod();
 			$parameter1 = $request->getParameter(1);
 			$parameter2 = $request->getParameter(2);
+			$parameter3 = $request->getParameter(3);
 			if ($parameter1 == NULL) $parameter1 == "";
 			if ($parameter2 == NULL) $parameter2 == "";
+			if ($parameter3 == NULL) $parameter3 == "";
 
-			echo "  processData: $method\n$parameter1\n$parameter2\n";
+			echo "  processData: $method\n$parameter1\n$parameter2\n$parameter3\n";
 
 			if ($roomType == "main")
-				processData($readSocket, $method, $parameter1, $parameter2);
+				processData($readSocket, $method, $parameter1, $parameter2, $parameter3);
 			else
-				$room->processData($readSocket, $method, $parameter1, $parameter2);
+				$room->processData($readSocket, $method, $parameter1, $parameter2, $parameter3);
 		}
 	}
 }
 
 // Process data (at main room)
-function processData(&$socket, $method, $parameter1, $parameter2)
+function processData(&$socket, $method, $parameter1, $parameter2, $parameter3)
 {
 	global $client_room;
 	
@@ -124,7 +126,7 @@ function processData(&$socket, $method, $parameter1, $parameter2)
 			break;
 
 		case "MAKE":
-			processMAKE($socket, $parameter1, $parameter2);
+			processMAKE($socket, $parameter1, $parameter2, $parameter3);
 			break;
 
 		case "ROOMLIST":
@@ -175,11 +177,11 @@ function processJOIN(&$socket, $parameter1, $parameter2)
 	sendToSocket($socket, "JOIN", "0", "Invalid room index.");
 }
 
-function processMAKE(&$socket, $roomname, $password)
+function processMAKE(&$socket, $roomname, $password, $mode)
 {
 	global $client_room;
 
-	$new_room = new GameRoom("game", $roomname, $password, 4);
+	$new_room = new GameRoom("game", $roomname, $password, $mode, 4);
 	$client_room[] = $new_room;
 
 	// Move the client from main to the new room.
@@ -220,6 +222,7 @@ function processROOMLIST($socketList,$str = '')
 		if (strlen($str)) $str .= '``';
 		$str .= $room->getIndex().'`'
 		.$room->getName().'`'
+		.$room->getMode().'`'
 		.($room->isPlaying() ? '1' : '0').'`'
 		.$room->getNumberOfClient().'/'.$room->getMaximumClients().'`'
 		.($room->checkPassword("") ? '0' : '1');

@@ -12,32 +12,35 @@ $(document).ready(function()
 
 function initializeButton()
 {
-	$('#make').on('submit', function(e)
+	$("#make").on("submit", function(e)
 	{
 		e.preventDefault();
-		sendMessage("MAKE", $(this).find("input[name=modal_roomName]").val(), $(this).find("input[name=modal_password]").val());
-		$('#modal_id_roomName').val("");
-		$('#modal_id_password').val("");
+		sendMessage("MAKE",
+			$(this).find("input[name=roomname]").val(),
+			$(this).find("input[name=password]").val(),
+			$(this).find("input[name=mode]:checked").val()
+		);
+		$(this).find("input").val("");
 		$('#createRoom').modal("hide");
 	});
 	$("#btn_quit").on("click", function()
 	{
 		clearInterval(turnInterval);
 		clearInterval(roundInterval);
-		sendMessage("QUIT", "", "");
+		sendMessage("QUIT", null, null, null);
 	});
 	$("#btn_test").on("click", function()
 	{
-		sendMessage("TIMETEST", "", "");
+		sendMessage("TIMETEST", null, null, null);
 		responseTime = (new Date()).getTime();
 	});
 	$("#btn_ready").on("click", function()
 	{
-		sendMessage("READY", "1");
+		sendMessage("READY", "1", null, null);
 	});
 	$("#btn_send").on("click", function()
 	{
-		sendMessage("SEND", $("#wordInput").val());
+		sendMessage("SEND", $("#wordInput").val(), null, null);
 		$("#wordInput").val("");
 	});
 	$("#roomlistArea").on("click", ".gameroom", function()
@@ -45,7 +48,7 @@ function initializeButton()
 		var pw = "";
 		if ($(this).data("pw") == "1")
 			pw = prompt("비밀번호를 입력하세요","");
-		sendMessage("JOIN", $(this).data("index"), pw);
+		sendMessage("JOIN", $(this).data("index"), pw, null);
 	});
 	$("#wordInput").keypress(function(event)
 	{
@@ -77,7 +80,7 @@ function showRoundTimer(duration) {
 			timer = 0;
 			clearInterval(roundInterval);
 			clearInterval(turnInterval);
-			sendMessage("ROUNDOVER","","");
+			sendMessage("ROUNDOVER", null, null, null);
         }
     }, 100);
 }
@@ -98,7 +101,7 @@ function showTurnTimer(duration) {
 			timer = 0;
 			clearInterval(turnInterval);
 			clearInterval(roundInterval);
-			sendMessage("ROUNDOVER","","");
+			sendMessage("ROUNDOVER", null, null, null);
         }
 	}, 100);
 }
