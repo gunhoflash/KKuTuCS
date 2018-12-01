@@ -13,7 +13,7 @@ class GameRoom
 	private $name           = "KKuTuCS";
 	private $password       = "";        // "": no password
 	private $maximumClients = 4;         // 0: no limit
-	private $mode           = "";        // "korean" or "english"
+	private $mode           = "english";        // "korean" or "english"
 	
 	private $roundTime      = 625;        // unit: 0.1sec
 	private $tv;
@@ -97,9 +97,37 @@ class GameRoom
 	{
 		//$word = strtolower($typed_word);
 		// TODO: To allow for words with spaces, this code must be modified.
-		if (isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
+		
+		if (($this->mode=="english" && isValid($word) && isChained($this->lastWord, $word) && isInDB($word) && !isUsed($word, $this->wordHistory))
+			||($this->mode=="korean" && isValid_K($word) && isChained_K($this->lastWord, $word) && isInDB_K($word) && !isUsed($word, $this->wordHistory)))
 		{
-			$this->wordHistory[] = $this->lastWord = $word;
+			$message = "";
+			$this->wordHistory[] = $this->lastWord = $word;	
+			sendToSocketAll($this->clientSockets, "CORRECT", "");
+			$tspeed = $this->getTurnSpeed($this->roundTime);
+			switch($tspeed)
+			{
+				case 21: $ktime = 0.23; break;
+				case 32: $ktime = 0.36; break;
+				case 51: $ktime = 0.46; break;
+				case 62: $ktime = 0.57; break;
+				case 80: $ktime = 0.70; break;
+			}
+			$astime = ($ktime * 1000000 / mb_strlen($word, "utf-8")) + 1000;//2.5s = 2500000 = 2.5 * 10^6
+			for($i=0;$i<mb_strlen($word, "utf-8");$i++) {
+				$message .= mb_substr($word, $i, 1, "utf-8");
+				sendToSocketAll($this->clientSockets, "CORRECT", "$message");
+				sendToSocketAll($this->clientSockets, "PLAYBGM", "As", $tspeed);
+				usleep($astime);
+				if($i==mb_strlen($word, "utf-8")-1) {
+					usleep(10000);
+					sendToSocketAll($this->clientSockets, "PLAYBGM", "K", $tspeed);
+					usleep($ktime*1000000 + 1000);
+				}
+				// TODO: when doing usleep and timer < 0, don't end the game
+			}
+			if($this->mode == "korean") sendToSocketAll($this->clientSockets, "CORRECT", "$word".checkKorean($word));
+			else sendToSocketAll($this->clientSockets, "CORRECT", "$word");
 			return TRUE;
 		}
 		
@@ -110,11 +138,17 @@ class GameRoom
 	{
 		//방과 클라이언트 설정
 		$n = 0;
-		$word = getRandomWord();
+		if($this->mode == "korean") $word = getRandomWord_K();
+		else $word = getRandomWord();
 		$this->nowTurn = 0;
 		$this->state="Playing";
 		$this->lastWord=$word;
 		sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
+		if($this->currentRound==0)
+		{
+			sendToSocketAll($this->clientSockets, "PLAYBGM", "game_start");
+			usleep(2500000);
+		}
 		sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 		usleep(2500000);
 		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
@@ -280,8 +314,6 @@ class GameRoom
 					// TODO: Calculate client's score.
 					// TODO: Send a 'success' message to the client.
 					$score = $this->getScore($message);
-					$fixed_message = $message.$this->checkKorean($message);
-					sendToSocketAll($this->clientSockets, "CORRECT", "$fixed_message");
 					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString get $score");
 					$this->clientScores[$this->nowTurn] += $score;
 					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString type $message");
