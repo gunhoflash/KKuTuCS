@@ -76,7 +76,6 @@ You should have 147023 rows with english db and 430053 with korean db.
 * Websocket(server - PHP)
   * Introduction: [NAVER D2](https://d2.naver.com/helloworld/1336)
   * Supported Browsers: [Can I use](https://caniuse.com/#search=websocket)
-  * Document: [MDN](https://developer.mozilla.org/ko/docs/Web/API/WebSocket)
   * Example for Simple Communication: [CUELOGIC](https://www.cuelogic.com/blog/php-and-html5-websocket-server-and-client-communication)
   * Example for Multiple clients: [Nolan's Blog](https://www.nolanchou.com/?p=997&fbclid=IwAR2RI43qe_OkmmaCXOUC7wyDw6_lxljrnBctD-i2XVpPF-cn6arA9Uyxads)
 * Websocket(client - JS)
