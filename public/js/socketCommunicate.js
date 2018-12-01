@@ -11,7 +11,7 @@ function initializeSocketAndObject()
 {
 	// Initialize views and variable
 	$("*[data-ismain]").attr("data-ismain", "true");
-	$("#chatArea").html("").trigger("create");
+	$("#wordArea, #chatArea").html("").trigger("create");
 	processROOMLIST("");
 
 	socket = new WebSocket(socketLink);

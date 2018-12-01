@@ -63,45 +63,49 @@ function initializeButton()
 var roundInterval;
 var turnInterval;
 
-function showRoundTimer(duration) {
-    
-    var timer = duration;
-    var seconds, msec;
-    
-    roundInterval = setInterval(function(){
+function showRoundTimer(duration)
+{
+	var timer = duration;
+	var seconds, msec;
+
+	roundInterval = setInterval(function()
+	{
+		// TODO: Check if the client quitted game already.
 		msec = parseInt(timer%10, 10);
 		seconds = parseInt(timer/10, 10);
-		
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+		seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        $('#btn_timer').text(seconds+'.'+msec);
+		$('#btn_timer').text(seconds+'.'+msec);
 
-        if (--timer < 0) {
+		if (--timer < 0)
+		{
 			timer = 0;
 			clearInterval(roundInterval);
 			clearInterval(turnInterval);
 			sendMessage("ROUNDOVER", null, null, null);
-        }
-    }, 100);
+		}
+	}, 100);
 }
-function showTurnTimer(duration) {
-    
-    var timer = duration;
-    var seconds;
-    
-    turnInterval = setInterval(function(){
-        msec = parseInt(timer%10, 10);
+function showTurnTimer(duration)
+{
+	var timer = duration;
+	var seconds, msec;
+
+	turnInterval = setInterval(function()
+	{
+		// TODO: Check if the client quitted game already.
+		msec = parseInt(timer%10, 10);
 		seconds = parseInt(timer/10, 10);
+		seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        seconds = seconds < 10 ? "0" + seconds : seconds;
+		$('#btn_Ttimer').text(seconds+'.'+msec);
 
-        $('#btn_Ttimer').text(seconds+'.'+msec);
-
-        if (--timer < 0) {
+		if (--timer < 0)
+		{
 			timer = 0;
 			clearInterval(turnInterval);
 			clearInterval(roundInterval);
 			sendMessage("ROUNDOVER", null, null, null);
-        }
+		}
 	}, 100);
 }
