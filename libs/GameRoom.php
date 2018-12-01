@@ -118,7 +118,8 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 		usleep(2500000);
 		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
-		while($this->clientReady[$n]!=NULL) {
+		while ($this->clientReady[$n] != NULL)
+		{
 			$this->clientScores[$n] = 0;
 			$n++;
 		}
@@ -309,7 +310,6 @@ class GameRoom
 			// If all ready, then start the game!
 			if (!in_array(0, $this->clientReady))
 			{
-				// TODO: Initialize all clients's score.
 				$this->startGame();
 				$this->tv = time();
 			}
