@@ -32,37 +32,46 @@ while(TRUE)
 	// Socket is only to catch read-event. Write and except is always NULL.
 	$num_changed_sockets = socket_select($read, $NULL, $NULL, 0);
 
-	// Error
-	if ($num_changed_sockets === FALSE) continue;
+	// Handle the read-event.
+	if ($num_changed_sockets !== FALSE)
+	{
+		// There is something to read(maybe an new client).
+		if ($num_changed_sockets != 0)
+			if (in_array($socket, $read))
+			{
+				$newSocket = socket_accept($socket);
+				if (@socket_recv($newSocket, $data, 2048, 0) == 0) continue;
+				handshake($newSocket, $data, $socket);
+				$client_room[0]->clientEntered($newSocket);
+				
+				echo "Connected: ".socketToString($newSocket)."\n";
+				unsetFromArray($socket, $read);
+			}
 
-	// Something new (maybe an new client)
-	if ($num_changed_sockets != 0)
-		if (in_array($socket, $read))
+		foreach ($client_room as &$room)
 		{
-			$newSocket = socket_accept($socket);
-			if (@socket_recv($newSocket, $data, 2048, 0) == 0) continue;
-			handshake($newSocket, $data, $socket);
-			$client_room[0]->clientEntered($newSocket);
-			
-			echo "Connected: ".socketToString($newSocket)."\n";
-			unsetFromArray($socket, $read);
-		}
+			if ($room->getNumberOfClient() == 0)
+			{
+				// Delete empty room.
+				if ($room->getRoomType() == "game")
+				{
+					unsetFromArray($room, $client_room);
 
+					// Send ROOMLIST message to all clients in the main.
+					processROOMLIST($client_room[0]->getClientSockets());
+				}
+			}
+			else
+				socket_read_GameRoom($room);
+		}
+	}
+
+	// Process Game Round
 	foreach ($client_room as &$room)
 	{
-		if ($room->getNumberOfClient() == 0)
-		{
-			// Delete empty room.
-			if ($room->getRoomType() == "game")
-			{
-				unsetFromArray($room, $client_room);
+		if ($room->getRoomType() == "main") continue;
 
-				// Send ROOMLIST message to all clients in the main.
-				processROOMLIST($client_room[0]->getClientSockets());
-			}
-		}
-		else
-			socket_read_GameRoom($room);
+		$room->processGameRound();
 	}
 }
 

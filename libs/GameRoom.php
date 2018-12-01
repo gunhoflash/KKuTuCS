@@ -7,6 +7,11 @@ include './libs/wordCheck.php';
 class GameRoom
 {
 	private static $room_index = 1;
+	private $gameState; // "before game" -> "before round" -> "on round" -> "before round" -> "on round" -> "end game"
+	private $time_beforeGame  = 2500000; // const
+	private $time_beforeRound = 2500000; // const
+	private $time_forSomething;
+
 	private $index;
 	private $roomType       = NULL;      // "main" or "game"
 	private $state          = "Ready";   // "Ready" or "Playing"
@@ -16,8 +21,10 @@ class GameRoom
 	private $mode           = "";        // "en" or "kr"
 	
 	private $roundTime      = 625;        // unit: 0.1sec
-	private $tv;
+	private $time_startTurn;
 	private $counter        = 0;
+	private $counter_beforeGame     = 0; // millisecond before game start
+	private $counter_beforeRound    = 0; // millisecond before round start
 	private $currentRound   = 0;
 
 	// Array for Clients
@@ -94,6 +101,27 @@ class GameRoom
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $socketString);
 	}
 
+	// Process Game Round
+	public function processGameRound()
+	{
+		// Do nothing when the state is 'Ready'.
+		if ($this->state == "Ready") return;
+
+		switch ($this->gameState)
+		{
+			case "before game":
+				$time_temp = time();
+				// TODO: 타임포섬띵이랑 비교해서 충분한 시간이 흘렀는지 검사
+				break;
+
+				// TODO: 작성
+			default:
+				break;
+		}
+		if ($this->counter_beforeGame > 0) 
+		counter_beforeGame
+	}
+
 	private function checkWord($word)
 	{
 		//$word = strtolower($typed_word);
@@ -105,7 +133,7 @@ class GameRoom
 			$message = "";
 			$this->wordHistory[] = $this->lastWord = $word;	
 			sendToSocketAll($this->clientSockets, "CORRECT", "");
-			$tspeed = $this->getTurnSpeed($this->roundTime);
+			$tspeed = $this->getTurnSpeed();
 			switch($tspeed)
 			{
 				case 21: $ktime = 0.23; break;
@@ -138,21 +166,27 @@ class GameRoom
 	private function startGame()
 	{
 		//방과 클라이언트 설정
-		$n = 0;
-		if($this->mode == "kr") $word = getRandomWord_K();
-		else $word = getRandomWord();
+		$this->lastWord = ($this->mode == "kr") ? getRandomWord_K() : getRandomWord();
 		$this->nowTurn = 0;
-		$this->state="Playing";
-		$this->lastWord=$word;
+		$this->state = "Playing";
+		$this->gameState = "before game";
+		$this->time_forSomething = time();
+
 		sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
-		if($this->currentRound==0)
+		sendToSocketAll($this->clientSockets, "PLAYBGM", "game_start");
+
+		return;
+
+		if ($this->currentRound == 0)
 		{
 			sendToSocketAll($this->clientSockets, "PLAYBGM", "game_start");
 			usleep(2500000);
 		}
 		sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 		usleep(2500000);
-		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
+		sendToSocketAll($this->clientSockets, "GAMESTART", $this->getTurnSpeed(), $this->roundTime);
+
+		$n = 0;
 		while ($this->clientReady[$n] != NULL)
 		{
 			$this->clientScores[$n] = 0;
@@ -163,10 +197,10 @@ class GameRoom
 
 	private function getScore($text) 
 	{
-		//tv = 턴 시작 시점의 unix time
+		//time_startTurn = 턴 시작 시점의 unix time
 		//t = 점수 계산 시점의 unix time
 		$t = time();
-		$delay = $t-$this->tv;
+		$delay = $t-$this->time_startTurn;
 		$score = ( 2 - 0.5 * ($delay/10) ) * (pow(5 + 7 * strlen($text), 0.74));
 		$this->roundTime -= $delay*10;
 		return round($score);
@@ -215,24 +249,21 @@ class GameRoom
 		if($this->nowTurn >= count($this->clientSockets)) {
 			$this->nowTurn=0;
 		}
-		sendToSocketAll($this->clientSockets, "TURNSTART", $this->getTurnSpeed($this->roundTime), $this->roundTime);
-		sendToSocketAll($this->clientSockets, "PLAYBGM", "T", $this->getTurnSpeed($this->roundTime));
-		$this->tv = time();
+		sendToSocketAll($this->clientSockets, "TURNSTART", $this->getTurnSpeed(), $this->roundTime);
+		sendToSocketAll($this->clientSockets, "PLAYBGM", "T", $this->getTurnSpeed());
+		$this->time_startTurn = time();
 	}
 
-	private function getTurnSpeed($rt)
+	private function getTurnSpeed()
 	{
-		if($rt < 100) return 21;
+		$rt = $this->roundTime;
 
-		else if($rt < 200) return 32;
-
-		else if($rt < 300) return 51;
-
-		else if($rt < 400) return 62;
-
-		else if($rt <= 650) return 80;
-
-		else return 0;
+		if($rt <  100) return 21;
+		if($rt <  200) return 32;
+		if($rt <  300) return 51;
+		if($rt <  400) return 62;
+		if($rt <= 650) return 80;
+		return 0;
 	}
 
 	// Make String for JavaScript process
@@ -340,11 +371,11 @@ class GameRoom
 			$this->clientReady[$index] = $flag;
 			sendToSocketAll($this->clientSockets, "PLAYERLIST", $this->makePlayerList());
 
-			// If all ready, then start the game!
+			// Start the game when all ready!
 			if (!in_array(0, $this->clientReady))
 			{
 				$this->startGame();
-				$this->tv = time();
+				//$this->time_startTurn = time();
 			}
 		}
 	}
