@@ -1,39 +1,32 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="description" content="">
-        <meta name="author" content="">
-    
-        <title>Welcome to KKuTuCS</title>
-    
-        <!-- CSS -->
-        <link rel="stylesheet" href="public/css/bootstrap.min.css">
+<html class="h-100">
 
-        <!-- Custom styles for this template -->
-        <link href="public/css/signin.css" rel="stylesheet">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<title>Welcome to KKuTuCS</title>
 
-        <style>
-            form{
-                border-style: groove;
-                border-width: 4px;
-            }
-        </style>
-      </head>
-      <body class="text-center">
-        <form class="form-signin" action="./action_page.html">
-          <img class="mb-4" src="./img/logo.png" alt="logo" width="100" height="100" href="index.html">
-          <h1 class="h3 mb-3 font-weight-normal">Welcome!</h1>
-          <label for="inputname" class="sr-only">Nick-Name</label>
-          <input type="text" id="inputname" class="form-control" name="nickname" placeholder="NickName Here!" required autofocus=""> 
-          
-          
-          <br>
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Join</button>
-          <p class="mt-5 mb-3 text-muted">© 2018 by KKuTuCS All Rights Reserved. </p>
-        </form>
-      
-    
-    </body>
-</html> 
+		<!-- CSS -->
+		<link rel="stylesheet" href="public/css/bootstrap.min.css">
+	</head>
+
+	<body class="h-100 d-flex flex-column justify-content-center align-content-center">
+		<div class="card mx-auto w-100 bg-light shadow" style="max-width: 20rem;">
+			<div class="card-body text-center">
+				<img class="m-4" src="./img/logo.png" alt="logo" href="index.html" style="width: 7rem;">
+				<h3>&nbsp;Welcome!</h3>
+				<form class="my-5" action="./action_page.html">
+					<div class="form-group">
+						<label for="inputname" class="sr-only">Nickname</label>
+						<input type="text" id="inputname" class="form-control shadow-sm" name="nickname" placeholder="NickName Here!" autofocus="" required>
+					</div>
+					<button class="btn btn-block btn-lg btn-primary shadow-sm" type="submit">Join</button>
+				</form>
+				<p class="m-0 small text-muted">© 2018 by KKuTuCS All Rights Reserved.</p>
+			</div>
+		</div>
+	</body>
+
+</html>
