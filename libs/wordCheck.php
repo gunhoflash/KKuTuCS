@@ -16,15 +16,14 @@ function isValid($word)
  */
 function isChained($lastWord, $newWord)
 {
-	if($lastWord=="") return TRUE;
-	return ($newWord[0] == substr($lastWord, -1));
+	return $newWord[0] == substr($lastWord, -1);
 }
 
 // TODO: Edit below functions
 
 //사전DB내에 있는지 검사
 //있을 경우 TRUE 아니면 FALSE
-function isInDB ($word)
+function isInDB($word)
 {
 	global $conn;
 
@@ -41,7 +40,7 @@ function isInDB ($word)
 //사용됐던 단어인지 확인
 //사용된 경우 TRUE 아니면 FALSE
 //array_search가 대소문자를 구별하기때문에, 모든 단어가 소문자로 들어감.
-function isUsed ($Word, $WordHistory)
+function isUsed($Word, $WordHistory)
 {
 	if ($WordHistory == NULL) return FALSE;
 	$lowerword = strtolower($Word);
@@ -72,7 +71,6 @@ function isValid_K($word)
  */
 function isChained_K($lastWord, $newWord)
 {
-	if($lastWord=="") return TRUE;
 	$newWord_first = mb_substr($newWord, 0, 1, 'utf-8');
 	$lastWord_last = mb_substr($lastWord, -1, 1,'utf-8');
 	$last_u = ucord($lastWord_last);
@@ -88,7 +86,7 @@ function isChained_K($lastWord, $newWord)
 
 //사전DB내에 있는지 검사
 //있을 경우 TRUE 아니면 FALSE
-function isInDB_K ($word)
+function isInDB_K($word)
 {
 	global $conn;
 
@@ -105,7 +103,7 @@ function isInDB_K ($word)
 //사용됐던 단어인지 확인
 //사용된 경우 TRUE 아니면 FALSE
 //array_search가 대소문자를 구별하기때문에, 모든 단어가 소문자로 들어감.
-function isUsed_K ($Word, $WordHistory)
+function isUsed_K($Word, $WordHistory)
 {
 	if ($WordHistory == NULL) return FALSE;
 	return in_array($Word, $WordHistory); 

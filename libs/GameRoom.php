@@ -7,54 +7,60 @@ include './libs/wordCheck.php';
 class GameRoom
 {
 	// Constant
-	private const ROUND_TIME = 62.5;
-	private const LAST_ROUND = 3;
+	private const ROUND_TIME    = 62.5;
+	private const LAST_ROUND    = 3;
 
 	// Static
-	private static $room_index = 1;
+	private static $room_index  = 1;
 
 	// Informations
-	private $index;                          // Room Index
-	private $roomType;                       // "main" or "game"
-	private $state              = "Ready";   // "Ready" or "Playing"
-	private $name;                           // Room Name
-	private $password;                       // "": no password
-	private $maximumClients     = 4;         // 0: no limit
-	private $mode;                           // "en" or "kr"
+	private $index;          // Room Index
+	private $roomType;       // "main" or "game"
+	private $state;          // "Ready" or "Playing"
+	private $name;           // Room Name
+	private $password;       // "": no password
+	private $maximumClients; // 0: no limit
+	private $mode;           // "en" or "kr"
 	
 	// For Clients
-	private $clientSockets      = array();
-	private $clientReady        = array();   // 0: not ready, 1: ready
-	private $clientScores       = array();
+	private $clientSockets;
+	private $clientReady;    // 0: not ready, 1: ready
+	private $clientScores;
 
 	// For game
-	private $gameState;                      // "before game" -> ["before round" -> "on round" -> "after round"]
+	private $gameState;      // "before game" -> ["before round" -> "on round" -> "after round"]
 	private $time_roundTime;
 	private $time_forTurn;
-	private $time_forSomething;
-	private $wordHistory        = array();   // String과 _로 엮어서 하나의 string으로 만드는게 더 빠를까?
-	private $lastWord           = "";
-	private $nowTurn            = 0;         // Index of the client who has to say a word.
-	private $currentRound;                   // 1, 2, 3 available.
+	private $time_temp;
+	private $wordHistory;
+	private $lastWord;
+	private $nowTurn;        // Index of the client who has to say a word.
+	private $currentRound;   // 1, 2, 3 available.
 
 	/**
 	 * Constructor
 	 */
-	public function __construct(string $roomType, string $name, string $password, string $mode, int $maximumClients)
+	public function __construct(string $roomType, string $name, string $password, string $mode, int $maximumClients = 4)
 	{
+		$this->index          = self::$room_index++;
 		$this->roomType       = $roomType;
+		$this->state          = "Ready";
 		$this->name           = $name;
 		$this->password       = $password;
-		$this->mode           = $mode;
 		$this->maximumClients = $maximumClients;
-		$this->index          = self::$room_index++;
+		$this->mode           = $mode;
+
+		$this->clientSockets  = array();
+		$this->clientReady    = array();
+		$this->clientScores   = array();
 	}
 
 	public function clientEntered(&$socket)
 	{
 		$socketString = socketToString($socket);
 		sendToSocketAll($this->clientSockets, "CONNECTED", $socketString);
-		if (TRUE)sendToSocket($socket, "PLAYBGM", "lobbyBGM");
+		sendToSocket($socket, "PLAYBGM", "lobbyBGM");
+
 		$this->clientSockets[] = $socket;
 		$this->clientReady[] = 0;
 		$this->clientScores[] = 0;
@@ -110,7 +116,7 @@ class GameRoom
 			case "before game":
 				$time_temp = microtime(true);
 				// After enough time, prepare the first round. If not, do nothing and just wait.
-				if ($time_temp - $this->time_forSomething >= 2.5)
+				if ($time_temp - $this->time_temp >= 2.5)
 				{
 					// Initialize variable
 					$this->nowTurn = 0;
@@ -124,7 +130,7 @@ class GameRoom
 					$this->lastWord = ($this->mode == "kr") ? getRandomWord_K() : getRandomWord();
 					sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
-					$this->time_forSomething = $time_temp;
+					$this->time_temp = $time_temp;
 					$this->gameState = "before round";
 				}
 				break;
@@ -132,7 +138,7 @@ class GameRoom
 			case "before round":
 				$time_temp = microtime(true);
 				// After enough time, start the first round. If not, do nothing and just wait.
-				if ($time_temp - $this->time_forSomething >= 2.5)
+				if ($time_temp - $this->time_temp >= 2.5)
 				{
 					// Initialize variable
 					$this->time_roundTime = self::ROUND_TIME;
@@ -146,7 +152,7 @@ class GameRoom
 			case "on round":
 				$time_temp = microtime(true);
 				// End round when timeover
-				if ($time_temp - $this->time_forSomething >= $this->time_forTurn)
+				if ($time_temp - $this->time_temp >= $this->time_forTurn)
 				{
 					sendToSocketAll($this->clientSockets, "SEND", "", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
 					
@@ -154,7 +160,7 @@ class GameRoom
 					$this->clientScores[$this->nowTurn] = ($this->clientScores[$this->nowTurn] < 100) ? 0 : $this->clientScores[$this->nowTurn] - 100;
 					
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "horror");
-					$this->time_forSomething = $time_temp;
+					$this->time_temp = $time_temp;
 					$this->gameState = "after round";
 				}
 				break;
@@ -162,7 +168,7 @@ class GameRoom
 			case "after round":
 				$time_temp = microtime(true);
 				// After enough time, prepare next round or end game.
-				if ($time_temp - $this->time_forSomething >= 3)
+				if ($time_temp - $this->time_temp >= 3)
 				{
 					if ($this->currentRound == self::LAST_ROUND)
 					{
@@ -179,7 +185,7 @@ class GameRoom
 						$this->lastWord = ($this->mode == "kr") ? getRandomWord_K() : getRandomWord();
 						sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 						sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
-						$this->time_forSomething = $time_temp;
+						$this->time_temp = $time_temp;
 						$this->gameState = "before round";
 					}
 				}
@@ -221,24 +227,24 @@ class GameRoom
 		$this->wordHistory[] = $this->lastWord = $word;	
 		sendToSocketAll($this->clientSockets, "CORRECT", "");
 		$tspeed = $this->getTurnSpeed();
-		switch($tspeed)
+		switch ($tspeed)
 		{
-			case 2.1: $ktime = 0.23;    break;
-			case 3.2: $ktime = 0.36;    break;
-			case 5.1: $ktime = 0.46;    break;
-			case 6.2: $ktime = 0.57;    break;
-			case 8.0: $ktime = 0.70;    break;
-			default : $ktime = $tspeed; break;
+			case 2.1: $ktime = 0.23; break;
+			case 3.2: $ktime = 0.36; break;
+			case 5.1: $ktime = 0.46; break;
+			case 6.2: $ktime = 0.57; break;
+			case 8.0: $ktime = 0.70; break;
+			default : $ktime = 0.23; break;
 		}
 		$astime = ($ktime * 1000000 / mb_strlen($word, "utf-8")) + 1000;//2.5s = 2500000 = 2.5 * 10^6
 		for($i=0;$i<mb_strlen($word, "utf-8");$i++) {
 			$message .= mb_substr($word, $i, 1, "utf-8");
 			sendToSocketAll($this->clientSockets, "CORRECT", "$message");
-			sendToSocketAll($this->clientSockets, "PLAYBGM", "As", $tspeed);
+			sendToSocketAll($this->clientSockets, "PLAYBGM", "As", $tspeed*10);
 			usleep($astime);
 			if($i==mb_strlen($word, "utf-8")-1) {
 				usleep(10000);
-				sendToSocketAll($this->clientSockets, "PLAYBGM", "K", $tspeed);
+				sendToSocketAll($this->clientSockets, "PLAYBGM", "K", $tspeed*10);
 				usleep($ktime*1000000 + 1000);
 			}
 			// TODO: when doing usleep and timer < 0, don't end the game
@@ -250,13 +256,13 @@ class GameRoom
 
 	private function getScore($text) 
 	{
-		$delay = microtime(true) - $this->time_forSomething;
+		$delay = microtime(true) - $this->time_temp;
 		$score = ( 20 - $delay / 2 ) * (pow(5 + 7 * strlen($text), 0.74));
 		$this->time_roundTime -= $delay; // Is it needed?
 		return round($score);
 	}
 
-	// End game. 
+	// End game.
 	private function endGame()
 	{
 		// TODO: When a client get RESULT message, set ready as false.
@@ -269,7 +275,7 @@ class GameRoom
 	private function startTurn()
 	{
 		$this->time_forTurn = $this->getTurnSpeed();
-		$this->time_forSomething = microtime(true);
+		$this->time_temp = microtime(true);
 		sendToSocketAll($this->clientSockets, "GAMESTART", $this->time_forTurn, $this->time_roundTime);
 	}
 
@@ -291,17 +297,14 @@ class GameRoom
 	private function makePlayerList()
 	{
 		$str = "";
-		$i = 0;
-		for($i = 0; $i <= count($this->clientSockets)-1; $i++)
+		for ($i = 0; $i < count($this->clientSockets); $i++)
 		{
 			if (strlen($str)) $str .= "``";
 			$str .= socketToString($this->clientSockets[$i])."`";
 			$str .= $this->clientScores[$i]."`";
 			$str .= $this->clientReady[$i];
 		}
-		$str = $str."``".$this->nowTurn;
-
-		return $str;
+		return $str."``".$this->nowTurn;
 	}
 
 	// Refresh PlayerList
@@ -353,15 +356,15 @@ class GameRoom
 
 				// TODO: If you want to distinguish word and chat, you need to call isValid()
 				// TODO: If you want to feedback the word, you need to check word here step by step.
-				$validity = $this->checkWord($message);
-				if ($validity == "OK")
+				$checkResult = $this->checkWord($message);
+				if ($checkResult == "OK")
 				{
 					// The word is valid.
 
 					$score = $this->getScore($message);
 					$this->clientScores[$this->nowTurn] += $score;
 
-					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, "1");
+					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, $checkResult);
 					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString get $score");
 					
 					// sendToSocketAll($this->clientSockets, "SEND", "", "$socketString type $message"); // this line will be deleted
@@ -374,7 +377,7 @@ class GameRoom
 				{
 					// The word is invalid.
 
-					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, "0");
+					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, $checkResult);
 				}
 				return;
 			}
@@ -394,7 +397,7 @@ class GameRoom
 		}
 
 		// 0: not ready, 1: ready
-		if (($flag == 1 || $flag == 0) && $this->state="Ready")
+		if (($flag == 1 || $flag == 0) && $this->state = "Ready")
 		{
 			$this->clientReady[$index] = $flag;
 			sendToSocketAll($this->clientSockets, "PLAYERLIST", $this->makePlayerList());
@@ -404,7 +407,7 @@ class GameRoom
 			{
 				$this->state = "Playing";
 				$this->gameState = "before game";
-				$this->time_forSomething = microtime(true);
+				$this->time_temp = microtime(true);
 
 				sendToSocketAll($this->clientSockets, "PLAYBGM", "game_start");
 			}

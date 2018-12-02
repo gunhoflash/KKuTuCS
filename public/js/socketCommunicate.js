@@ -97,18 +97,8 @@ function parseMessage(data)
 			processSEND(parameter1, parameter2);
 			break;
 
-		// TODO: Support this message.
-		case "WORD": // (Syntax: WORD nickname message [0/1])
-			if (parameter3 == "0")
-			{
-				// word fail
-				processSEND(parameter1, parameter2 + " (invalid)");
-			}
-			if (parameter3 == "1")
-			{
-				// word success
-				processSEND(parameter1, parameter2 + " (valid)");
-			}
+		case "WORD": // (Syntax: WORD nickname message result)
+			processWORD(parameter1, parameter2, parameter3);
 			break;
 
 		case "JOIN":
@@ -191,6 +181,26 @@ function processSEND(nickname, message)
 
 	$("#chatArea").append("<p class='mb-1'>" + nickname + message + "</p>");
 	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
+}
+
+function processWORD(nickname, message, result)
+{
+	switch (result)
+	{
+		case "OK":
+			processSEND(nickname, "<span class='text-primary'>" + message + "</span>");
+			break;
+
+		case "VALID":
+		case "CHAIN":
+			processSEND(nickname, message);
+			break;
+
+		case "DB":
+		case "USED":
+			processSEND(nickname, "<span class='text-danger'>" + message + "</span>");
+			break;
+	}
 }
 
 function processJOIN(success, message)

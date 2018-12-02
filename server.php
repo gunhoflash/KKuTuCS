@@ -190,7 +190,7 @@ function processMAKE(&$socket, $roomname, $password, $mode)
 {
 	global $client_room;
 
-	$new_room = new GameRoom("game", $roomname, $password, $mode, 4);
+	$new_room = new GameRoom("game", $roomname, $password, $mode);
 	$client_room[] = $new_room;
 
 	// Move the client from main to the new room.
