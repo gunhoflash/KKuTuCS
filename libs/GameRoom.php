@@ -164,7 +164,7 @@ class GameRoom
 				// After enough time, prepare next round or end game.
 				if ($time_temp - $this->time_forSomething >= 3)
 				{
-					if ($this->currentRound == LAST_ROUND)
+					if ($this->currentRound == self::LAST_ROUND)
 					{
 						// End game.
 						$this->endGame();
