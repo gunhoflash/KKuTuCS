@@ -58,7 +58,6 @@ class GameRoom
 	public function clientEntered(&$socket)
 	{
 		$socketString = socketToString($socket);
-		sendToSocketAll($this->clientSockets, "CONNECTED", $socketString);
 		sendToSocket($socket, "PLAYBGM", "lobbyBGM");
 
 		$this->clientSockets[] = $socket;

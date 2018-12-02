@@ -29,30 +29,39 @@ function unsetFromArray(&$object, &$array, $index = -1)
 	$array = array_values($array);
 }
 
-// Convert the socket to a string. 
-$client_name = array("TESTIPPORT" => "TESTNAME"); // nickname
-function socketToString($socket, $IPPORT='', $nickname = '')
+$client_name = array(); // socketString => nickname
+
+// Insert new key(IPPORT) and value(nickname) to the $client_name
+function registerClientNickname($socket, $nickname)
 {
+	global $client_name;
 
-    global $client_name;
-    // case that can't find nickname 
-    if($socket!='') {
-        socket_getpeername($socket, $IP, $PORT);
-        $IPPORT = $IP.":".$PORT;
-    }
+	$client_name[getIPPORT($socket)] = $nickname;
+}
 
-    // insert nickname
-    if($nickname != '') {
-        $client_name[$IPPORT] = $nickname;
-        
-    }
+// TODO: Rename it.
+// Return the client's nickname.
+function socketToString($socket)
+{
+	global $client_name;
+
+	// Handle Exception
+	if ($socket == null) return "";
+
+	$IPPORT = getIPPORT($socket);
 	
-    // check nickname                                                                                                                                                                                                                                                                                                                                                                        
-    if(array_key_exists($IPPORT,$client_name))
-        return $client_name[$IPPORT];
+	// If it is a new client, set nickname as 'Unknown'. But this cannot happen.
+	if (!array_key_exists($IPPORT, $client_name))
+		registerClientNickname($socket, "Unknown");
 
-    else
-        return "{".$IPPORT."}";
+	return $client_name[$IPPORT];
+}
+
+// Return IPPORT.
+function getIPPORT($socket)
+{
+	socket_getpeername($socket, $IP, $PORT);
+	return $IP.":".$PORT;
 }
 
 // Edcode the text.

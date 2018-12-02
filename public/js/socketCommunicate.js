@@ -51,8 +51,7 @@ function initializeSocketAndObject()
 	socket.onclose = function(event)
 	{
 		console.log("Socket closed.", event);
-		initializeSocketAndObject();
-		//alert("Socket closed.\nPlease refresh this page to reconnect.");
+		initializeSocketAndObject(); // Try to reconnect
 	};
 }
 
@@ -107,11 +106,11 @@ function parseMessage(data)
 			break;
 
 		case "DISCONNECTED":
-			processSEND(parameter1, "disconnected");
+			processSYSTEMSEND(parameter1, "is disconnected.");
 			break;
 
 		case "CONNECTED":
-			processSEND(parameter1, "connected");
+			processSYSTEMSEND(parameter1, "is connected.");
 			break;
 
 		case "ROOMLIST":
@@ -152,7 +151,7 @@ function parseMessage(data)
 
 		case "QUITTED":
 			// TODO: Edit here.
-			processSEND(parameter1, "quitted");
+			processSYSTEMSEND(parameter1, "quitted.");
 			break;
 
 		case "PLAYERLIST":
@@ -177,9 +176,32 @@ function processSEND(nickname, message)
 	 * \n      => <br>
 	 * (space) => &nbsp;
 	 */
-	nickname = (nickname == null || nickname.length == 0) ? "" : "<font color=DeepSkyBlue>" + nickname + "</font>&nbsp;:&nbsp;";
 
-	$("#chatArea").append("<p class='mb-1'>" + nickname + message + "</p>");
+	if (nickname == null || nickname == "")
+		nickname = colon = "";
+	else
+	{
+		nickname = "<font color=DeepSkyBlue>" + nickname + "</font>";
+		colon = "&nbsp;:&nbsp;";
+	}
+
+	$("#chatArea").append("<p class='mb-1'>" + nickname + colon + message + "</p>");
+	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
+}
+
+function processSYSTEMSEND(nickname, message)
+{
+	/**
+	 * TODO: Convert some characters.
+	 * \n      => <br>
+	 * (space) => &nbsp;
+	 */
+	if (nickname == null || nickname == "")
+		nickname = "";
+	else
+		nickname = "<font color=DeepSkyBlue>" + nickname + "</font>&nbsp;";
+
+	$("#chatArea").append("<p class='mb-1 text-muted'>" + nickname + message + "</p>");
 	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
 }
 
@@ -216,7 +238,7 @@ function processJOIN(success, message)
 	$("*[data-ismain]").attr("data-ismain", "false");
 
 	$("#chatArea").html("").trigger("create");
-	processSEND(null, "Welcome to " + message + "!");
+	processSYSTEMSEND(null, "Welcome to " + message + "!");
 }
 
 function processROOMLIST(roomlistString)
