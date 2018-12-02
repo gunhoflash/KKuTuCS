@@ -89,11 +89,26 @@ function parseMessage(data)
 	var method = datas[0];
 	var parameter1 = datas[1];
 	var parameter2 = datas[2];
+	var parameter3 = datas[3];
 
 	switch (method)
 	{
 		case "SEND": // (Syntax: SEND nickname message)
 			processSEND(parameter1, parameter2);
+			break;
+
+		// TODO: Support this message.
+		case "WORD": // (Syntax: WORD nickname message [0/1])
+			if (parameter3 == "0")
+			{
+				// word fail
+				processSEND(parameter1, parameter2 + " (invalid)");
+			}
+			if (parameter3 == "1")
+			{
+				// word success
+				processSEND(parameter1, parameter2 + " (valid)");
+			}
 			break;
 
 		case "JOIN":

@@ -4,15 +4,15 @@ $NULL = NULL;
 // Functions for socket
 
 // Send a message to the client.
-function sendToSocket($socket, $method, $parameter1 = "", $parameter2 = "")
+function sendToSocket($socket, $method, $parameter1 = "", $parameter2 = "", $parameter3 = "")
 {
-	sendToSocketAll([$socket], $method, $parameter1, $parameter2);
+	sendToSocketAll([$socket], $method, $parameter1, $parameter2, $parameter3);
 }
 
 // Send a message to all clients in the list.
-function sendToSocketAll($socketList, $method, $parameter1 = "", $parameter2 = "")
+function sendToSocketAll($socketList, $method, $parameter1 = "", $parameter2 = "", $parameter3 = "")
 {
-	$message = encode("$method\n$parameter1\n$parameter2");
+	$message = encode("$method\n$parameter1\n$parameter2\n$parameter3");
 	if ($message == "") return;
 
 	foreach ($socketList as $socket)

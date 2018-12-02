@@ -60,12 +60,13 @@ function initializeButton()
 		}
 	});
 }
+
 var roundInterval;
 var turnInterval;
 
 function showRoundTimer(duration)
 {
-	var timer = duration;
+	var timer = duration * 10;
 	var seconds, msec;
 
 	roundInterval = setInterval(function()
@@ -82,13 +83,12 @@ function showRoundTimer(duration)
 			timer = 0;
 			clearInterval(roundInterval);
 			clearInterval(turnInterval);
-			sendMessage("ROUNDOVER", null, null, null);
 		}
 	}, 100);
 }
 function showTurnTimer(duration)
 {
-	var timer = duration;
+	var timer = duration * 10;
 	var seconds, msec;
 
 	turnInterval = setInterval(function()
@@ -105,7 +105,6 @@ function showTurnTimer(duration)
 			timer = 0;
 			clearInterval(turnInterval);
 			clearInterval(roundInterval);
-			sendMessage("ROUNDOVER", null, null, null);
 		}
 	}, 100);
 }
