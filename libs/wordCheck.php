@@ -130,6 +130,15 @@ function ucord($uc)
 function ucchr($uc){
 	return chr(0xe0 | ($uc >> 12)) . chr(0x80 | (($uc & 0xfc0) >> 6)) . chr(0x80 | ($uc & 0x3f));
 }
+
+function checkKorean($word)
+{
+	$last = ucord(mb_substr($word, -1, 1, 'utf-8'));
+	if($last>=45208 && $last<=45795) return '('.ucchr($last+5292).')';
+	if($last>=46972 && $last<=47559) return '('.ucchr($last+3528).')';
+	else return;
+}
+
 /*
 //이하 주석처리된 코드들은 모두 SQL 이용
 //사용됐던 단어인지 확인
