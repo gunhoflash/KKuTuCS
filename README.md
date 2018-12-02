@@ -50,18 +50,16 @@ You should have 147023 rows with english db and 430053 with korean db.
   │      ├ KKuTuCSRequest.php
   │      ├ socketHandle.php
   │      └ wordCheck.php
-  ├ public ┬ css ┬ bootstrap.css
-  │        │     ├ bootstrap.min.css
+  ├ public ┬ css ┬ bootstrap.min.css
   │        │     └ signin.css
-  │        └ js ┬ bootstrap.bundle.js
-  │             ├ bootstrap.bundle.min.js
+  │        └ js ┬ bootstrap.bundle.min.js
   │             ├ client.js
   │             ├ jquery-3.3.1.min.js
   │             └ socketCommunicate.js
   ├ views ┬ KKuTu.php (will be deleted)
   │       └ other.html (will be deleted)
   ├ .gitignore
-  ├ action_page.html (will be deleted)
+  ├ action_page.html (will be renamed)
   ├ favicon.ico
   ├ index.html
   ├ KKuTuDB.sql
