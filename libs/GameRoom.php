@@ -129,6 +129,7 @@ class GameRoom
 					$this->lastWord = ($this->mode == "kr") ? getRandomWord_K() : getRandomWord();
 					sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
+					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Current Round is { ".($this->currentRound)." / 3 }");
 					$this->time_temp = $time_temp;
 					$this->gameState = "before round";
 				}
@@ -153,7 +154,7 @@ class GameRoom
 				// End round when timeover
 				if ($time_temp - $this->time_temp >= $this->time_forTurn)
 				{
-					sendToSocketAll($this->clientSockets, "SEND", "", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
+					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
 					
 					// Down score.
 					$this->clientScores[$this->nowTurn] = ($this->clientScores[$this->nowTurn] < 100) ? 0 : $this->clientScores[$this->nowTurn] - 100;
@@ -178,12 +179,13 @@ class GameRoom
 					{
 						$this->currentRound++;
 						// Prepare next round.
-						sendToSocketAll($this->clientSockets, "SEND", "", "Ready to play next Round.\n");
+						sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Ready to play next Round.\n");
 
 						$this->refreshList();
 						$this->lastWord = ($this->mode == "kr") ? getRandomWord_K() : getRandomWord();
 						sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 						sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
+						sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Current Round is { ".($this->currentRound)." / 3 }");
 						$this->time_temp = $time_temp;
 						$this->gameState = "before round";
 					}
@@ -328,7 +330,6 @@ class GameRoom
 			case "READY":
 				if ($this->state == "Playing") break; // Ignore it because the game has already started.
 				$this->processREADY($socket, $parameter1);
-				sendToSocketAll($this->clientSockets, "SEND", "", "Current Round is { ".($this->currentRound)." / 3 }");
 				break;
 			case "QUIT":
 				// Client will re-open its socket.
@@ -364,10 +365,8 @@ class GameRoom
 					$this->clientScores[$this->nowTurn] += $score;
 
 					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, $checkResult);
-					sendToSocketAll($this->clientSockets, "SEND", "", "$socketString get $score");
-					
-					// sendToSocketAll($this->clientSockets, "SEND", "", "$socketString type $message"); // this line will be deleted
-					
+					sendToSocketAll($this->clientSockets, "SYSTEMSEND", $socketString, "get score $score.");
+									
 					$this->nowTurn = ($this->nowTurn + 1) % sizeof($this->clientSockets);
 					$this->startTurn();
 					$this->refreshList();
