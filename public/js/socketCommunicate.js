@@ -129,17 +129,9 @@ function parseMessage(data)
 			alert("[Server Error] " + parameter1);
 			break;
 
-		case "GAMESTART":
-			// TODO: Edit here.
-			audio.pause();
-			showTurnTimer(parameter1);
-			showRoundTimer(parameter2);
-			processBGM("T", parameter1*10);
-			break;
-
 		case "CORRECT":
-			clearInterval(turnInterval);
-			clearInterval(roundInterval);
+			removeInterval(0);
+			removeInterval(1);
 			$("#wordArea").text(parameter1);
 			break;
 
@@ -147,13 +139,23 @@ function parseMessage(data)
 			processBGM(parameter1, parameter2);
 			break;
 
-		case "TURNSTART":
+		case "GAMESTART": // (Syntax: GAMESTART)
+			removeInterval(0);
+			removeInterval(1);
+			break;
+
+		case "ROUNDSTART":
+			showRoundTimer(parameter1, parameter1);
+			break;
+
+		case "TURNSTART": // (Syntax: TURNSTART turn_time round_time)
+			audio.pause();
 			showTurnTimer(parameter1);
-			showRoundTimer(parameter2);
+			showRoundTimer(parameter2, null);
+			processBGM("T", parameter1*10);
 			break;
 
 		case "QUITTED":
-			// TODO: Edit here.
 			processSYSTEMSEND(parameter1, "quitted.");
 			break;
 
@@ -162,6 +164,8 @@ function parseMessage(data)
 			break;
 
 		case "RESULT":
+			removeInterval(0);
+			removeInterval(1);
 			processSYSTEMSEND(null, "Game over.");
 			processPLAYERLIST(parameter1);
 			processRESULT(parameter1);
@@ -238,8 +242,6 @@ function processJOIN(success, message)
 	// Join the game
 	$("#Roomname").text(message);
 	$("*[data-ismain]").attr("data-ismain", "false");
-	$('#round_timer').css("width", "0%");
-	$('#turn_timer').css("width", "0%");
 	$("#chatArea").html("").trigger("create");
 	processSYSTEMSEND(null, "Welcome to " + message + "!");
 }

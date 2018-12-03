@@ -25,8 +25,8 @@ function initializeButton()
 	});
 	$("#btn_quit").on("click", function()
 	{
-		clearInterval(turnInterval);
-		clearInterval(roundInterval);
+		removeInterval(0);
+		removeInterval(1);
 		sendMessage("QUIT", null, null, null);
 	});
 	$("#btn_test").on("click", function()
@@ -61,53 +61,56 @@ function initializeButton()
 	});
 }
 
-var roundInterval;
-var turnInterval;
+var ar_interval = [
+	null, // round interval
+	null  // turn interval
+];
 
-function showRoundTimer(duration)
+// TODO: Call removeInterval(0) when round over.
+function removeInterval(index)
 {
-	var timer = duration * 10;
-	var seconds, msec;
+	if (ar_interval[index] != null)
+	{
+		clearInterval(ar_interval[index]);
+		ar_interval[index] = null;
+	}
+}
 
-	roundInterval = setInterval(function()
+function showRoundTimer(value, valueMax)
+{
+	value *= 10;
+
+	if (valueMax != null)
+		$("#round_timer").attr("aria-valuemax", valueMax);
+
+	removeInterval(0);
+	ar_interval[0] = setInterval(function()
 	{
 		// TODO: Check if the client quitted game already.
-		msec = parseInt(timer%10, 10);
-		seconds = parseInt(timer/10, 10);
-		seconds = seconds < 10 ? "0" + seconds : seconds;
 
-		//$('#btn_timer').text(seconds+'.'+msec);
-		$('#turn_timer').ariavaluenow(100*timer/(duration*10));
-		$('#round_timer').width(100*timer/(duration*10)+'%');
-		if (--timer < 0)
+		if (--value < 0)
 		{
-			timer = 0;
-			clearInterval(roundInterval);
-			clearInterval(turnInterval);
+			value = 0;
+			removeInterval(0);
 		}
+		$('#round_timer').width(100*value/($("#round_timer").attr("aria-valuemax")*10)+'%');
 	}, 100);
 }
-function showTurnTimer(duration)
+function showTurnTimer(valueMax)
 {
-	var timer = duration * 10;
-	var seconds, msec;
-	
+	valueMax *= 10;
+	var value = valueMax;
 
-	turnInterval = setInterval(function()
+	removeInterval(1);
+	ar_interval[1] = setInterval(function()
 	{
 		// TODO: Check if the client quitted game already.
-		msec = parseInt(timer%10, 10);
-		seconds = parseInt(timer/10, 10);
-		seconds = seconds < 10 ? "0" + seconds : seconds;
 
-		//$('#btn_Ttimer').text(seconds+'.'+msec);
-		$('#turn_timer').ariavaluenow(100*timer/(duration*10));
-		$('#turn_timer').width(100*timer/(duration*10)+'%');
-		if (--timer < 0)
+		if (--value < 0)
 		{
-			timer = 0;
-			clearInterval(turnInterval);
-			clearInterval(roundInterval);
+			value = 0;
+			removeInterval(1);
 		}
+		$('#turn_timer').width(100*value/(valueMax)+'%');
 	}, 100);
 }

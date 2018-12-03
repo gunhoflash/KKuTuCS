@@ -131,6 +131,10 @@ class GameRoom
 					sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Current Round is { ".($this->currentRound)." / 3 }");
+
+					$this->time_roundTime = self::ROUND_TIME;
+					sendToSocketAll($this->clientSockets, "ROUNDSTART", $this->time_roundTime);
+
 					$this->time_temp = $time_temp;
 					$this->gameState = "before round";
 				}
@@ -142,7 +146,6 @@ class GameRoom
 				if ($time_temp - $this->time_temp >= 2.5)
 				{
 					// Initialize variable
-					$this->time_roundTime = self::ROUND_TIME;
 					$this->wordHistory = array();
 
 					$this->gameState = "on round";
@@ -187,6 +190,10 @@ class GameRoom
 						sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 						sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 						sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Current Round is { ".($this->currentRound)." / 3 }");
+						
+						$this->time_roundTime = self::ROUND_TIME;
+						sendToSocketAll($this->clientSockets, "ROUNDSTART", $this->time_roundTime);
+						
 						$this->time_temp = $time_temp;
 						$this->gameState = "before round";
 					}
@@ -264,7 +271,7 @@ class GameRoom
 	{
 		$this->time_forTurn = $this->getTurnSpeed();
 		$this->time_temp = microtime(true);
-		sendToSocketAll($this->clientSockets, "GAMESTART", $this->time_forTurn, $this->time_roundTime);
+		sendToSocketAll($this->clientSockets, "TURNSTART", $this->time_forTurn, $this->time_roundTime);
 	}
 
 	private function getTurnSpeed()
@@ -393,6 +400,7 @@ class GameRoom
 				$this->gameState = "before game";
 				$this->time_temp = microtime(true);
 
+				sendToSocketAll($this->clientSockets, "GAMESTART");
 				sendToSocketAll($this->clientSockets, "PLAYBGM", "game_start");
 			}
 		}
