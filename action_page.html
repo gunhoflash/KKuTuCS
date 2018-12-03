@@ -45,26 +45,24 @@
 		<script src="public/js/bootstrap.bundle.min.js"></script>
 
 		<nav class="navbar navbar-dark bg-primary">
-			<span class="align-items-center d-flex text-white">
+			<span class="align-items-center d-flex text-white text-truncate">
 				<button id="btn_quit" class="btn btn-primary px-1 px-md-2 mr-2 mr-md-3" type="button" data-btnshow="room">⮜&nbsp;<span class="d-none d-md-inline">Back</span></button>
 				<span class="align-items-baseline d-flex h5 mb-0">
-					<span>KKuTuCS&nbsp;-&nbsp;</span><span id="Roomname"></span>
+					<span class="d-none d-md-block">KKuTuCS&nbsp;-&nbsp;</span><span id="Roomname"></span>
 					<!-- TODO: Show the roomIndex. -->
 				</span>
 			</span>
-			<div>
-				<button id="btn_test" class="btn btn-outline-light" type="button" data-btnshow="both">Check RT</button>
-				<button id="btn_make" class="btn btn-outline-light" type="button" data-btnshow="main" data-toggle="modal" data-target="#createRoom">Make</button>
-			</div>
+			<button id="btn_make" class="btn btn-outline-light" type="button" data-btnshow="main" data-toggle="modal" data-target="#createRoom">Make</button>
 		</nav>
-		<br>
-		<div id="wordArea" class="text-center h-auto" data-btnshow="room"></div>
 		<div class="container d-flex flex-column h-100 mb-auto py-3 py-md-5 my-0">
-			<div class="d-flex align-items-center" data-btnshow="room">
-				<div class="col-auto p-0">
+			<div class="h3 text-center" data-btnshow="room">
+				&nbsp;<span id="wordArea"></span>&nbsp;
+			</div>
+			<div class="d-flex align-items-center my-1" data-btnshow="room">
+				<div class="mr-3">
 					<button id="btn_ready" class="btn btn-outline-secondary" type="button">Ready!</button>
 				</div>
-				<div class="col h-auto">
+				<div class="w-100">
 					<div class="progress">
 						<div id="round_timer" class="progress-bar bg-success progress-bar-striped active" role="progressbar"
 						style="width: 100%;" aria-valuenow="0" aria-valuemax="0">round</div>
@@ -74,17 +72,10 @@
 						style="width: 100%;" aria-valuenow="0" aria-valuemax="0">turn</div>
 					</div>
 				</div>
-				<!--
-				<button id="btn_timer" class="btn btn-outline-secondary" type="button">RTimer</button>
-				<button id="btn_Ttimer" class="btn btn-outline-secondary" type="button">TTimer</button>
-				-->
 			</div>
 
 			<div class="d-flex flex-column flex-md-row my-3 h-100">
-				<div id="wordchatArea" class="col col-md-6 d-flex flex-column p-3 m-0 bg-dark text-white" style="min-height:75%; overflow-y: auto;">
-					
-					<div id="chatArea" class="h-auto"></div>
-				</div>
+				<div id="chatArea" class="col col-md-6 d-flex flex-column p-3 m-0 bg-dark text-white word-break-all" style="min-height:75%; overflow-x: hidden; overflow-y: auto;"></div>
 				<div id="roomlistArea" class="col-md-6 px-0 pl-md-3 mt-3 mt-md-0" style="overflow-y: auto;"></div>
 			</div>
 			<form>
@@ -114,7 +105,7 @@
 						<div class="modal-body">
 							<div class="form-group">
 								<label for="modal_id_roomName">RoomName</label>
-								<input type="text" class="form-control" name="roomname" id="modal_id_roomName" placeholder="Enter roomname" required>
+								<input type="text" class="form-control" name="roomname" id="modal_id_roomName" placeholder="Enter roomname" maxlength="20" required>
 							</div>
 							<div class="form-group">
 								<label for="modal_id_password">Password</label>

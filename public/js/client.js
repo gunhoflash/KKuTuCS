@@ -40,7 +40,8 @@ function initializeButton()
 	});
 	$("#btn_send").on("click", function()
 	{
-		sendMessage("SEND", $("#wordInput").val(), null, null);
+		if ($("#wordInput").val().trim() != "")
+			sendMessage("SEND", $("#wordInput").val(), null, null);
 		$("#wordInput").val("");
 	});
 	$("#roomlistArea").on("click", ".gameroom", function()

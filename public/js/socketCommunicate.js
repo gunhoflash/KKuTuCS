@@ -11,7 +11,8 @@ function initializeSocketAndObject()
 {
 	// Initialize views and variable
 	$("*[data-ismain]").attr("data-ismain", "true");
-	$("#wordArea, #chatArea").html("").trigger("create");
+	showWord("");
+	$("#chatArea").html("").trigger("create");
 	processROOMLIST("");
 
 	socket = new WebSocket(socketLink);
@@ -132,7 +133,7 @@ function parseMessage(data)
 		case "CORRECT":
 			removeInterval(0);
 			removeInterval(1);
-			$("#wordArea").text(parameter1);
+			showWord(parameter1);
 			break;
 
 		case "PLAYBGM":
@@ -189,10 +190,10 @@ function processSEND(nickname, message)
 	 * (space) => &nbsp;
 	 */
 
-	nickname = "<font color=DeepSkyBlue>[" + nickname + "]</font>&nbsp;:&nbsp;";
+	nickname = "<span class='text-primary'>[" + nickname + "]</span>&nbsp;:&nbsp;";
 
 	$("#chatArea").append("<p class='mb-1'>" + nickname + message + "</p>");
-	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
+	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
 }
 
 function processSYSTEMSEND(nickname, message)
@@ -205,10 +206,10 @@ function processSYSTEMSEND(nickname, message)
 	if (nickname == null || nickname == "")
 		nickname = "";
 	else
-		nickname = "<font color=DeepSkyBlue>" + nickname + "</font>&nbsp;";
+		nickname = "<span class='text-primary'>" + nickname + "</span>&nbsp;";
 
 	$("#chatArea").append("<p class='mb-1 text-muted'>" + nickname + message + "</p>");
-	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
+	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
 }
 
 function processWORD(nickname, message, result)
@@ -366,7 +367,7 @@ function processANIMATION(turnSpeed, word)
 	astime = (ktime * 1000 / word.length) + 10;//2.5s = 2500 = 2.5 * 10^3
 	ani = setInterval(function(){
 		message += word.substr(i, 1);
-		$("#wordArea").text(message);
+		showWord(message);
 		processBGM("As", tspeed*10);
 		if(i==word.length) {
 			setTimeout(function(){
@@ -377,4 +378,18 @@ function processANIMATION(turnSpeed, word)
 		i++;
 	}, astime);
 		// TODO: when doing usleep and timer < 0, don't end the game
+}
+
+// Show the word with responsive font-size.
+function showWord(word)
+{
+	var fontsize;
+
+	     if (word.length <  6) fontsize = "2.50rem";
+	else if (word.length < 12) fontsize = "2.25rem";
+	else if (word.length < 18) fontsize = "2.00rem";
+	else if (word.length < 24) fontsize = "1.75rem";
+	else                       fontsize = "1.50rem";
+
+	$("#wordArea").css("font-size", fontsize).text(word);
 }
