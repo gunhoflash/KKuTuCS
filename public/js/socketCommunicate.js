@@ -131,7 +131,7 @@ function parseMessage(data)
 			$("#chatArea").empty();
 			showTurnTimer(parameter1);
 			showRoundTimer(parameter2);
-			processBGM("T80");
+			processBGM("T", parameter1*10);
 			break;
 
 		case "CORRECT":
@@ -161,6 +161,10 @@ function parseMessage(data)
 		case "RESULT":
 			processPLAYERLIST(parameter1);
 			processRESULT(parameter1);
+			break;
+
+		case "ANIMATION":
+			processANIMATION(parameter1, parameter2);
 			break;
 
 		default:
@@ -338,4 +342,36 @@ function processBGM(BGMtitle, playSpeed = 0)
 	}
 
 	audio.play();
+}
+
+function processANIMATION(turnSpeed, word)
+{
+	var ani;
+	var message = "";
+	var i = 0;
+	var astime, ktime;
+	var tspeed = parseFloat(turnSpeed,10);
+	switch (tspeed)
+	{
+		case 2.1: ktime = 0.23; break;
+		case 3.2: ktime = 0.36; break;
+		case 5.1: ktime = 0.46; break;
+		case 6.2: ktime = 0.57; break;
+		case 8.0: ktime = 0.70; break;
+		default : ktime = 0.23; break;
+	}
+	astime = (ktime * 1000 / word.length) + 100;//2.5s = 2500 = 2.5 * 10^3
+	ani = setInterval(function(){
+		message += word.substr(i, 1);
+		$("#wordArea").text(message);
+		processBGM("AS", tspeed*10);
+		if(i==word.length-1) {
+			setTimeout(function(){
+				processBGM("K", tspeed*10);
+			},10);
+			clearInterval(ani);
+		}
+		i++;
+	}, astime);
+		// TODO: when doing usleep and timer < 0, don't end the game
 }

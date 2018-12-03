@@ -32,10 +32,11 @@ class GameRoom
 	private $time_roundTime;
 	private $time_forTurn;
 	private $time_temp;
+	private $time_forAni;
 	private $wordHistory;
 	private $lastWord;
 	private $nowTurn;        // Index of the client who has to say a word.
-	private $currentRound;   // 1, 2, 3 available.
+	private $currentRound= 1;// 1, 2, 3 available.
 
 	/**
 	 * Constructor
@@ -189,6 +190,17 @@ class GameRoom
 					}
 				}
 				break;
+			
+			case "in animation":
+				$time_temp = microtime(true);
+				if($time_temp - $this->time_forAni > 2.5) {
+					$this->gameState = "on round";
+					($this->mode == "kr") ? $add = checkKorean($this->lastWord) : $add = "";
+					sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord.$add);
+					$this->refreshList();
+					$this->startTurn();
+				}
+				break;
 		}
 	}
 
@@ -221,35 +233,10 @@ class GameRoom
 			if (isUsed($word, $this->wordHistory))
 				return "USED";
 		}
-
-		$message = "";
-		$this->wordHistory[] = $this->lastWord = $word;	
 		sendToSocketAll($this->clientSockets, "CORRECT", "");
-		$tspeed = $this->getTurnSpeed();
-		switch ($tspeed)
-		{
-			case 2.1: $ktime = 0.23; break;
-			case 3.2: $ktime = 0.36; break;
-			case 5.1: $ktime = 0.46; break;
-			case 6.2: $ktime = 0.57; break;
-			case 8.0: $ktime = 0.70; break;
-			default : $ktime = 0.23; break;
-		}
-		$astime = ($ktime * 1000000 / mb_strlen($word, "utf-8")) + 1000;//2.5s = 2500000 = 2.5 * 10^6
-		for($i=0;$i<mb_strlen($word, "utf-8");$i++) {
-			$message .= mb_substr($word, $i, 1, "utf-8");
-			sendToSocketAll($this->clientSockets, "CORRECT", "$message");
-			sendToSocketAll($this->clientSockets, "PLAYBGM", "As", $tspeed*10);
-			usleep($astime);
-			if($i==mb_strlen($word, "utf-8")-1) {
-				usleep(10000);
-				sendToSocketAll($this->clientSockets, "PLAYBGM", "K", $tspeed*10);
-				usleep($ktime*1000000 + 1000);
-			}
-			// TODO: when doing usleep and timer < 0, don't end the game
-		}
-		if($this->mode == "kr") sendToSocketAll($this->clientSockets, "CORRECT", "$word".checkKorean($word));
-		else sendToSocketAll($this->clientSockets, "CORRECT", "$word");
+		sendToSocketAll($this->clientSockets, "ANIMATION", $this->getTurnSpeed(), $word);
+		$this->wordHistory[] = $this->lastWord = $word;
+		$this->time_forAni = microtime(TRUE);
 		return "OK";
 	}
 
@@ -369,8 +356,7 @@ class GameRoom
 					// sendToSocketAll($this->clientSockets, "SEND", "", "$socketString type $message"); // this line will be deleted
 					
 					$this->nowTurn = ($this->nowTurn + 1) % sizeof($this->clientSockets);
-					$this->startTurn();
-					$this->refreshList();
+					$this->gameState = "in animation";
 				}
 				else
 				{
