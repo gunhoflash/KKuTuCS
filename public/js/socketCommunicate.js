@@ -5,7 +5,6 @@ var responseTime = 0;
 var uriQueries = [];
 
 var audio = document.createElement("audio");
-audio.prop("volume", "0.5");
 
 function initializeSocketAndObject()
 {
@@ -333,16 +332,17 @@ function processRESULT(playerlistString)
 
 }
 
-function processBGM(BGMtitle, playSpeed = 0)
+function processBGM(BGMtitle, playSpeed)
 {
 	audio.pause();
-	if(playSpeed!=0) BGMtitle += playSpeed;
+	if (playSpeed != 0) BGMtitle += playSpeed;
 	audio.src = "libs/media/"+BGMtitle+".mp3";
-	if(BGMtitle == "LobbyBGM")
+	if (BGMtitle == "LobbyBGM")
 	{
-	audio.addEventListener('ended', function () {
-		setTimeout(function () { audio.play(); }, 500);
-	}, false);       
+		audio.addEventListener('ended', function ()
+		{
+			setTimeout(function () { audio.play(); }, 500);
+		}, false);
 	}
 
 	audio.play();
