@@ -96,6 +96,10 @@ function parseMessage(data)
 			processSEND(parameter1, parameter2);
 			break;
 
+		case "SYSTEMSEND": // (Syntax: SYSTEMSEND nickname message)
+			processSYSTEMSEND(parameter1, parameter2);
+			break;
+
 		case "WORD": // (Syntax: WORD nickname message result)
 			processWORD(parameter1, parameter2, parameter3);
 			break;
@@ -128,7 +132,6 @@ function parseMessage(data)
 		case "GAMESTART":
 			// TODO: Edit here.
 			audio.pause();
-			$("#chatArea").empty();
 			showTurnTimer(parameter1);
 			showRoundTimer(parameter2);
 			processBGM("T", parameter1*10);
@@ -159,6 +162,7 @@ function parseMessage(data)
 			break;
 
 		case "RESULT":
+			processSYSTEMSEND(null, "Game over.");
 			processPLAYERLIST(parameter1);
 			processRESULT(parameter1);
 			break;
@@ -181,15 +185,9 @@ function processSEND(nickname, message)
 	 * (space) => &nbsp;
 	 */
 
-	if (nickname == null || nickname == "")
-		nickname = colon = "";
-	else
-	{
-		nickname = "<font color=DeepSkyBlue>" + nickname + "</font>";
-		colon = "&nbsp;:&nbsp;";
-	}
+	nickname = "<font color=DeepSkyBlue>[" + nickname + "]</font>&nbsp;:&nbsp;";
 
-	$("#chatArea").append("<p class='mb-1'>" + nickname + colon + message + "</p>");
+	$("#chatArea").append("<p class='mb-1'>" + nickname + message + "</p>");
 	$("#wordchatArea").scrollTop($("#wordchatArea").prop("scrollHeight"));
 }
 
