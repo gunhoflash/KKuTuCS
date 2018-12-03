@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<style type="text/css">
+<html class="h-100"><head><style type="text/css">
 	#bar {
 	  background-color: white;
 	  width: 40px;
@@ -22,9 +22,9 @@
 		 background-color: #BFFF8C !important;
 	}
 </style>
-<html class="h-100">
-	<head>
-		<audio id="lobbyBGM" src="libs/media/LobbyBGM.mp3" preload="auto"></audio>
+
+	
+		</head><body class="bg-light d-flex flex-column h-100" data-ismain="true"><audio id="lobbyBGM" src="libs/media/LobbyBGM.mp3" preload="auto"></audio>
 		<audio id="T1" src="libs/media/T1.mp3" preload="auto"></audio>
 
 		<meta charset="UTF-8">
@@ -40,15 +40,14 @@
 		<script src="public/js/jquery-3.3.1.min.js"></script>
 		<script src="public/js/client.js"></script>
 		<script src="public/js/bootstrap.bundle.min.js"></script>
-	</head>
+	
 
-	<body class="bg-light d-flex flex-column h-100" data-ismain="true">
+	
 		<nav class="navbar navbar-dark bg-primary">
 			<span class="align-items-center d-flex text-white">
 				<button id="btn_quit" class="btn btn-primary px-1 px-md-2 mr-2 mr-md-3" type="button" data-btnshow="room">⮜&nbsp;<span class="d-none d-md-inline">Back</span></button>
 				<span class="align-items-baseline d-flex h5 mb-0">
 					<span>KKuTuCS&nbsp;-&nbsp;</span><span id="Roomname"></span>
-					<!-- TODO: Show the roomIndex. -->
 				</span>
 			</span>
 			<div>
@@ -56,30 +55,31 @@
 				<button id="btn_make" class="btn btn-outline-light" type="button" data-btnshow="main" data-toggle="modal" data-target="#createRoom">Make</button>
 			</div>
 		</nav>
+		<br>
+		<div id="wordArea" class="text-center h-auto" data-btnshow="room"></div>
 		<div class="container d-flex flex-column h-100 mb-auto py-3 py-md-5 my-0">
 			<div class="d-flex align-items-center" data-btnshow="room">
-				<!--
 				<div class="col-auto p-0">
 					<button id="btn_ready" class="btn btn-outline-secondary" type="button">Ready!</button>
 				</div>
-				<div class="col">
+				<div class="col h-auto">
 					<div class="progress">
-						<div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+						<div id="round_timer" class="progress-bar bg-success progress-bar-striped active" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">round</div>
 					</div>
 					<div class="progress mt-1">
-						<div class="progress-bar bg-warning" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+						<div id="turn_timer" class="progress-bar bg-warning progress-bar-striped active" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">turn</div>
 					</div>
 				</div>
-				-->
-				<button id="btn_ready" class="btn btn-outline-secondary" type="button">Ready!</button>
+				<!--
 				<button id="btn_timer" class="btn btn-outline-secondary" type="button">RTimer</button>
 				<button id="btn_Ttimer" class="btn btn-outline-secondary" type="button">TTimer</button>
-				
+				-->
 			</div>
+
 
 			<div class="d-flex flex-column flex-md-row my-3 h-100">
 				<div id="wordchatArea" class="col col-md-6 d-flex flex-column p-3 m-0 bg-dark text-white" style="min-height:75%; overflow-y: auto;">
-					<div id="wordArea" class="text-center">Chat Room</div>
+					
 					<div id="chatArea" class="h-auto"></div>
 				</div>
 				<div id="roomlistArea" class="col-md-6 px-0 pl-md-3 mt-3 mt-md-0" style="overflow-y: auto;"></div>
@@ -104,14 +104,14 @@
 					<div class="modal-header">
 						<h5 class="modal-title" id="createRoomLabel">Make Room</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
+							<span aria-hidden="true">×</span>
 						</button>
 					</div>
 					<form id="make">
 						<div class="modal-body">
 							<div class="form-group">
 								<label for="modal_id_roomName">RoomName</label>
-								<input type="text" class="form-control" name="roomname" id="modal_id_roomName" placeholder="Enter roomname" required>
+								<input type="text" class="form-control" name="roomname" id="modal_id_roomName" placeholder="Enter roomname" required="">
 							</div>
 							<div class="form-group">
 								<label for="modal_id_password">Password</label>
@@ -121,7 +121,7 @@
 							<div class="form-group">
 								<label>Game mode</label>
 								<div class="form-check">
-									<input class="form-check-input" type="radio" name="mode" id="modal_id_en" value="en" checked>
+									<input class="form-check-input" type="radio" name="mode" id="modal_id_en" value="en" checked="">
 									<label class="form-check-label" for="modal_id_en">en</label>
 								</div>
 								<div class="form-check">
@@ -140,17 +140,21 @@
 		</div>
 		<!-- Result Screen-->
 		<div class="modal fade" id="resultScreen" tabindex="-1" role="dialog" aria-labelledby="resultScreenLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="resultScreenLabel">Result</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="resultScreenLabel">Result</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">×</span>
+							</button>
+						</div>
+							<div class="modal-body" id="resultScreenBody">
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							</div>
 					</div>
-					<div class="modal-body" id="resultScreenBody"></div>
 				</div>
 			</div>
-		</div>
-	</body>
-</html>
+	
+</body></html>

@@ -76,8 +76,9 @@ function showRoundTimer(duration)
 		seconds = parseInt(timer/10, 10);
 		seconds = seconds < 10 ? "0" + seconds : seconds;
 
-		$('#btn_timer').text(seconds+'.'+msec);
-
+		//$('#btn_timer').text(seconds+'.'+msec);
+		$('#turn_timer').ariavaluenow(100*timer/(duration*10));
+		$('#round_timer').width(100*timer/(duration*10)+'%');
 		if (--timer < 0)
 		{
 			timer = 0;
@@ -90,6 +91,7 @@ function showTurnTimer(duration)
 {
 	var timer = duration * 10;
 	var seconds, msec;
+	
 
 	turnInterval = setInterval(function()
 	{
@@ -98,8 +100,9 @@ function showTurnTimer(duration)
 		seconds = parseInt(timer/10, 10);
 		seconds = seconds < 10 ? "0" + seconds : seconds;
 
-		$('#btn_Ttimer').text(seconds+'.'+msec);
-
+		//$('#btn_Ttimer').text(seconds+'.'+msec);
+		$('#turn_timer').ariavaluenow(100*timer/(duration*10));
+		$('#turn_timer').width(100*timer/(duration*10)+'%');
 		if (--timer < 0)
 		{
 			timer = 0;

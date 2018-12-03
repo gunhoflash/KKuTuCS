@@ -238,7 +238,8 @@ function processJOIN(success, message)
 	// Join the game
 	$("#Roomname").text(message);
 	$("*[data-ismain]").attr("data-ismain", "false");
-
+	$('#round_timer').css("width", "0%");
+	$('#turn_timer').css("width", "0%");
 	$("#chatArea").html("").trigger("create");
 	processSYSTEMSEND(null, "Welcome to " + message + "!");
 }
@@ -254,6 +255,7 @@ function processROOMLIST(roomlistString)
 	 */
 
 	// No rooms.
+	
 	if (roomlistString.length == 0)
 		$("#roomlistArea").html(no_rooms).trigger("create");
 
@@ -321,7 +323,8 @@ function processRESULT(playerlistString)
 		str +=
 		player[0] + "'s score : " +player[1] + "<br>";
 	}
-
+	$('#round_timer').css("width", "0%");
+	$('#turn_timer').css("width", "0%");
 	$("#resultScreen").modal('show');
 	$("#resultScreenBody").html(str).trigger("create");
 
@@ -358,12 +361,12 @@ function processANIMATION(turnSpeed, word)
 		case 8.0: ktime = 0.70; break;
 		default : ktime = 0.23; break;
 	}
-	astime = (ktime * 1000 / word.length) + 100;//2.5s = 2500 = 2.5 * 10^3
+	astime = (ktime * 1000 / word.length) + 10;//2.5s = 2500 = 2.5 * 10^3
 	ani = setInterval(function(){
 		message += word.substr(i, 1);
 		$("#wordArea").text(message);
-		processBGM("AS", tspeed*10);
-		if(i==word.length-1) {
+		processBGM("As", tspeed*10);
+		if(i==word.length) {
 			setTimeout(function(){
 				processBGM("K", tspeed*10);
 			},10);
