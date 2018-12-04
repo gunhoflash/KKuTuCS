@@ -161,31 +161,27 @@ function processJOIN(&$socket, $parameter1, $parameter2)
 	global $client_room;
 
 	// Check the room index.
-	if ($parameter1 > 0)
-	{
-		foreach ($client_room as $room)
+	foreach ($client_room as $room)
+		if ($room->getIndex() == $parameter1)
 		{
-			if ($room->getIndex() == $parameter1)
+			// Check the password and the number of users.
+			if ($room->isPlaying())
+				sendToSocket($socket, "JOIN", "0", "This room is now playing the game.", $parameter1);
+			else if ($room->checkPassword($parameter2) == FALSE)
+				sendToSocket($socket, "JOIN", "0", "Password is incorrect.", $parameter1);
+			else if ($room->isFull())
+				sendToSocket($socket, "JOIN", "0", "This room is full!", $parameter1);
+			else
 			{
-				// Check the password and the number of users.
-				if ($room->isPlaying())
-					sendToSocket($socket, "JOIN", "0", "This room is now playing the game.");
-				else if ($room->checkPassword($parameter2) == FALSE)
-					sendToSocket($socket, "JOIN", "0", "Password is incorrect.");
-				else if ($room->isFull())
-					sendToSocket($socket, "JOIN", "0", "This room is full!");
-				else
-				{
-					$room->clientEntered($socket);
-					$client_room[0]->clientQuitted($socket);
-					sendToSocket($socket, "JOIN", "1", $room->getName());
-					processROOMLIST($client_room[0]->getClientSockets());
-				}
-				return;
+				$room->clientEntered($socket);
+				$client_room[0]->clientQuitted($socket);
+				sendToSocket($socket, "JOIN", "1", $room->getName(), $parameter1);
+				processROOMLIST($client_room[0]->getClientSockets());
 			}
+			return;
 		}
-	}
-	sendToSocket($socket, "JOIN", "0", "Invalid room index.");
+
+	sendToSocket($socket, "JOIN", "0", "Invalid room index.", $parameter1);
 }
 
 function processMAKE(&$socket, $roomname, $password, $mode)
@@ -203,7 +199,7 @@ function processMAKE(&$socket, $roomname, $password, $mode)
 	processROOMLIST($client_room[0]->getClientSockets());
 	
 	// Send a JOIN success message to the client.
-	sendToSocket($socket, "JOIN", "1", $new_room->getName());
+	sendToSocket($socket, "JOIN", "1", $new_room->getName(), $new_room->getIndex());
 }
 
 // Send a information of roomlist to the client in the main room.

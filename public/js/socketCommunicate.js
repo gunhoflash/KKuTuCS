@@ -15,13 +15,13 @@ function initializeSocketAndObject()
 	processROOMLIST("");
 
 	socket = new WebSocket(socketLink);
-	$("#Roomname").text("(Connecting..)");
+	$("#Mainname").text("(Connecting..)");
 
 	// When the socket open
 	socket.onopen = function(event)
 	{
 		console.log("Socket opened.", event);
-		$("#Roomname").text("Main");
+		$("#Mainname").text("KKuTuCS");
 		
 		// Decode url to get the nickname.
 		decodeURI(window.location.search).substr(1).split("&").forEach(function (str)
@@ -104,9 +104,8 @@ function parseMessage(data)
 			processWORD(parameter1, parameter2, parameter3);
 			break;
 
-		case "JOIN":
-			// JOIN [1/0] [roonname/error_message]
-			processJOIN(parameter1, parameter2);
+		case "JOIN": // (Syntax: JOIN [1/0] [roonname/error_message] roomIndex)
+			processJOIN(parameter1, parameter2, parameter3);
 			break;
 
 		case "DISCONNECTED":
@@ -230,7 +229,7 @@ function processWORD(nickname, message, result)
 	}
 }
 
-function processJOIN(success, message)
+function processJOIN(success, message, roomIndex)
 {
 	if (success != 1)
 	{
@@ -239,6 +238,7 @@ function processJOIN(success, message)
 	}
 
 	// Join the game
+	$("#Roomindex").text("#" + roomIndex);
 	$("#Roomname").text(message);
 	$("*[data-ismain]").attr("data-ismain", "false");
 	$("#chatArea").html("").trigger("create");
