@@ -39,9 +39,8 @@ function registerClientNickname($socket, $nickname)
 	$client_name[getIPPORT($socket)] = $nickname;
 }
 
-// TODO: Rename it.
 // Return the client's nickname.
-function socketToString($socket)
+function getNicknameBySocket($socket)
 {
 	global $client_name;
 

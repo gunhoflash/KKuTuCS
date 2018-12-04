@@ -67,7 +67,6 @@ var ar_interval = [
 	null  // turn interval
 ];
 
-// TODO: Call removeInterval(0) when round over.
 function removeInterval(index)
 {
 	if (ar_interval[index] != null)

@@ -44,7 +44,7 @@ while(TRUE)
 				handshake($newSocket, $data, $socket);
 				$client_room[0]->clientEntered($newSocket);
 				
-				echo "Connected: ".socketToString($newSocket)."\n";
+				echo "Connected: ".getNicknameBySocket($newSocket)."\n";
 				unsetFromArray($socket, $read);
 			}
 

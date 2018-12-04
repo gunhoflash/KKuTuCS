@@ -58,7 +58,7 @@ class GameRoom
 
 	public function clientEntered(&$socket)
 	{
-		$socketString = socketToString($socket);
+		$socketString = getNicknameBySocket($socket);
 		sendToSocket($socket, "PLAYBGM", "lobbyBGM");
 
 		$this->clientSockets[] = $socket;
@@ -79,7 +79,7 @@ class GameRoom
 		}
 
 		// Log
-		$socketString = socketToString($socket);
+		$socketString = getNicknameBySocket($socket);
 		echo "  QUITTED: $socketString\n";
 
 		// Unset from arrays and close the socket.
@@ -96,7 +96,7 @@ class GameRoom
 		$this->clientQuitted($socket);
 
 		// Log
-		$socketString = socketToString($socket);
+		$socketString = getNicknameBySocket($socket);
 		echo "  DISCONNECTED: $socketString\n";
 		
 		socket_close($socket);
@@ -158,10 +158,11 @@ class GameRoom
 				// End round when timeover
 				if ($time_temp - $this->time_temp >= $this->time_forTurn)
 				{
-					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Round is over. ".socketToString($this->clientSockets[$this->nowTurn])." has failed to type.\n");
+					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Round is over. ".getNicknameBySocket($this->clientSockets[$this->nowTurn])." has failed to type.\n");
+					sendToSocketAll($this->clientSockets, "ROUNDOVER");
 					
 					// Down score.
-					$this->clientScores[$this->nowTurn] = ($this->clientScores[$this->nowTurn] < 100) ? 0 : $this->clientScores[$this->nowTurn] - 100;
+					$this->clientScores[$this->nowTurn] = ($this->clientScores[$this->nowTurn] < 1000) ? 0 : $this->clientScores[$this->nowTurn] - 1000;
 					
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "horror");
 					$this->time_temp = $time_temp;
@@ -295,7 +296,7 @@ class GameRoom
 		for ($i = 0; $i < count($this->clientSockets); $i++)
 		{
 			if (strlen($str)) $str .= "``";
-			$str .= socketToString($this->clientSockets[$i])."`";
+			$str .= getNicknameBySocket($this->clientSockets[$i])."`";
 			$str .= $this->clientScores[$i]."`";
 			$str .= $this->clientReady[$i];
 		}
@@ -340,16 +341,13 @@ class GameRoom
 
 	private function processSEND(&$socket, $message)
 	{
-		$socketString = socketToString($socket);
+		$socketString = getNicknameBySocket($socket);
 
 		if ($this->state == "Playing" && $this->gameState == "on round")
 		{
 			if ($this->nowTurn == array_search($socket, $this->clientSockets))
 			{
-				// It is a word.
-
-				// TODO: If you want to distinguish word and chat, you need to call isValid()
-				// TODO: If you want to feedback the word, you need to check word here step by step.
+				// It is a word. Check its validity.
 				$checkResult = $this->checkWord($message);
 				if ($checkResult == "OK")
 				{
@@ -364,17 +362,13 @@ class GameRoom
 					$this->nowTurn = ($this->nowTurn + 1) % sizeof($this->clientSockets);
 					$this->gameState = "in animation";
 				}
-				else
-				{
-					// The word is invalid.
-
+				else // The word is invalid.
 					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, $checkResult);
-				}
 				return;
 			}
 		}
 
-		// It is just a chat.
+		// It is a chat.
 		sendToSocketAll($this->clientSockets, "SEND", $socketString, $message);
 	}
 

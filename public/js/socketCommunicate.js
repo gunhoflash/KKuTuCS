@@ -147,6 +147,10 @@ function parseMessage(data)
 		case "ROUNDSTART":
 			showRoundTimer(parameter1, parameter1);
 			break;
+		
+		case "ROUNDOVER":
+			removeInterval(0);
+			break;
 
 		case "TURNSTART": // (Syntax: TURNSTART turn_time round_time)
 			audio.pause();
@@ -183,11 +187,9 @@ function parseMessage(data)
 
 function processSEND(nickname, message)
 {
-	/**
-	 * TODO: Convert some characters.
-	 * \n      => <br>
-	 * (space) => &nbsp;
-	 */
+	// Replace all space characters to &nbsp;
+	nickname = (nickname == null) ? "" : nickname.replace(/ /g, "&nbsp;");
+	message = (message == null) ? "" : message.replace(/ /g, "&nbsp;");
 
 	nickname = "<span class='text-primary'>[" + nickname + "]</span>&nbsp;:&nbsp;";
 
@@ -197,14 +199,11 @@ function processSEND(nickname, message)
 
 function processSYSTEMSEND(nickname, message)
 {
-	/**
-	 * TODO: Convert some characters.
-	 * \n      => <br>
-	 * (space) => &nbsp;
-	 */
-	if (nickname == null || nickname == "")
-		nickname = "";
-	else
+	// Replace all space characters to &nbsp;
+	nickname = (nickname == null) ? "" : nickname.replace(/ /g, "&nbsp;");
+	message = (message == null) ? "" : message.replace(/ /g, "&nbsp;");
+
+	if (nickname.length > 0)
 		nickname = "<span class='text-primary'>" + nickname + "</span>&nbsp;";
 
 	$("#chatArea").append("<p class='mb-1 text-muted'>" + nickname + message + "</p>");
@@ -392,4 +391,10 @@ function showWord(word)
 	else                       fontsize = "1.50rem";
 
 	$("#wordArea").css("font-size", fontsize).text(word);
+}
+
+function stringToHTML(string)
+{
+	if (string == null) return "";
+	return string.replace(" ", "&nbsp;");
 }
