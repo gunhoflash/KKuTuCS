@@ -206,8 +206,8 @@ function processMAKE(&$socket, $roomname, $password, $mode)
 function processROOMLIST($socketList)
 {
 	/**
-	 * (roomString): roomname`isPlaying`now/max`needPassword
-	 * ex) Come on!`0`2/4`0
+	 * (roomString): roomIndex`roomname`mode`isPlaying`now/max`needPassword
+	 * ex) 3`Come on!`en`0`2/4`0
 	 * 
 	 * $str = (roomString)``(roomString)``(roomString) ...
 	 */

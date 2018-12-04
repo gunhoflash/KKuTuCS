@@ -266,10 +266,10 @@ function processROOMLIST(roomlistString)
 		room = roomlist[i].split('`');
 
 		// Handle wrong string.
-		if (room.length < 5) continue;
-		
+		if (room.length < 6) continue;
+
 		str +=
-		"<div class='gameroom border shadow-sm px-3 py-2 mb-2' data-index="+room[0]+" data-pw="+room[4]+">"+
+		"<div class='gameroom border shadow-sm px-3 py-2 mb-2' data-index="+room[0]+" data-pw="+room[5]+">"+
 			"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
 			"<div class='d-flex small'>"+
 				"<span class='text-muted'>"+(room[2] == 'en' ? "En" : "한")+"</span>"+
@@ -397,4 +397,11 @@ function stringToHTML(string)
 {
 	if (string == null) return "";
 	return string.replace(" ", "&nbsp;");
+}
+
+// This function is for test. You can call it only on the console, which is in the developer mode of your web browser.
+function TIMETEST()
+{
+	sendMessage("TIMETEST", null, null, null);
+	responseTime = (new Date()).getTime();
 }

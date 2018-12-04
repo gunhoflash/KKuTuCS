@@ -12,6 +12,7 @@ $(document).ready(function()
 
 function initializeButton()
 {
+	// Make a new game room.
 	$("#make").on("submit", function(e)
 	{
 		e.preventDefault();
@@ -23,34 +24,41 @@ function initializeButton()
 		$(this).find("input").val("");
 		$('#createRoom').modal("hide");
 	});
+
+	// Quit the game and go back to the main.
 	$("#btn_quit").on("click", function()
 	{
 		removeInterval(0);
 		removeInterval(1);
 		sendMessage("QUIT", null, null, null);
 	});
-	$("#btn_test").on("click", function()
-	{
-		sendMessage("TIMETEST", null, null, null);
-		responseTime = (new Date()).getTime();
-	});
+
+	// Get ready to the game.
 	$("#btn_ready").on("click", function()
 	{
 		sendMessage("READY", "1", null, null);
 	});
+
+	// Do chatting.
 	$("#btn_send").on("click", function()
 	{
 		if ($("#wordInput").val().trim() != "")
 			sendMessage("SEND", $("#wordInput").val(), null, null);
 		$("#wordInput").val("");
 	});
+
+	// Try to enter the game.
 	$("#roomlistArea").on("click", ".gameroom", function()
 	{
+		if ($(this).attr("data-pw") == undefined) return;
+
 		var pw = "";
-		if ($(this).data("pw") == "1")
+		if ($(this).attr("data-pw") == "1")
 			pw = prompt("비밀번호를 입력하세요","");
-		sendMessage("JOIN", $(this).data("index"), pw, null);
+		sendMessage("JOIN", $(this).attr("data-index"), pw, null);
 	});
+
+	// Do chatting.
 	$("#wordInput").keypress(function(event)
 	{
 		var keycode = (event.keyCode ? event.keyCode : event.which);
