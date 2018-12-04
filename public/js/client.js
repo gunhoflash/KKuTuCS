@@ -36,7 +36,11 @@ function initializeButton()
 	// Get ready to the game.
 	$("#btn_ready").on("click", function()
 	{
-		sendMessage("READY", "1", null, null);
+		var ready = $("#btn_ready").attr("data-ready");
+		ready = (ready == "1") ? "0" : "1";
+		$("#btn_ready").attr("data-ready", ready);
+		
+		sendMessage("READY", ready, null, null);
 	});
 
 	// Do chatting.

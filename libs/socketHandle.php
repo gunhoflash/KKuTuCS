@@ -16,7 +16,7 @@ function sendToSocketAll($socketList, $method, $parameter1 = "", $parameter2 = "
 	if ($message == "") return;
 
 	foreach ($socketList as $socket)
-		socket_write($socket, $message);
+		socket_write($socket, $message, strlen($message));
 }
 
 // Unset the object from the array. Index is option that indicates the index of object.
@@ -63,7 +63,7 @@ function getIPPORT($socket)
 	return $IP.":".$PORT;
 }
 
-// Edcode the text.
+// Decode the text.
 function unmask($payload)
 {
 	$length = ord($payload[1]) & 127;
@@ -98,7 +98,7 @@ function encode($text)
 	{
 		$b1 = 0x80 | (0x1 & 0x0f);
 		$length = strlen($text);
-
+		echo "encode length of $length\n";
 		if ($length <= 125)
 			$header = pack('CC', $b1, $length);
 		else if ($length > 125 && $length < 65536)

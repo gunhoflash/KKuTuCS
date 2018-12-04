@@ -11,7 +11,7 @@ class GameRoom
 	private const LAST_ROUND    = 3;
 
 	// Static
-	private static $room_index  = 1;
+	private static $room_index  = 0;
 
 	// Informations
 	private $index;          // Room Index
@@ -261,7 +261,6 @@ class GameRoom
 	// End game.
 	private function endGame()
 	{
-		// TODO: When a client get RESULT message, set ready as false.
 		sendToSocketAll($this->clientSockets, "RESULT", $this->makePlayerList());
 		$this->state = "Ready";
 		foreach ($this->clientReady as &$ready)

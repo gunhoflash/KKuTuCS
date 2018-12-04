@@ -9,6 +9,7 @@ var audio = document.createElement("audio");
 function initializeSocketAndObject()
 {
 	// Initialize views and variable
+	$("#btn_ready").removeClass("d-none");
 	$("*[data-ismain]").attr("data-ismain", "true");
 	showWord("");
 	$("#chatArea").html("").trigger("create");
@@ -141,10 +142,12 @@ function parseMessage(data)
 		case "GAMESTART": // (Syntax: GAMESTART)
 			removeInterval(0);
 			removeInterval(1);
+			$("#btn_ready").addClass("d-none");
 			break;
 
 		case "ROUNDSTART":
 			showRoundTimer(parameter1, parameter1);
+			removeInterval(0);
 			break;
 		
 		case "ROUNDOVER":
@@ -167,6 +170,8 @@ function parseMessage(data)
 			break;
 
 		case "RESULT":
+			// TODO: When a client get RESULT message, set ready as false.
+			$("#btn_ready").removeClass("d-none").attr("data-ready", "0");
 			removeInterval(0);
 			removeInterval(1);
 			processSYSTEMSEND(null, "Game over.");
@@ -321,8 +326,7 @@ function processRESULT(playerlistString)
 	{
 		player = playerlist[i].split("`");
 
-		str +=
-		player[0] + "'s score : " +player[1] + "<br>";
+		str += player[0] + "'s score : " +player[1] + "<br>";
 	}
 	$('#round_timer').css("width", "0%");
 	$('#turn_timer').css("width", "0%");

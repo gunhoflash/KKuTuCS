@@ -10,7 +10,7 @@
 {
 	word-break: break-all;
 }
-.progress-bar
+.transition-w
 {
 	transition: width .1s ease;
 }

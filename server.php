@@ -94,7 +94,7 @@ function socket_read_GameRoom(&$room)
 	// Read some new datas from clients.
 	foreach ($read as &$readSocket)
 	{
-		$data = @socket_read($readSocket, 2048);
+		$data = @socket_read($readSocket, 1024);
 		if ($data === FALSE || strlen($data) == 0)
 		{
 			$room->clientDisconnected($readSocket);
@@ -103,7 +103,7 @@ function socket_read_GameRoom(&$room)
 		else
 		{
 			// Decode & Parse the data. If the data is invalid, diconnect it.
-			$request = new KKuTuCSRequest(@unmask($data));
+			$request = new KKuTuCSRequest(@unmask(trim($data)));
 			if ($request->getValidity() == FALSE) continue; // Invalid Data
 			$method = $request->getMethod();
 			$parameter1 = $request->getParameter(1);
