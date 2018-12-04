@@ -328,7 +328,7 @@ function processBGM(BGMtitle, playSpeed)
 {
 	audio.pause();
 	if (playSpeed != 0) BGMtitle += playSpeed;
-	audio.src = "libs/media/"+BGMtitle+".mp3";
+	audio.src = "public/media/"+BGMtitle+".mp3";
 	if (BGMtitle == "LobbyBGM")
 	{
 		audio.addEventListener('ended', function ()
