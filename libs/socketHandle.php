@@ -98,7 +98,7 @@ function encode($text)
 	{
 		$b1 = 0x80 | (0x1 & 0x0f);
 		$length = strlen($text);
-		echo "encode length of $length\n";
+
 		if ($length <= 125)
 			$header = pack('CC', $b1, $length);
 		else if ($length > 125 && $length < 65536)

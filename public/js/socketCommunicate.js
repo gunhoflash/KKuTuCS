@@ -94,11 +94,11 @@ function parseMessage(data)
 	switch (method)
 	{
 		case "SEND": // (Syntax: SEND nickname message)
-			processSEND(parameter1, parameter2);
+			showChat(parameter1, parameter2, false);
 			break;
 
 		case "SYSTEMSEND": // (Syntax: SYSTEMSEND nickname message)
-			processSYSTEMSEND(parameter1, parameter2);
+			showChat(parameter1, parameter2, true);
 			break;
 
 		case "WORD": // (Syntax: WORD nickname message result)
@@ -110,11 +110,11 @@ function parseMessage(data)
 			break;
 
 		case "DISCONNECTED":
-			processSYSTEMSEND(parameter1, "is disconnected.");
+			showChat(parameter1, "is disconnected.", true);
 			break;
 
 		case "CONNECTED":
-			processSYSTEMSEND(parameter1, "is connected.");
+			showChat(parameter1, "is connected.", true);
 			break;
 
 		case "ROOMLIST":
@@ -162,7 +162,7 @@ function parseMessage(data)
 			break;
 
 		case "QUITTED":
-			processSYSTEMSEND(parameter1, "quitted.");
+			showChat(parameter1, "quitted.", true);
 			break;
 
 		case "PLAYERLIST":
@@ -170,11 +170,10 @@ function parseMessage(data)
 			break;
 
 		case "RESULT":
-			// TODO: When a client get RESULT message, set ready as false.
 			$("#btn_ready").removeClass("d-none").attr("data-ready", "0");
 			removeInterval(0);
 			removeInterval(1);
-			processSYSTEMSEND(null, "Game over.");
+			showChat(null, "Game over.", true);
 			processPLAYERLIST(parameter1);
 			processRESULT(parameter1);
 			break;
@@ -189,28 +188,18 @@ function parseMessage(data)
 	}
 }
 
-function processSEND(nickname, message)
-{
-	// Replace all space characters to &nbsp;
-	nickname = (nickname == null) ? "" : nickname.replace(/ /g, "&nbsp;");
-	message = (message == null) ? "" : message.replace(/ /g, "&nbsp;");
-
-	nickname = "<span class='text-primary'>[" + nickname + "]</span>&nbsp;:&nbsp;";
-
-	$("#chatArea").append("<p class='mb-1'>" + nickname + message + "</p>");
-	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
-}
-
-function processSYSTEMSEND(nickname, message)
+function showChat(nickname, message, isSystem)
 {
 	// Replace all space characters to &nbsp;
 	nickname = (nickname == null) ? "" : nickname.replace(/ /g, "&nbsp;");
 	message = (message == null) ? "" : message.replace(/ /g, "&nbsp;");
 
 	if (nickname.length > 0)
-		nickname = "<span class='text-primary'>" + nickname + "</span>&nbsp;";
+		nickname = "<span class='text-primary'>[" + nickname + "]</span>&nbsp;";
+	if (!isSystem)
+		nickname += ":&nbsp;";
 
-	$("#chatArea").append("<p class='mb-1 text-muted'>" + nickname + message + "</p>");
+	$("#chatArea").append("<p class='mb-1"+(isSystem ? " text-muted" : "")+"'>" + nickname + message + "</p>");
 	$("#chatArea").scrollTop($("#chatArea").prop("scrollHeight"));
 }
 
@@ -219,17 +208,17 @@ function processWORD(nickname, message, result)
 	switch (result)
 	{
 		case "OK":
-			processSEND(nickname, "<span class='text-primary'>" + message + "</span>");
+			showChat(nickname, "<span class='text-primary'>" + message + "</span>", false);
 			break;
 
 		case "VALID":
 		case "CHAIN":
-			processSEND(nickname, message);
+			showChat(nickname, message, false);
 			break;
 
 		case "DB":
 		case "USED":
-			processSEND(nickname, "<span class='text-danger'>" + message + "</span>");
+			showChat(nickname, "<span class='text-danger'>" + message + "</span>", false);
 			break;
 	}
 }
@@ -247,7 +236,7 @@ function processJOIN(success, message, roomIndex)
 	$("#Roomname").text(message);
 	$("*[data-ismain]").attr("data-ismain", "false");
 	$("#chatArea").html("").trigger("create");
-	processSYSTEMSEND(null, "Welcome to " + message + "!");
+	showChat(null, "Welcome to " + message + "!", true);
 }
 
 function processROOMLIST(roomlistString)
