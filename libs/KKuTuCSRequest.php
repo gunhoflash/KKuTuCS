@@ -15,8 +15,8 @@ class KKuTuCSRequest
 		"ROUNDOVER",  // (room)      End round and calculate score.  (Syntax: ROUNDOVER)
 		"PLAYERLIST", // (room)      Receive Playerlist from server. (Syntax: PLAYERLIST str)
 		"RESULT",     // (room)      Popup Result Modal              (Syntax: RESULT str)
-		"PLAYBGM",
-		"ANIMATION"
+		"PLAYBGM",    // (main/room) Play BGM                        (Syntax: PLAYBGM name playspeed)
+		"ANIMATION"   // (room)      Play animation for word         (Syntax: ANIMATION turnspeed word)
 	);
 	private $requestMessage;
 	private $result = [
