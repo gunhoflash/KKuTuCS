@@ -191,8 +191,8 @@ function parseMessage(data)
 function showChat(nickname, message, isSystem)
 {
 	// Replace all space characters to &nbsp;
-	nickname = (nickname == null) ? "" : nickname.replace(/ /g, "&nbsp;");
-	message = (message == null) ? "" : message.replace(/ /g, "&nbsp;");
+	nickname = (nickname == null) ? "" : nickname.replace(/  /g, "&nbsp;&nbsp;");
+	message = (message == null) ? "" : message.replace(/  /g, "&nbsp;&nbsp;");
 
 	if (nickname.length > 0)
 		nickname = "<span class='text-primary'>[" + nickname + "]</span>&nbsp;";

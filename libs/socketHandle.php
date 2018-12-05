@@ -16,7 +16,7 @@ function sendToSocketAll($socketList, $method, $parameter1 = "", $parameter2 = "
 	if ($message == "") return;
 
 	foreach ($socketList as $socket)
-		socket_write($socket, $message, strlen($message));
+		socket_write($socket, $message);
 }
 
 // Unset the object from the array. Index is option that indicates the index of object.

@@ -23,7 +23,8 @@ class KKuTuCSRequest
 		"validity"   => FALSE,
 		"method"     => NULL,
 		"parameter1" => NULL,
-		"parameter2" => NULL
+		"parameter2" => NULL,
+		"parameter3" => NULL
 	];
 	
 	/**
