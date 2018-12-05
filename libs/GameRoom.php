@@ -89,7 +89,6 @@ class GameRoom
 
 		// Send the information to other clients.
 		sendToSocketAll($this->clientSockets, "QUITTED", $socketString);
-		$this->refreshList();
 	}
 
 	public function clientDisconnected(&$socket)
