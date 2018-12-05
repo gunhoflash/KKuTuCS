@@ -326,17 +326,18 @@ function processRESULT(playerlistString)
 
 function processBGM(BGMtitle, playSpeed)
 {
+	var temp_audio = document.createElement('audio');
 	audio.pause();
 	if (playSpeed != 0) BGMtitle += playSpeed;
-	audio.src = "public/media/"+BGMtitle+".mp3";
+	temp_audio.src = "public/media/"+BGMtitle+".mp3";
 	if (BGMtitle == "LobbyBGM")
 	{
-		audio.addEventListener('ended', function ()
+		temp_audio.addEventListener('ended', function ()
 		{
 			setTimeout(function () { audio.play(); }, 500);
 		}, false);
 	}
-
+	audio = temp_audio;
 	audio.play();
 }
 
@@ -369,7 +370,6 @@ function processANIMATION(turnSpeed, word)
 		}
 		i++;
 	}, astime);
-		// TODO: when doing usleep and timer < 0, don't end the game
 }
 
 // Show the word with responsive font-size.

@@ -33,6 +33,7 @@ class GameRoom
 	private $time_forTurn;
 	private $time_temp;
 	private $time_forAni;
+	private $astime;
 	private $wordHistory;
 	private $lastWord;
 	private $nowTurn;        // Index of the client who has to say a word.
@@ -203,7 +204,7 @@ class GameRoom
 			
 			case "in animation":
 				$time_temp = microtime(true);
-				if($time_temp - $this->time_forAni > 2.5) {
+				if($time_temp - $this->time_forAni > $this->astime) {
 					$this->gameState = "on round";
 					($this->mode == "kr") ? $add = checkKorean($this->lastWord) : $add = "";
 					sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord.$add);
@@ -243,10 +244,20 @@ class GameRoom
 			if (isUsed($word, $this->wordHistory))
 				return "USED";
 		}
+		$this->time_forAni = microtime(TRUE);
 		sendToSocketAll($this->clientSockets, "CORRECT", "");
 		sendToSocketAll($this->clientSockets, "ANIMATION", $this->getTurnSpeed(), $word);
+		switch ($this->getTurnSpeed())
+		{
+			case 2.1: $ktime = 0.30; break;
+			case 3.2: $ktime = 0.47; break;
+			case 5.1: $ktime = 0.60; break;
+			case 6.2: $ktime = 0.72; break;
+			case 8.0: $ktime = 0.93; break;
+			default : $ktime = 0.23; break;
+		}
+		$this->astime = $ktime + (mb_strlen($word, "utf-8")/100) + 0.8;
 		$this->wordHistory[] = $this->lastWord = $word;
-		$this->time_forAni = microtime(TRUE);
 		return "OK";
 	}
 
