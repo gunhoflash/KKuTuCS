@@ -14,3 +14,7 @@
 {
 	transition: width .1s ease;
 }
+.bg-teal
+{
+	background-color: #BFFF8C !important;
+}
