@@ -136,7 +136,7 @@ function parseMessage(data)
 			break;
 
 		case "PLAYBGM":
-			processBGM(parameter1, parameter2);
+			processBGM(parameter1, parameter2, true);
 			break;
 
 		case "GAMESTART": // (Syntax: GAMESTART)
@@ -158,7 +158,7 @@ function parseMessage(data)
 			audio.pause();
 			showTurnTimer(parameter1);
 			showRoundTimer(parameter2, null);
-			processBGM("T", parameter1*10);
+			processBGM("T", parameter1*10, true);
 			break;
 
 		case "QUITTED":
@@ -314,31 +314,36 @@ function processRESULT(playerlistString)
 	for(i = 0; i < playerlist.length-1; i++)
 	{
 		player = playerlist[i].split("`");
-
 		str += player[0] + "'s score : " +player[1] + "<br>";
 	}
 	$('#round_timer').css("width", "0%");
 	$('#turn_timer').css("width", "0%");
 	$("#resultScreen").modal('show');
 	$("#resultScreenBody").html(str).trigger("create");
-
 }
 
-function processBGM(BGMtitle, playSpeed)
+function processBGM(BGMtitle, playSpeed, isBackground)
 {
 	var temp_audio = document.createElement('audio');
-	audio.pause();
 	if (playSpeed != 0) BGMtitle += playSpeed;
 	temp_audio.src = "public/media/"+BGMtitle+".mp3";
-	if (BGMtitle == "LobbyBGM")
+	
+	// Pause audio.
+	audio.pause();
+	if (BGMtitle == "lobbyBGM")
 	{
+		// The audio 'lobbyBGM' should be replayed over and over.
 		temp_audio.addEventListener('ended', function ()
 		{
 			setTimeout(function () { audio.play(); }, 500);
 		}, false);
+		audio = temp_audio;
 	}
-	audio = temp_audio;
-	audio.play();
+	else if (isBackground)
+		audio = temp_audio;
+
+	// Play audio.
+	temp_audio.play();
 }
 
 function processANIMATION(turnSpeed, word)
@@ -347,7 +352,7 @@ function processANIMATION(turnSpeed, word)
 	var message = "";
 	var i = 0;
 	var astime, ktime;
-	var tspeed = parseFloat(turnSpeed,10);
+	var tspeed = parseFloat(turnSpeed, 10);
 	switch (tspeed)
 	{
 		case 2.1: ktime = 0.23; break;
@@ -358,17 +363,19 @@ function processANIMATION(turnSpeed, word)
 		default : ktime = 0.23; break;
 	}
 	astime = (ktime * 1000 / word.length) + 10;//2.5s = 2500 = 2.5 * 10^3
-	ani = setInterval(function(){
-		message += word.substr(i, 1);
+	ani = setInterval(function()
+	{
+		message += word[i];
 		showWord(message);
-		processBGM("As", tspeed*10);
-		if(i==word.length) {
-			setTimeout(function(){
-				processBGM("K", tspeed*10);
-			},10);
+		processBGM("As", tspeed*10, false);
+		if (++i == word.length)
+		{
+			setTimeout(function()
+			{
+				processBGM("K", tspeed*10, false);
+			}, 350);
 			clearInterval(ani);
 		}
-		i++;
 	}, astime);
 }
 
