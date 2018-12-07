@@ -127,7 +127,7 @@ class GameRoom
 						$score = 0;
 
 					$this->refreshList();
-					$this->lastWord = ($this->mode == "kr") ? getRandomWord_K() : getRandomWord();
+					$this->lastWord = getRandomWord($this->word);
 					sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Current Round is { ".($this->currentRound)." / 3 }");
@@ -187,7 +187,7 @@ class GameRoom
 						sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Ready to play next Round.\n");
 
 						$this->refreshList();
-						$this->lastWord = ($this->mode == "kr") ? getRandomWord_K() : getRandomWord();
+						$this->lastWord = getRandomWord($this->mode);
 						sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 						sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 						sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Current Round is { ".($this->currentRound)." / 3 }");
@@ -219,30 +219,15 @@ class GameRoom
 		//$word = strtolower($typed_word);
 		// TODO: To allow for words with spaces, this code must be modified.
 
-		if ($this->mode == "en")
-		{
-			// en
-			if (!isValid($word))
-				return "VALID";
-			if (!isChained($this->lastWord, $word))
-				return "CHAIN";
-			if (!isInDB($word))
-				return "DB";
-			if (isUsed($word, $this->wordHistory))
-				return "USED";
-		}
-		else
-		{
-			// kr
-			if (!isValid_K($word))
-				return "VALID";
-			if (!isChained_K($this->lastWord, $word))
-				return "CHAIN";
-			if (!isInDB_K($word))
-				return "DB";
-			if (isUsed($word, $this->wordHistory))
-				return "USED";
-		}
+		if (!isValid($this->mode, $word))
+			return "VALID";
+		if (!isChained($this->mode, $this->lastWord, $word))
+			return "CHAIN";
+		if (!isInDB($this->mode, $word))
+			return "DB";
+		if (isUsed($this->mode, $word, $this->wordHistory))
+			return "USED";
+
 		$this->time_forAni = microtime(TRUE);
 		sendToSocketAll($this->clientSockets, "CORRECT", "");
 		sendToSocketAll($this->clientSockets, "ANIMATION", $this->getTurnSpeed(), $word);
@@ -323,7 +308,6 @@ class GameRoom
 		return ($this->password == "") || ($password == $this->password);
 	}
 
-	// Process data (at game room)
 	public function processData(&$socket, $method, $parameter1, $parameter2, $parameter3)
 	{
 		switch ($method)
@@ -331,17 +315,21 @@ class GameRoom
 			case "SEND":
 				$this->processSEND($socket, $parameter1);
 				break;
+
 			case "READY":
-				if ($this->state == "Playing") break; // Ignore it because the game has already started.
-				$this->processREADY($socket, $parameter1);
+				if ($this->state == "Ready")
+					$this->processREADY($socket, $parameter1);
 				break;
+
 			case "QUIT":
 				// Client will re-open its socket.
 				$this->clientDisconnected($socket);
 				break;
+
 			case "TIMETEST":
 				sendToSocket($socket, $method);
 				break;
+
 			default:
 				echo "  Gameroom can't handle the new method: $method\n";
 				break;
@@ -353,7 +341,6 @@ class GameRoom
 		$socketString = getNicknameBySocket($socket);
 
 		if ($this->state == "Playing" && $this->gameState == "on round")
-		{
 			if ($this->nowTurn == array_search($socket, $this->clientSockets))
 			{
 				// It is a word. Check its validity.
@@ -367,7 +354,7 @@ class GameRoom
 
 					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, $checkResult);
 					sendToSocketAll($this->clientSockets, "SYSTEMSEND", $socketString, "get score $score.");
-									
+
 					$this->nowTurn = ($this->nowTurn + 1) % sizeof($this->clientSockets);
 					$this->gameState = "in animation";
 				}
@@ -375,7 +362,6 @@ class GameRoom
 					sendToSocketAll($this->clientSockets, "WORD", $socketString, $message, $checkResult);
 				return;
 			}
-		}
 
 		// It is a chat.
 		sendToSocketAll($this->clientSockets, "SEND", $socketString, $message);
@@ -390,9 +376,9 @@ class GameRoom
 			return;
 		}
 
-		// 0: not ready, 1: ready
 		if (($flag == 1 || $flag == 0) && $this->state = "Ready")
 		{
+			// 0: not ready, 1: ready
 			$this->clientReady[$index] = $flag;
 			sendToSocketAll($this->clientSockets, "PLAYERLIST", $this->makePlayerList());
 
