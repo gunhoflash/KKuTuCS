@@ -67,7 +67,7 @@ function getRandomWord($mode)
 {
 	global $conn;
 
-	$queryString = "SELECT * FROM kkutudb.kkutu_".$mode." ORDER BY RAND() LIMIT 1";
+	$queryString = "SELECT * FROM kkutudb.kkutu_" . ($mode == "en" ? "en" : "ko") . " ORDER BY RAND() LIMIT 1";
 	$result = mysqli_query($conn, $queryString);
 	$rows = mysqli_fetch_all($result);
 	mysqli_free_result($result);
