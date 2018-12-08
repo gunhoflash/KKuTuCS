@@ -207,21 +207,21 @@ function processROOMLIST($socketList)
 	 * $str = (roomString)``(roomString)``(roomString) ...
 	 */
 	global $client_room;
-		
+
+	sendToSocketAll($socketList, "ROOMLISTSTART");
+
 	// Convert $client_room to string.
-	$str = '';
 	foreach ($client_room as $room)
 	{
 		if ($room->getRoomType() == "main") continue;
-
-		if (strlen($str)) $str .= '``';
-		$str .= $room->getIndex().'`'
+		$str = $room->getIndex().'`'
 		.$room->getName().'`'
 		.$room->getMode().'`'
 		.($room->isPlaying() ? '1' : '0').'`'
 		.$room->getNumberOfClient().'/'.$room->getMaximumClients().'`'
 		.($room->checkPassword("") ? '0' : '1');
+		sendToSocketAll($socketList, "ROOMLIST", $str);
 	}
 
-	sendToSocketAll($socketList, "ROOMLIST", $str);
+	sendToSocketAll($socketList, "ROOMLISTEND");
 }

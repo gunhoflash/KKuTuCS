@@ -78,12 +78,12 @@ function initializeButton()
 		var rotate;
 		if ($("#chatArea").attr("data-expand") == "1")
 		{
-			rotate = "0";
+			rotate = "180";
 			$("#chatArea").attr("data-expand", "0");
 		}
 		else
 		{
-			rotate = "180";
+			rotate = "0";
 			$("#chatArea").attr("data-expand", "1");
 		}
 		$(this).find("svg").css("transform", "rotate("+rotate+"deg)");

@@ -1,6 +1,6 @@
 var socketLink = "ws://"+window.location.hostname+":7002";
 var socket;
-
+var roomlist;
 var responseTime = 0;
 var uriQueries = [];
 
@@ -117,8 +117,16 @@ function parseMessage(data)
 			showChat(parameter1, "is connected.", true);
 			break;
 
+		case "ROOMLISTSTART":
+			processROOMLIST(parameter1, "START");
+			break;
+
 		case "ROOMLIST":
-			processROOMLIST(parameter1);
+			processROOMLIST(parameter1, "MIDDLE");
+			break;
+
+		case "ROOMLISTEND":
+			processROOMLIST(parameter1, "END");
 			break;
 
 		case "TIMETEST":
@@ -240,46 +248,53 @@ function processJOIN(success, message, roomIndex)
 	showChat(null, "Welcome to " + message + "!", true);
 }
 
-function processROOMLIST(roomlistString)
+function processROOMLIST(roomlistString, mode)
 {
-	var no_rooms = "<p class='py-3 text-center text-muted'>No rooms</p>";
-	/**
-	 * (roomString): index`roomname`isPlaying`now/max`needPassword
-	 * ex) 133`Come on!`0`2/4`0
-	 * 
-	 * roomlistString = (roomString)``(roomString)``(roomString) ...
-	 */
-
-	// No rooms.
-	
-	if (roomlistString.length == 0)
-		$("#roomlistArea").html(no_rooms).trigger("create");
-
-	var i, str = "", room, roomlist = roomlistString.split('``');
-	for (i = 0; i < roomlist.length; i++)
+	switch (mode)
 	{
-		room = roomlist[i].split('`');
+		case "START":
+			roomlist = [];
+			break;
 
-		// Handle wrong string.
-		if (room.length < 6) continue;
+		case "MIDDLE":
+			var room = roomlistString.split('`');
 
-		str +=
-		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate' data-index="+room[0]+" data-pw="+room[5]+">"+
-			"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
-			"<div class='d-flex small'>"+
-				"<span class='text-muted'>"+(room[2] == 'en' ? "En" : "한")+"</span>"+
-				(room[3] == '0' ? "<span class='text-success px-1'>Ready" : "<span class='text-warning px-1'>Playing")+"</span>"+
-				"<span class='text-black'>"+room[4]+"</span>"+
-				"<span class='text-muted ml-auto'>"+(room[5] == '0' ? "" : "PW")+"</span>"+
-			"</div>"+
-		"</div>";
+			// Handle wrong string.
+			if (room.length < 6) break;
+
+				/**
+				 * (roomString): index`roomname`isPlaying`now/max`needPassword
+				 * ex) 133`Come on!`0`2/4`0
+				 * 
+				 * roomlistString = (roomString)``(roomString)``(roomString) ...
+				 */
+
+			roomlist.push(
+			"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate bg-white' data-index="+room[0]+" data-pw="+room[5]+">"+
+				"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
+				"<div class='d-flex small'>"+
+					"<span class='text-muted'>"+(room[2] == 'en' ? "En" : "한")+"</span>"+
+					(room[3] == '0' ? "<span class='text-success px-1'>Ready" : "<span class='text-warning px-1'>Playing")+"</span>"+
+					"<span class='text-black'>"+room[4]+"</span>"+
+					"<span class='text-muted ml-auto'>"+(room[5] == '0' ? "" : "PW")+"</span>"+
+				"</div>"+
+			"</div>");
+			break;
+
+		case "END":
+			var str;
+			if (roomlist.length == 0)
+				str = "<p class='py-3 text-center text-muted'>No rooms</p>";
+			else
+			{
+				str = "";
+				for (var i = 0; i < roomlist.length; i++)
+					str += roomlist[i];
+
+			}
+			$("#roomlistArea").html(str).trigger("create");
+			break;
 	}
-
-	// Show the roomlist.
-	if (str.length)
-		$("#roomlistArea").html(str).trigger("create");
-	else
-		$("#roomlistArea").html(no_rooms).trigger("create");
 }
 
 function processPLAYERLIST(playerlistString)
@@ -295,7 +310,7 @@ function processPLAYERLIST(playerlistString)
 		player = playerlist[i].split("`");
 
 		str +=
-		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(i == nowTurn ? " bg-teal" : "")+"'>"+
+		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(i == nowTurn ? " bg-teal" : "")+" bg-white'>"+
 			"<h6>"+player[0]+"</h6>"+
 			"<div class='d-flex'>"+
 				(player[2] == '1' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Not Ready")+"</span>"+
