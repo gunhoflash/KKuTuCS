@@ -8,7 +8,8 @@
 		<title id="title">KKuTuCS</title> 
 
 		<!-- CSS -->
-		<link rel="stylesheet" href="public/css/bootstrap.min.css">
+		<link rel="stylesheet" href="public/css/bootstrap.custom.css">
+		<!-- <link rel="stylesheet" href="public/css/bootstrap.min.css"> -->
 		<link rel="stylesheet" href="public/css/style.css">
 
 		<!-- JS -->
@@ -18,9 +19,11 @@
 	</head>
 
 	<body class="bg-light d-flex flex-column h-100" data-ismain="true">
-		<nav class="navbar navbar-dark bg-primary">
+		<nav class="navbar navbar-dark bg-kkutu">
 			<span class="align-items-center d-flex text-white text-truncate">
-				<button id="btn_quit" class="btn btn-primary px-1 px-md-2 mr-2 mr-md-3" type="button" data-btnshow="room">⮜&nbsp;<span class="d-none d-md-inline">Back</span></button>
+				<button id="btn_quit" class="btn btn-outline-primary px-1 px-md-2 mr-2 mr-md-3 border-0" type="button" data-btnshow="room">
+					<svg viewBox="0 0 8 8" class="h-100"><path d="M5 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z"></path></svg>
+					&nbsp;<span class="d-none d-md-inline">Back</span></button>
 				<span class="align-items-baseline d-flex h5 mb-0">
 					<span id="Mainname" data-btnshow="main"></span>
 					<span id="Roomindex" class="text-dark mr-3" data-btnshow="room"></span>
@@ -29,11 +32,11 @@
 			</span>
 			<button id="btn_make" class="btn btn-outline-light" type="button" data-btnshow="main" data-toggle="modal" data-target="#createRoom">Make</button>
 		</nav>
-		<div class="container d-flex flex-column h-100 mb-auto py-3 py-md-5 my-0">
+		<div class="container d-flex flex-column h-100 mb-auto px-0 px-md-3 py-0 py-sm-3 py-md-5 my-0">
 			<div class="text-center" data-btnshow="room" style="line-height: 3rem; height: 3rem;">
 				&nbsp;<span id="wordArea"></span>&nbsp;
 			</div>
-			<div class="d-flex align-items-center my-1" data-btnshow="room">
+			<div class="d-flex align-items-center px-3 px-sm-0 my-3 my-sm-1" data-btnshow="room">
 				<button id="btn_ready" class="btn btn-outline-secondary mr-3" type="button" data-ready="0">Ready!</button>
 				<div class="w-100">
 					<div class="progress">
@@ -47,17 +50,20 @@
 				</div>
 			</div>
 
-			<div class="d-flex flex-column flex-md-row my-3 h-100">
-				<div id="chatArea" class="col col-md-6 d-flex flex-column p-3 m-0 bg-dark text-white word-break-all" style="min-height:75%; overflow-x: hidden; overflow-y: auto;"></div>
-				<div id="roomlistArea" class="col-md-6 px-0 pl-md-3 mt-3 mt-md-0" style="overflow-y: auto;"></div>
+			<div class="d-flex flex-column flex-md-row my-0 mt-sm-3 h-100">
+				<div id="chatArea" class="col col-md-6 d-flex flex-column p-3 m-0 bg-dark text-white word-break-all" data-expand="1" style="overflow-x: visible; overflow-y: auto;"></div>
+				<div id="btn_expand" class="d-md-none text-center">
+					<svg viewBox="0 0 8 8" class="h-50"><path d="M4 1l-4 4 1.5 1.5 2.5-2.5 2.5 2.5 1.5-1.5-4-4z"></path></svg>
+				</div>
+				<div id="roomlistArea" class="col-md-6 px-3 pr-md-0 pr-md-0 mt-3 mt-md-0" style="overflow: auto;"></div>
 			</div>
-			<form>
+			<form class="px-2 px-sm-0 py-2 py-sm-3">
 				<div class="form-row align-items-start">
 					<div class="col-9">
-						<input id="wordInput" type="text" class="form-control" placeholder="Something here!" maxlength="32">
+						<input id="wordInput" type="text" class="form-control shadow-hoverable-sm" placeholder="Something here!" maxlength="32">
 					</div>
 					<div class="col-3">
-						<button id="btn_send" class="btn btn-primary w-100" type="button">Send</button>
+						<button id="btn_send" class="btn btn-primary w-100 shadow-hoverable-sm" type="button">Send</button>
 					</div>
 				</div>
 			</form>
@@ -83,7 +89,7 @@
 							<div class="form-group">
 								<label for="modal_id_password">Password</label>
 								<input type="password" class="form-control" name="password" id="modal_id_password" aria-describedby="pwdHelp" placeholder="Password">
-								<small id="pwdHelp" class="form-text text-muted">Remain this blank, if you want to make public room.</small>
+								<small id="pwdHelp" class="form-text text-muted">To make room public, remain it blank.</small>
 							</div>
 							<div class="form-group">
 								<label>Game mode</label>
@@ -98,7 +104,7 @@
 							</div>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
 							<button type="submit" class="btn btn-primary">Create</button>
 						</div>
 					</form>

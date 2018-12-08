@@ -21,7 +21,7 @@ function initializeButton()
 			$(this).find("input[name=password]").val(),
 			$(this).find("input[name=mode]:checked").val()
 		);
-		$(this).find("input").val("");
+		$(this).find("input:not([type=radio])").val("");
 		$('#createRoom').modal("hide");
 	});
 
@@ -71,6 +71,22 @@ function initializeButton()
 			event.preventDefault();
 			$("#btn_send").click();
 		}
+	});
+
+	$("#btn_expand").on("click", function()
+	{
+		var rotate;
+		if ($("#chatArea").attr("data-expand") == "1")
+		{
+			rotate = "0";
+			$("#chatArea").attr("data-expand", "0");
+		}
+		else
+		{
+			rotate = "180";
+			$("#chatArea").attr("data-expand", "1");
+		}
+		$(this).find("svg").css("transform", "rotate("+rotate+"deg)");
 	});
 }
 

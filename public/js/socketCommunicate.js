@@ -263,7 +263,7 @@ function processROOMLIST(roomlistString)
 		if (room.length < 6) continue;
 
 		str +=
-		"<div class='gameroom border shadow-sm px-3 py-2 mb-2' data-index="+room[0]+" data-pw="+room[5]+">"+
+		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate' data-index="+room[0]+" data-pw="+room[5]+">"+
 			"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
 			"<div class='d-flex small'>"+
 				"<span class='text-muted'>"+(room[2] == 'en' ? "En" : "한")+"</span>"+
@@ -294,7 +294,7 @@ function processPLAYERLIST(playerlistString)
 		player = playerlist[i].split("`");
 
 		str +=
-		"<div class='gameroom border shadow-sm px-3 py-2 mb-2"+(i == nowTurn ? " bg-teal" : "")+"'>"+
+		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(i == nowTurn ? " bg-teal" : "")+"'>"+
 			"<h6>"+player[0]+"</h6>"+
 			"<div class='d-flex'>"+
 				(player[2] == '1' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Not Ready")+"</span>"+

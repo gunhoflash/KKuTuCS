@@ -18,3 +18,40 @@
 {
 	background-color: #BFFF8C !important;
 }
+
+.bg-kkutu
+{
+	background: linear-gradient(to right, #7457AD , #F74581) !important;
+}
+
+.shadow-hoverable:not(:hover):not(:focus)              { box-shadow: 0   0.5rem    1rem rgba(0, 0, 0, 0.15  ); transition: box-shadow 0.2s; }
+.shadow-hoverable:hover, .shadow-hoverable:focus       { box-shadow: 0     1rem    2rem rgba(0, 0, 0, 0.1875); transition: box-shadow 0.2s; }
+
+.shadow-hoverable-lg:not(:hover):not(:focus)           { box-shadow: 0     1rem    3rem rgba(0, 0, 0, 0.175 ); transition: box-shadow 0.2s; }
+.shadow-hoverable-lg:hover, .shadow-hoverable-lg:focus { box-shadow: 0   1.5rem    5rem rgba(0, 0, 0, 0.2   ); transition: box-shadow 0.2s; }
+
+.shadow-hoverable-sm:not(:hover):not(:focus)           { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075 ); transition: box-shadow 0.2s; }
+.shadow-hoverable-sm:hover, .shadow-hoverable-sm:focus { box-shadow: 0   0.5rem    1rem rgba(0, 0, 0, 0.1   ); transition: box-shadow 0.2s; }
+
+svg
+{
+	fill: #fff;
+}
+
+#btn_expand
+{
+	z-index: 1;
+	height: 2rem;
+	line-height: 2rem;
+	margin-top: -2rem;
+	background: rgba(0, 0, 0, .1);
+}
+#btn_expand svg
+{
+	transform: rotate(180deg);
+	transition: transform .35s ease;
+}
+
+#chatArea { transition: min-height 1s ease; }
+#chatArea[data-expand="1"] { min-height: 80%; }
+#chatArea[data-expand="0"] { min-height: 20%; }

@@ -10,13 +10,11 @@ set_time_limit(0);
 
 // Create a socket, bind to port, and start listening for connections.
 $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP) or die("Could not create socket.\n");
-$result = socket_bind($socket, "0.0.0.0", 7002) or die("Could not bind to socket.\n");
-$result = socket_listen($socket, 512) or die("Could not set up socket listener.\n");
+socket_bind($socket, "0.0.0.0", 7002) or die("Could not bind to socket.\n");
+socket_listen($socket, 512) or die("Could not set up socket listener.\n");
 
 $client_unknown = array($socket); // New client here.
-$client_room = array(
-	new GameRoom("main", "main room", "", "", 0)
-); // Array of GameRooms.
+$client_room = array(new GameRoom("main", "main room", "", "", 0)); // Array of GameRooms.
 
 // Connecting to MySQL database.
 $conn = mysqli_connect("p:localhost", "root", "111111", "kkutudb");
@@ -68,11 +66,8 @@ while(TRUE)
 
 	// Process Game Round
 	foreach ($client_room as &$room)
-	{
-		if ($room->getRoomType() == "main") continue;
-
-		$room->processGameRound();
-	}
+		if ($room->getRoomType() == "game")
+			$room->processGameRound();
 }
 
 function socket_read_GameRoom(&$room)

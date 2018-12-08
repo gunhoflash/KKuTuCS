@@ -56,10 +56,7 @@ function isUsed($mode, $word, $wordHistory)
 	if (is_null($wordHistory))
 		return FALSE;
 
-	if ($mode == "en")
-		$word = strtolower($word);
-
-	return in_array($word, $wordHistory); 
+	return in_array(strtolower($word), $wordHistory); 
 }
 
 // Get a random word in DB.
@@ -67,7 +64,7 @@ function getRandomWord($mode)
 {
 	global $conn;
 
-	$queryString = "SELECT * FROM kkutudb.kkutu_" . ($mode == "en" ? "en" : "ko") . " ORDER BY RAND() LIMIT 1";
+	$queryString = "SELECT * FROM kkutudb.kkutu_" . ($mode == "en" ? "en" : "ko") . " ORDER BY RAND() LIMIT 1;";
 	$result = mysqli_query($conn, $queryString);
 	$rows = mysqli_fetch_all($result);
 	mysqli_free_result($result);
@@ -81,15 +78,16 @@ function ucord($uc)
 	return (((ord($uc[0]) ^ 0xe0) << 12) | ((ord($uc[1]) ^ 0x80) << 6) | (ord($uc[2]) ^ 0x80));
 }
 
-function ucchr($uc){
+function ucchr($uc)
+{
 	return chr(0xe0 | ($uc >> 12)) . chr(0x80 | (($uc & 0xfc0) >> 6)) . chr(0x80 | ($uc & 0x3f));
 }
 
 function checkKorean($word)
 {
 	$last = ucord(mb_substr($word, -1, 1, 'utf-8'));
-	if($last>=45208 && $last<=45795) return '('.ucchr($last+5292).')';
-	if($last>=46972 && $last<=47559) return '('.ucchr($last+3528).')';
-	else return;
+	if ($last >= 45208 && $last <= 45795) return '('.ucchr($last+5292).')';
+	if ($last >= 46972 && $last <= 47559) return '('.ucchr($last+3528).')';
+	return "";
 }
 ?>
