@@ -47,7 +47,9 @@ You should have 147023 rows with english db and 430053 with korean db.
   │      ├ KKuTuCSRequest.php
   │      ├ socketHandle.php
   │      └ wordCheck.php
-  ├ public ┬ css ┬ bootstrap.min.css
+  ├ public ┬ css ┬ bootstrap.custom.css
+  │        │     ├ bootstrap.custom.min.css
+  │        │     ├ bootstrap.min.css
   │        │     └ style.css
   │        ├ img ┬ kkutucs_char.jpg
   │        │     └ logo.png
