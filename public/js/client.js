@@ -47,7 +47,7 @@ function initializeButton()
 	$("#btn_send").on("click", function()
 	{
 		if ($("#wordInput").val().trim() != "")
-			sendMessage("SEND", $("#wordInput").val(), null, null);
+			sendMessage("SEND", $("#wordInput").val().substring(0, 31), null, null);
 		$("#wordInput").val("");
 	});
 
