@@ -234,6 +234,7 @@ function processJOIN(success, message, roomIndex)
 	// Join the game
 	$("#Roomindex").text("#" + roomIndex);
 	$("#Roomname").text(message);
+	$("#btn_ready").removeClass("d-none").attr("data-ready", "0");
 	$("*[data-ismain]").attr("data-ismain", "false");
 	$("#chatArea").html("").trigger("create");
 	showChat(null, "Welcome to " + message + "!", true);
