@@ -1,7 +1,10 @@
 <?php
 defined('PROJECT_ROOT') or exit('No direct script access allowed');
 $NULL = NULL;
-// Functions for socket
+
+/**
+ * Socket Send Functions
+ */
 
 // Send a message to the client.
 function sendToSocket($socket, $method, $parameter1 = "", $parameter2 = "", $parameter3 = "")
@@ -19,17 +22,19 @@ function sendToSocketAll($socketList, $method, $parameter1 = "", $parameter2 = "
 		socket_write($socket, $message);
 }
 
-// Unset the object from the array. Index is option that indicates the index of object.
-function unsetFromArray(&$object, &$array, $index = -1)
+function sendLongToSocketAll($socketList, $method, $stringArray)
 {
-	if ($index == -1)
-		$index = array_search($object, $array);
-	if ($index !== FALSE)
-		unset($array[$index]);
-	$array = array_values($array);
+	sendToSocketAll($socketList, $method."START");
+	for ($i = 0; $i < sizeof($stringArray); $i++)
+		sendToSocketAll($socketList, $method."MIDDLE", $stringArray[$i]);
+	sendToSocketAll($socketList, $method."END");
 }
 
-$client_name = array(); // socketString => nickname
+/**
+ * Nickname Functions
+ */
+
+$client_name = array(); // IPPORT => nickname
 
 // Insert new key(IPPORT) and value(nickname) to the $client_name
 function registerClientNickname($socket, $nickname)
@@ -61,6 +66,20 @@ function getIPPORT($socket)
 {
 	socket_getpeername($socket, $IP, $PORT);
 	return $IP.":".$PORT;
+}
+
+/**
+ * System Functions
+ */
+
+// Unset the object from the array. Index is option that indicates the index of object.
+function unsetFromArray(&$object, &$array, $index = -1)
+{
+	if ($index == -1)
+		$index = array_search($object, $array);
+	if ($index !== FALSE)
+		unset($array[$index]);
+	$array = array_values($array);
 }
 
 // Decode the text.

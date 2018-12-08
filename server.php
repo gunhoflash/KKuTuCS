@@ -192,7 +192,7 @@ function processMAKE(&$socket, $roomname, $password, $mode)
 
 	// Send a information of roomlist to all clients in the main room.
 	processROOMLIST($client_room[0]->getClientSockets());
-	
+
 	// Send a JOIN success message to the client.
 	sendToSocket($socket, "JOIN", "1", $new_room->getName(), $new_room->getIndex());
 }
@@ -203,25 +203,23 @@ function processROOMLIST($socketList)
 	/**
 	 * (roomString): roomIndex`roomname`mode`isPlaying`now/max`needPassword
 	 * ex) 3`Come on!`en`0`2/4`0
-	 * 
-	 * $str = (roomString)``(roomString)``(roomString) ...
 	 */
+
 	global $client_room;
 
-	sendToSocketAll($socketList, "ROOMLISTSTART");
+	$ar = array();
 
 	// Convert $client_room to string.
 	foreach ($client_room as $room)
 	{
 		if ($room->getRoomType() == "main") continue;
-		$str = $room->getIndex().'`'
+		$ar[] = $room->getIndex().'`'
 		.$room->getName().'`'
 		.$room->getMode().'`'
 		.($room->isPlaying() ? '1' : '0').'`'
 		.$room->getNumberOfClient().'/'.$room->getMaximumClients().'`'
 		.($room->checkPassword("") ? '0' : '1');
-		sendToSocketAll($socketList, "ROOMLIST", $str);
 	}
 
-	sendToSocketAll($socketList, "ROOMLISTEND");
+	sendLongToSocketAll($socketList, "ROOMLIST", $ar);
 }

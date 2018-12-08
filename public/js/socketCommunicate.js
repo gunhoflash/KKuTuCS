@@ -1,6 +1,8 @@
 var socketLink = "ws://"+window.location.hostname+":7002";
 var socket;
-var roomlist;
+var roomList = [];
+var resultList = [];
+var playerList = [];
 var responseTime = 0;
 var uriQueries = [];
 
@@ -13,7 +15,7 @@ function initializeSocketAndObject()
 	$("*[data-ismain]").attr("data-ismain", "true");
 	showWord("");
 	$("#chatArea").html("").trigger("create");
-	processROOMLIST("");
+	processROOMLIST();
 
 	socket = new WebSocket(socketLink);
 	$("#Mainname").text("(Connecting..)");
@@ -109,41 +111,41 @@ function parseMessage(data)
 			processJOIN(parameter1, parameter2, parameter3);
 			break;
 
-		case "DISCONNECTED":
+		case "DISCONNECTED": // (Syntax: DISCONNECTED nickname)
 			showChat(parameter1, "is disconnected.", true);
 			break;
 
-		case "CONNECTED":
+		case "CONNECTED": // (Syntax: CONNECTED nickname)
 			showChat(parameter1, "is connected.", true);
 			break;
 
-		case "ROOMLISTSTART":
-			processROOMLIST(parameter1, "START");
-			break;
+		case "ROOMLISTSTART"    : roomList = [];               break; // (Syntax: ROOMLISTSTART)
+		case "ROOMLISTMIDDLE"   : roomList.push(parameter1);   break; // (Syntax: ROOMLISTMIDDLE roomString)
+		case "ROOMLISTEND"      : processROOMLIST();           break; // (Syntax: ROOMLISTEND)
 
-		case "ROOMLIST":
-			processROOMLIST(parameter1, "MIDDLE");
-			break;
+		case "RESULTLISTSTART"  : resultList = [];             break; // (Syntax: RESULTLISTSTART)
+		case "RESULTLISTMIDDLE" : resultList.push(parameter1); break; // (Syntax: RESULTLISTMIDDLE resultString)
+		case "RESULTLISTEND"    : processRESULT();             break; // (Syntax: RESULTLISTEND)
 
-		case "ROOMLISTEND":
-			processROOMLIST(parameter1, "END");
-			break;
+		case "PLAYERLISTSTART"  : playerList = [];             break; // (Syntax: PLAYERLISTSTART)
+		case "PLAYERLISTMIDDLE" : playerList.push(parameter1); break; // (Syntax: PLAYERLISTMIDDLE playerString)
+		case "PLAYERLISTEND"    : processPLAYERLIST();         break; // (Syntax: PLAYERLISTEND)
 
-		case "TIMETEST":
+		case "TIMETEST": // (Syntax: TIMETEST)
 			console.log("response time: " + ((new Date()).getTime() - responseTime) + "ms");
 			break;
 
-		case "ERROR":
+		case "ERROR": // (Syntax: ERROR errorMessage)
 			alert("[Server Error] " + parameter1);
 			break;
 
-		case "CORRECT":
+		case "CORRECT": // (Syntax: ERROR word)
 			removeInterval(0);
 			removeInterval(1);
 			showWord(parameter1);
 			break;
 
-		case "PLAYBGM":
+		case "PLAYBGM": // (Syntax: PLAYBGM name playspeed)
 			processBGM(parameter1, parameter2, true);
 			break;
 
@@ -153,40 +155,27 @@ function parseMessage(data)
 			$("#btn_ready").addClass("d-none");
 			break;
 
-		case "ROUNDSTART":
+		case "ROUNDSTART": // (Syntax: ROUNDSTART roundTime)
 			showRoundTimer(parameter1, parameter1);
 			removeInterval(0);
 			break;
 		
-		case "ROUNDOVER":
+		case "ROUNDOVER": // (Syntax: ROUNDOVER)
 			removeInterval(0);
 			break;
 
-		case "TURNSTART": // (Syntax: TURNSTART turn_time round_time)
+		case "TURNSTART": // (Syntax: TURNSTART turnTime roundTime)
 			audio.pause();
 			showTurnTimer(parameter1);
 			showRoundTimer(parameter2, null);
 			processBGM("T", parameter1*10, true);
 			break;
 
-		case "QUITTED":
+		case "QUITTED": // (Syntax: QUITTED nickname)
 			showChat(parameter1, "quitted.", true);
 			break;
 
-		case "PLAYERLIST":
-			processPLAYERLIST(parameter1);
-			break;
-
-		case "RESULT":
-			$("#btn_ready").removeClass("d-none").attr("data-ready", "0");
-			removeInterval(0);
-			removeInterval(1);
-			showChat(null, "Game over.", true);
-			processPLAYERLIST(parameter1);
-			processRESULT(parameter1);
-			break;
-
-		case "ANIMATION":
+		case "ANIMATION": // (Syntax: ANIMATION turnspeed word)
 			processANIMATION(parameter1, parameter2);
 			break;
 
@@ -216,7 +205,7 @@ function processWORD(nickname, message, result)
 	switch (result)
 	{
 		case "OK":
-			showChat(nickname, "<span class='text-primary'>" + message + "</span>", false);
+			showChat(nickname, "<span class='text-success'>" + message + "</span>", false);
 			break;
 
 		case "VALID":
@@ -248,94 +237,87 @@ function processJOIN(success, message, roomIndex)
 	showChat(null, "Welcome to " + message + "!", true);
 }
 
-function processROOMLIST(roomlistString, mode)
+function processROOMLIST()
 {
-	switch (mode)
+	/**
+	 * (roomString): roomIndex`roomname`mode`isPlaying`now/max`needPassword
+	 * ex) 3`Come on!`en`0`2/4`0
+	 */
+
+	var room, i, str = "";
+	for (i = 0; i < roomList.length; i++)
 	{
-		case "START":
-			roomlist = [];
-			break;
-
-		case "MIDDLE":
-			var room = roomlistString.split('`');
-
-			// Handle wrong string.
-			if (room.length < 6) break;
-
-				/**
-				 * (roomString): index`roomname`isPlaying`now/max`needPassword
-				 * ex) 133`Come on!`0`2/4`0
-				 * 
-				 * roomlistString = (roomString)``(roomString)``(roomString) ...
-				 */
-
-			roomlist.push(
-			"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate bg-white' data-index="+room[0]+" data-pw="+room[5]+">"+
-				"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
-				"<div class='d-flex small'>"+
-					"<span class='text-muted'>"+(room[2] == 'en' ? "En" : "한")+"</span>"+
-					(room[3] == '0' ? "<span class='text-success px-1'>Ready" : "<span class='text-warning px-1'>Playing")+"</span>"+
-					"<span class='text-black'>"+room[4]+"</span>"+
-					"<span class='text-muted ml-auto'>"+(room[5] == '0' ? "" : "PW")+"</span>"+
-				"</div>"+
-			"</div>");
-			break;
-
-		case "END":
-			var str;
-			if (roomlist.length == 0)
-				str = "<p class='py-3 text-center text-muted'>No rooms</p>";
-			else
-			{
-				str = "";
-				for (var i = 0; i < roomlist.length; i++)
-					str += roomlist[i];
-
-			}
-			$("#roomlistArea").html(str).trigger("create");
-			break;
-	}
-}
-
-function processPLAYERLIST(playerlistString)
-{
-	//clients`scores`ready``clients`scores`ready``...``nowTurn;
-	$("#roomlistArea").html("").trigger("create");
-
-	var i, str = "", playerlist = playerlistString.split("``");
-	var nowTurn = parseInt(playerlist.slice(-1), 10);
-
-	for(i = 0; i < playerlist.length-1; i++)
-	{
-		player = playerlist[i].split("`");
+		room = roomList[i].split('`');
+		if (room.length < 6) continue;
 
 		str +=
-		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(i == nowTurn ? " bg-teal" : "")+" bg-white'>"+
+		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate bg-white' data-index="+room[0]+" data-pw="+room[5]+">"+
+			"<span class='font-weight-bold'><span class='pr-1 text-primary'>#"+room[0]+"</span>"+room[1]+"</span>"+
+			"<div class='d-flex small'>"+
+				"<span class='text-muted'>"+(room[2] == 'en' ? "En" : "한")+"</span>"+
+				(room[3] == '0' ? "<span class='text-success px-1'>Ready" : "<span class='text-warning px-1'>Playing")+"</span>"+
+				"<span class='text-black'>"+room[4]+"</span>"+
+				"<span class='text-muted ml-auto'>"+(room[5] == '0' ? "" : "PW")+"</span>"+
+			"</div>"+
+		"</div>";
+	}
+
+	// If there is no room, show 'No room'.
+	if (str == "") str = "<p class='py-3 text-center text-muted'>No room</p>";
+
+	$("#roomlistArea").html(str).trigger("create");
+}
+
+function processRESULT()
+{
+	$("#btn_ready").removeClass("d-none").attr("data-ready", "0");
+	removeInterval(0);
+	removeInterval(1);
+	showChat(null, "Game over.", true);
+
+	/**
+	 * (resultString): nickname`score
+	 * ex) gunhoflash`9122
+	 */
+	var result, i, str = "";
+	for (i = 0; i < resultList.length; i++)
+	{
+		result = resultList[i].split('`');
+		if (result.length < 2) continue;
+		str += result[0] + "'s score : " + result[1] + "<br>";
+	}
+
+	$("#round_timer").css("width", "0%");
+	$("#turn_timer").css("width", "0%");
+	$("#resultScreen").modal('show');
+	$("#resultScreenBody").html(str).trigger("create");
+
+	playerList = resultList;
+	processPLAYERLIST();
+}
+
+function processPLAYERLIST()
+{
+	/**
+	 * (playerString): nickname`score`[ready(0/1)/nowTurn(2)]
+	 * ex) gunhoflash`9122`2
+	 */
+	var player, i, str = "";
+	for (i = 0; i < playerList.length; i++)
+	{
+		player = playerList[i].split('`');
+		if (player.length < 3) continue;
+		str += 
+		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(player[2] == "2" ? " bg-teal" : "")+" bg-white'>"+
 			"<h6>"+player[0]+"</h6>"+
 			"<div class='d-flex'>"+
-				(player[2] == '1' ? "<span class='text-success'>Ready" : "<span class='text-warning'>Not Ready")+"</span>"+
+				(player[2] == "0" ? "<span class='text-warning'>Not Ready" : "<span class='text-success'>Ready")+"</span>"+
 				"<span class='text-black px-1'>"+player[1]+"</span>"+
 			"</div>"+
 		"</div>";
 	}
-	
+
 	$("#roomlistArea").html(str).trigger("create");
-}
-
-function processRESULT(playerlistString)
-{
-	//clients`scores`ready``clients`scores`ready``...``nowTurn;
-	var i, str = "", playerlist = playerlistString.split("``");
-
-	for(i = 0; i < playerlist.length-1; i++)
-	{
-		player = playerlist[i].split("`");
-		str += player[0] + "'s score : " +player[1] + "<br>";
-	}
-	$('#round_timer').css("width", "0%");
-	$('#turn_timer').css("width", "0%");
-	$("#resultScreen").modal('show');
-	$("#resultScreenBody").html(str).trigger("create");
 }
 
 function processBGM(BGMtitle, playSpeed, isBackground)
