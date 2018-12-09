@@ -48,16 +48,16 @@ You should have 147023 rows with english db and 430053 with korean db.
   │      ├ socketHandle.php
   │      └ wordCheck.php
   ├ public ┬ css ┬ bootstrap.custom.css
-  │        │     ├ bootstrap.custom.min.css
-  │        │     ├ bootstrap.min.css
-  │        │     └ style.css
+  │        │     ├ css.min.css
+  │        │     └ mystyle.css
   │        ├ img ┬ kkutucs_char.jpg
   │        │     └ logo.png
   │        ├ js ┬ bootstrap.bundle.min.js
   │        │    ├ client.js
   │        │    ├ jquery-3.3.1.min.js
+  │        │    ├ js.min.js
   │        │    └ socketCommunicate.js
-  │        └ media
+  │        └ media - (skip)
   ├ .gitignore
   ├ favicon.ico
   ├ game.html

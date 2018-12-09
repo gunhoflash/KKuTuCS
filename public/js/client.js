@@ -1,13 +1,7 @@
 $(document).ready(function()
 {
-	$.getScript("public/js/socketCommunicate.js")
-	.done(function() {
-		initializeButton();
-		initializeSocketAndObject();
-	})
-	.fail(function() {
-		alert("Cannot load other js file!");
-	});
+	initializeButton();
+	initializeSocketAndObject();
 });
 
 function initializeButton()
@@ -114,8 +108,6 @@ function showRoundTimer(value, valueMax)
 	removeInterval(0);
 	ar_interval[0] = setInterval(function()
 	{
-		// TODO: Check if the client quitted game already.
-
 		if (--value < 0)
 		{
 			value = 0;
@@ -132,8 +124,6 @@ function showTurnTimer(valueMax)
 	removeInterval(1);
 	ar_interval[1] = setInterval(function()
 	{
-		// TODO: Check if the client quitted game already.
-
 		if (--value < 0)
 		{
 			value = 0;

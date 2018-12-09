@@ -220,7 +220,6 @@ class GameRoom
 	private function checkWord($word)
 	{
 		//$word = strtolower($typed_word);
-		// TODO: To allow for words with spaces, this code must be modified.
 
 		if (!isValid($this->mode, $word))
 			return "VALID";
