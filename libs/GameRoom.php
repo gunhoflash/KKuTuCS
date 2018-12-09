@@ -97,6 +97,8 @@ class GameRoom
 
 	public function clientDisconnected(&$socket)
 	{
+		global $room_state_changed;
+
 		$this->clientQuitted($socket);
 
 		// Log
@@ -108,7 +110,10 @@ class GameRoom
 		// Send the information to other clients.
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $nickname);
 		if ($this->roomType == "game")
+		{
 			$this->processPLAYERLIST($this->clientSockets, "PLAYERLIST");
+			$room_state_changed = TRUE;
+		}
 	}
 
 	// Process Game Round
