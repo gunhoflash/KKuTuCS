@@ -138,7 +138,7 @@ class GameRoom
 					$this->time_roundTime = self::ROUND_TIME;
 					sendToSocketAll($this->clientSockets, "ROUNDSTART", $this->time_roundTime);
 
-					$this->time_temp = $time_temp;
+					$this->time_temp = $time_temp + 0.6;
 					$this->gameState = "before round";
 				}
 				break;
@@ -363,7 +363,7 @@ class GameRoom
 			return;
 		}
 
-		if (($flag == 1 || $flag == 0) && $this->state = "Ready")
+		if (($flag == 1 || $flag == 0) && $this->state == "Ready")
 		{
 			// 0: not ready, 1: ready
 			$this->clientReady[$index] = $flag;

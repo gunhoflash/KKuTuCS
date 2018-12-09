@@ -368,10 +368,7 @@ function processANIMATION(turnSpeed, word)
 		processBGM("As", tspeed*10, false);
 		if (++i == word.length)
 		{
-			setTimeout(function()
-			{
-				processBGM("K", tspeed*10, false);
-			}, 350);
+			processBGM("K", tspeed*10, false);
 			clearInterval(ani);
 		}
 	}, astime);
