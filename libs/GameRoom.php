@@ -89,6 +89,7 @@ class GameRoom
 		// Unset from arrays and close the socket.
 		unsetFromArray($NULL, $this->clientSockets, $index);
 		unsetFromArray($NULL, $this->clientReady, $index);
+		unsetFromArray($NULL, $this->clientScores, $index);
 
 		// Send the information to other clients.
 		sendToSocketAll($this->clientSockets, "QUITTED", $nickname);
@@ -265,7 +266,11 @@ class GameRoom
 		$this->state = "Ready";
 		foreach ($this->clientReady as &$ready)
 			$ready = 0;
+
 		$this->processPLAYERLIST($this->clientSockets, "RESULTLIST");
+
+		foreach ($this->clientScores as &$score)
+			$score = 0;
 		$room_state_changed = TRUE;
 	}
 
