@@ -106,6 +106,8 @@ class GameRoom
 
 		// Send the information to other clients.
 		sendToSocketAll($this->clientSockets, "DISCONNECTED", $nickname);
+		if ($this->roomType == "game")
+			$this->processPLAYERLIST($this->clientSockets, "PLAYERLIST");
 	}
 
 	// Process Game Round
@@ -258,10 +260,13 @@ class GameRoom
 	// End game.
 	private function endGame()
 	{
-		$this->processPLAYERLIST($this->clientSockets, "RESULTLIST");
+		global $room_state_changed;
+
 		$this->state = "Ready";
 		foreach ($this->clientReady as &$ready)
 			$ready = 0;
+		$this->processPLAYERLIST($this->clientSockets, "RESULTLIST");
+		$room_state_changed = TRUE;
 	}
 
 	private function startTurn()
@@ -356,6 +361,7 @@ class GameRoom
 
 	private function processREADY(&$socket, $flag)
 	{
+		global $room_state_changed;
 		$index = array_search($socket, $this->clientSockets);
 		if ($index === FALSE)
 		{
@@ -363,7 +369,7 @@ class GameRoom
 			return;
 		}
 
-		if (($flag == 1 || $flag == 0) && $this->state = "Ready")
+		if (($flag == 1 || $flag == 0) && $this->state == "Ready")
 		{
 			// 0: not ready, 1: ready
 			$this->clientReady[$index] = $flag;
@@ -378,6 +384,8 @@ class GameRoom
 
 				sendToSocketAll($this->clientSockets, "GAMESTART");
 				sendToSocketAll($this->clientSockets, "PLAYBGM", "game_start");
+
+				$room_state_changed = TRUE;
 			}
 		}
 	}

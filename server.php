@@ -15,7 +15,7 @@ socket_listen($socket, 512) or die("Could not set up socket listener.\n");
 
 $client_unknown = array($socket); // New client here.
 $client_room = array(new GameRoom("main", "main room", "", "", 0)); // Array of GameRooms.
-
+$room_state_changed = FALSE;
 // Connecting to MySQL database.
 $conn = mysqli_connect("p:localhost", "root", "111111", "kkutudb");
 if (!$conn)
@@ -68,6 +68,12 @@ while(TRUE)
 	foreach ($client_room as &$room)
 		if ($room->getRoomType() == "game")
 			$room->processGameRound();
+	
+	if ($room_state_changed)
+	{
+		$room_state_changed = FALSE;
+		processROOMLIST($client_room[0]->getClientSockets());
+	}
 }
 
 function socket_read_GameRoom(&$room)
