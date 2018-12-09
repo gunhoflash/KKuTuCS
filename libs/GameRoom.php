@@ -140,7 +140,7 @@ class GameRoom
 					$this->time_roundTime = self::ROUND_TIME;
 					sendToSocketAll($this->clientSockets, "ROUNDSTART", $this->time_roundTime);
 
-					$this->time_temp = $time_temp;
+					$this->time_temp = $time_temp + 0.6;
 					$this->gameState = "before round";
 				}
 				break;
