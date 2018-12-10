@@ -110,6 +110,15 @@ function unmask($payload)
 	return $text;
 }
 
+// XSS Filtering
+function xssFilter($string)
+{
+	return preg_replace(
+		['/  /', '/</', '/>/', '/\"/', '/\'/'],
+		["&nbsp;&nbsp;", "&lt;", "&gt;", "&quot;", "&#39"],
+		$string);
+}
+
 // Encode the text. Return "" when it failed.
 function encode($text)
 {

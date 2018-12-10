@@ -104,7 +104,7 @@ function socket_read_GameRoom(&$room)
 		else
 		{
 			// Decode & Parse the data. If the data is invalid, diconnect it.
-			$request = new KKuTuCSRequest(@unmask(trim($data)));
+			$request = new KKuTuCSRequest(xssFilter(@unmask(trim($data))));
 			if ($request->getValidity() == FALSE) continue; // Invalid Data
 			$method = $request->getMethod();
 			$parameter1 = $request->getParameter(1);

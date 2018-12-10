@@ -14,7 +14,7 @@ function initializeSocketAndObject()
 	$("#btn_ready").removeClass("d-none");
 	$("*[data-ismain]").attr("data-ismain", "true");
 	showWord("");
-	$("#chatArea").html("").trigger("create");
+	$("#chatArea").text("").trigger("create");
 	processROOMLIST();
 
 	socket = new WebSocket(socketLink);
@@ -87,7 +87,7 @@ function sendMessage(method, parameter1, parameter2, parameter3)
 
 function parseMessage(data)
 {
-	var datas = data.split("\n");
+	var datas = xssFilter(data).split("\n");
 	var method = datas[0];
 	var parameter1 = datas[1];
 	var parameter2 = datas[2];
@@ -187,10 +187,6 @@ function parseMessage(data)
 
 function showChat(nickname, message, isSystem)
 {
-	// Replace all space characters to &nbsp;
-	nickname = (nickname == null) ? "" : nickname.replace(/  /g, "&nbsp;&nbsp;");
-	message = (message == null) ? "" : message.replace(/  /g, "&nbsp;&nbsp;");
-
 	if (nickname.length > 0)
 		nickname = "<span class='text-primary'>[" + nickname + "]</span>&nbsp;";
 	if (!isSystem)
@@ -233,7 +229,7 @@ function processJOIN(success, message, roomIndex)
 	$("#Roomname").text(message);
 	$("#btn_ready").removeClass("d-none").attr("data-ready", "0");
 	$("*[data-ismain]").attr("data-ismain", "false");
-	$("#chatArea").html("").trigger("create");
+	$("#chatArea").text("").trigger("create");
 	showChat(null, "Welcome to " + message + "!", true);
 }
 
@@ -392,6 +388,17 @@ function stringToHTML(string)
 {
 	if (string == null) return "";
 	return string.replace(" ", "&nbsp;");
+}
+
+function xssFilter(string)
+{
+	if (string == null || string == undefined) return "";
+	return string
+		.replace(/  /g, "&nbsp;&nbsp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/\"/g, "&quot;")
+		.replace(/\'/g, "&#39");
 }
 
 // This function is for test. You can call it only on the console, which is in the developer mode of your web browser.
