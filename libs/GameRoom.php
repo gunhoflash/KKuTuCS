@@ -138,7 +138,10 @@ class GameRoom
 						$score = 0;
 
 					$this->refreshList();
-					$this->lastWord = getRandomWord($this->mode);
+					while($this->lastWord == "")
+					{
+						$this->lastWord = getRandomWord($this->mode);
+					}
 					sendToSocketAll($this->clientSockets, "CORRECT", $this->lastWord);
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "round_start");
 					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Current Round is { ".($this->currentRound)." / 3 }");

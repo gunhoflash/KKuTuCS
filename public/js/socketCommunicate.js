@@ -274,16 +274,33 @@ function processRESULT()
 	removeInterval(1);
 	showChat(null, "Game over.", true);
 
+	// need for sort
+	function descending ( a, b ) {  return ( b < a ) ? -1 : ( b == a ) ? 0 : 1; } 
+
 	/**
 	 * (resultString): nickname`score
 	 * ex) gunhoflash`9122
 	 */
-	var result, i, str = "";
+	var result, j, i, str = "";
+	var score = [];
 	for (i = 0; i < resultList.length; i++)
 	{
 		result = resultList[i].split('`');
 		if (result.length < 2) continue;
-		str += result[0] + "'s score : " + result[1] + "<br>";
+		score[i] = parseInt(result[1], 10)*10 + i;
+	}
+	/** 
+	 * score[] = (player's score)(index)
+	 * ex) 4752 == score of index 2 is 475.
+	 */
+	score = score.sort(descending);
+
+	for (i = 0; i < resultList.length; i++)
+	{
+		j = score[i] % 10;
+		result = resultList[j].split('`');
+		if (result.length < 2) continue;
+		str += (i+1) + ". " + result[0] + "'s score : " + result[1] + "<br>";
 	}
 
 	$("#round_timer").css("width", "0%");

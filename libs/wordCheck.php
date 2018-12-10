@@ -69,7 +69,8 @@ function getRandomWord($mode)
 	$rows = mysqli_fetch_all($result);
 	mysqli_free_result($result);
 
-	return $rows[0][0];
+	if(isValid($mode, $rows[0][0])) return $rows[0][0];
+	else return "";
 }
 
 // 두음법칙을 위한 유니코드 전환기
