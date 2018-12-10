@@ -65,12 +65,16 @@ function getRandomWord($mode)
 	global $conn;
 
 	$queryString = "SELECT * FROM kkutudb.kkutu_" . ($mode == "en" ? "en" : "ko") . " ORDER BY RAND() LIMIT 1;";
-	$result = mysqli_query($conn, $queryString);
-	$rows = mysqli_fetch_all($result);
-	mysqli_free_result($result);
 
-	if(isValid($mode, $rows[0][0])) return $rows[0][0];
-	else return "";
+	do
+	{
+		$result = mysqli_query($conn, $queryString);
+		$rows = mysqli_fetch_all($result);
+		mysqli_free_result($result);
+	}
+	while (!isValid($mode, $rows[0][0]));
+
+	return $rows[0][0];
 }
 
 // 두음법칙을 위한 유니코드 전환기
