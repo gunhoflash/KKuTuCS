@@ -131,6 +131,10 @@ function parseMessage(data)
 		case "PLAYERLISTMIDDLE" : playerList.push(parameter1); break; // (Syntax: PLAYERLISTMIDDLE playerString)
 		case "PLAYERLISTEND"    : processPLAYERLIST();         break; // (Syntax: PLAYERLISTEND)
 
+		case "NUMBEROFPEOPLE" :
+			processNUMBEROFPEOPLE(parameter1);
+			break;
+
 		case "TIMETEST": // (Syntax: TIMETEST)
 			console.log("response time: " + ((new Date()).getTime() - responseTime) + "ms");
 			break;
@@ -324,11 +328,14 @@ function processPLAYERLIST()
 		player = playerList[i].split('`');
 		if (player.length < 3) continue;
 		str += 
-		"<div class='gameroom border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(player[2] == "2" ? " bg-teal" : "")+" bg-white'>"+
-			"<h6>"+player[0]+"</h6>"+
-			"<div class='d-flex'>"+
-				(player[2] == "0" ? "<span class='text-warning'>Not Ready" : "<span class='text-success'>Ready")+"</span>"+
-				"<span class='text-black px-1'>"+player[1]+"</span>"+
+		"<div class='gameroom d-flex border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(player[2] == "2" ? " bg-teal" : "")+" bg-white'>"+
+			"<img src='../public/img/kkutucs_char.jpg' class='mr-2 my-auto' style='height: 2.25rem;'>"+
+			"<div>"+
+				"<h6>"+player[0]+"</h6>"+
+				"<div class='d-flex'>"+
+					(player[2] == "0" ? "<span class='text-warning'>Not Ready" : "<span class='text-success'>Ready")+"</span>"+
+					"<span class='text-black px-1'>"+player[1]+"</span>"+
+				"</div>"+
 			"</div>"+
 		"</div>";
 	}
@@ -402,6 +409,11 @@ function showWord(word)
 	else                       fontsize = "1.50rem";
 
 	$("#wordArea").css("font-size", fontsize).text(word);
+}
+
+function processNUMBEROFPEOPLE(numberOfPeople)
+{
+	$("#numberOfPeople").text(numberOfPeople + " 명이 메인에서 노닥거리는 중");
 }
 
 function stringToHTML(string)
