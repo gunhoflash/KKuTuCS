@@ -58,11 +58,6 @@ svg
 
 #numberOfPeople
 {
-	position: absolute;
-	height: 1rem;
 	font-size: 0.5rem;
-	line-height: 1rem;
-	margin-bottom: -1rem;
 	color: #aaaaaa;
-	z-index: 1;
 }

@@ -333,7 +333,7 @@ function processPLAYERLIST()
 		if (player.length < 3) continue;
 		str += 
 		"<div class='gameroom d-flex border shadow-hoverable-sm px-3 py-2 mb-2 text-truncate"+(player[2] == "2" ? " bg-teal" : "")+" bg-white'>"+
-			"<img src='../public/img/kkutucs_char.png' class='mr-2 my-auto' style='height: 2.25rem;'>"+
+			"<img src='./public/img/kkutucs_char.png' class='mr-2 my-auto' style='height: 2.25rem;'>"+
 			"<div>"+
 				"<h6>"+player[0]+"</h6>"+
 				"<div class='d-flex'>"+
