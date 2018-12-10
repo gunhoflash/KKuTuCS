@@ -14,12 +14,10 @@
 	<body class="h-100 d-flex flex-column justify-content-center align-content-center">
 		<div class="border mx-auto w-100 bg-light shadow-hoverable" style="max-width: 20rem;">
 			<div class="p-4 text-center">
-				<img class="m-4" src="./public/img/logo.png" alt="logo" href="index.html" style="width: 7rem;">
+				<img class="m-4" src="./public/img/logo.png" alt="logo" href="index.html" style="width: 7rem; -webkit-filter: drop-shadow(0 .35rem .35rem rgba(0,0,0,.35)); filter: drop-shadow(0 .35rem .35rem rgba(0,0,0,.35)); ">
 				<h3>&nbsp;Welcome!</h3>
 				<form class="my-5" action="./game.html">
-					<div class="form-group">
-						<input type="text" id="inputname" class="form-control shadow-hoverable-sm" name="nickname" placeholder="NickName Here!" maxlength="8" autofocus required>
-					</div>
+					<input type="text" id="inputname" class="text-center form-control shadow-hoverable-sm mb-3" name="nickname" placeholder="Input your nickname" maxlength="8" autofocus required>
 					<button class="btn btn-block btn-lg btn-primary shadow-hoverable-sm" type="submit">Join</button>
 				</form>
 				<p class="m-0 small text-muted">© 2018 by KKuTuCS All Rights Reserved.</p>
