@@ -187,6 +187,9 @@ function parseMessage(data)
 
 function showChat(nickname, message, isSystem)
 {
+	if (nickname == null || nickname == undefined) nickname = "";
+	if (message == null || message == undefined) message = "";
+
 	if (nickname.length > 0)
 		nickname = "<span class='text-primary'>[" + nickname + "]</span>&nbsp;";
 	if (!isSystem)
