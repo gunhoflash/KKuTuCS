@@ -50,7 +50,7 @@ You should have 147023 rows with english db and 430053 with korean db.
   ├ public ┬ css ┬ bootstrap.custom.css
   │        │     ├ css.min.css
   │        │     └ mystyle.css
-  │        ├ img ┬ kkutucs_char.jpg
+  │        ├ img ┬ kkutucs_char.png
   │        │     └ logo.png
   │        ├ js ┬ bootstrap.bundle.min.js
   │        │    ├ client.js
