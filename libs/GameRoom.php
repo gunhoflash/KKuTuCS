@@ -354,8 +354,8 @@ class GameRoom
 					$score = $this->getScore($message);
 					$this->clientScores[$this->nowTurn] += $score;
 
-					sendToSocketAll($this->clientSockets, "WORD", $nickname, $message, $checkResult);
-					sendToSocketAll($this->clientSockets, "SYSTEMSEND", $nickname, "get score $score.");
+					sendToSocketAll($this->clientSockets, "WORD", $nickname, $message, $score);
+					//sendToSocketAll($this->clientSockets, "SYSTEMSEND", $nickname, "get score $score.");
 
 					$this->nowTurn = ($this->nowTurn + 1) % sizeof($this->clientSockets);
 					$this->gameState = "in animation";
