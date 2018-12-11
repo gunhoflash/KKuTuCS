@@ -146,7 +146,7 @@ class GameRoom
 					$this->time_roundTime = self::ROUND_TIME;
 					sendToSocketAll($this->clientSockets, "ROUNDSTART", $this->time_roundTime);
 
-					$this->time_temp = $time_temp + 0.6;
+					$this->time_temp = $time_temp;
 					$this->gameState = "before round";
 				}
 				break;
@@ -154,7 +154,7 @@ class GameRoom
 			case "before round":
 				$time_temp = microtime(true);
 				// After enough time, start the first round. If not, do nothing and just wait.
-				if ($time_temp - $this->time_temp >= 2.5)
+				if ($time_temp - $this->time_temp >= 3.25)
 				{
 					// Initialize variable
 					$this->wordHistory = array();
@@ -355,7 +355,6 @@ class GameRoom
 					$this->clientScores[$this->nowTurn] += $score;
 
 					sendToSocketAll($this->clientSockets, "WORD", $nickname, $message, $score);
-					//sendToSocketAll($this->clientSockets, "SYSTEMSEND", $nickname, "get score $score.");
 
 					$this->nowTurn = ($this->nowTurn + 1) % sizeof($this->clientSockets);
 					$this->gameState = "in animation";

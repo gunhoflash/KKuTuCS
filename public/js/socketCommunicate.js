@@ -360,7 +360,7 @@ function processBGM(BGMtitle, playSpeed, isBackground)
 		// The audio 'lobbyBGM' should be replayed over and over.
 		temp_audio.addEventListener('ended', function ()
 		{
-			setTimeout(function () { audio.play(); }, 500);
+			setTimeout(function () { audio.play(); }, 50);
 		}, false);
 		audio = temp_audio;
 	}
@@ -378,6 +378,7 @@ function processANIMATION(turnSpeed, word)
 	var i = 0;
 	var astime, ktime;
 	var tspeed = parseFloat(turnSpeed, 10);
+
 	switch (tspeed)
 	{
 		case 2.1: ktime = 0.23; break;
@@ -390,13 +391,16 @@ function processANIMATION(turnSpeed, word)
 	astime = (ktime * 1000 / word.length) + 10;//2.5s = 2500 = 2.5 * 10^3
 	ani = setInterval(function()
 	{
-		message += word[i];
-		showWord(message);
-		processBGM("As", tspeed*10, false);
-		if (++i == word.length)
+		if (i == word.length)
 		{
 			processBGM("K", tspeed*10, false);
 			clearInterval(ani);
+		}
+		else
+		{
+			message += word[i++];
+			showWord(message);
+			processBGM("As", tspeed*10, false);
 		}
 	}, astime);
 }
