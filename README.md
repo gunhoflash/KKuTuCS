@@ -8,6 +8,7 @@ Term Project by __Team 6__
 * 2017920049 [LeeMir](https://github.com/LeeMir)
 
 ## Implementation Test
+> If your server doesn't work, check your firewall and port forwarding settings.
 ### Terminal (at root of the server)
 ```
 php -S 0.0.0.0:{PORT}
@@ -48,14 +49,14 @@ You should have 147023 rows with english db and 430053 with korean db.
   │      ├ socketHandle.php
   │      └ wordCheck.php
   ├ public ┬ css ┬ bootstrap.custom.css
-  │        │     ├ css.min.css
+  │        │     ├ css.min.css (bootstrap.custom.css + mystyle.css)
   │        │     └ mystyle.css
   │        ├ img ┬ kkutucs_char.png
   │        │     └ logo.png
   │        ├ js ┬ bootstrap.bundle.min.js
   │        │    ├ client.js
   │        │    ├ jquery-3.3.1.min.js
-  │        │    ├ js.min.js
+  │        │    ├ js.min.js (client.js + socketCommunicate.js)
   │        │    └ socketCommunicate.js
   │        └ media - (skip)
   ├ .gitignore
@@ -79,3 +80,7 @@ You should have 147023 rows with english db and 430053 with korean db.
 * Websocket(client - JS)
   * Document: [MDN](https://developer.mozilla.org/ko/docs/Web/API/WebSocket)
   * Example: [MDN](https://developer.mozilla.org/ko/docs/WebSockets/Writing_WebSocket_client_applications)
+
+## Specially thanks to
+* JJoriping
+* All of testers
