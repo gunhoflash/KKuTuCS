@@ -169,10 +169,12 @@ class GameRoom
 				// End round when timeover
 				if ($time_temp - $this->time_temp >= $this->time_forTurn)
 				{
+					// TODO: Fix: Undefined offset error occured rarely.
 					sendToSocketAll($this->clientSockets, "SYSTEMSEND", "", "Round is over. ".getNicknameBySocket($this->clientSockets[$this->nowTurn])." has failed to type.\n");
 					sendToSocketAll($this->clientSockets, "ROUNDOVER");
 					
 					// Down score.
+					// TODO: Fix: Undefined offset error occured rarely.
 					$this->clientScores[$this->nowTurn] = ($this->clientScores[$this->nowTurn] < 1000) ? 0 : $this->clientScores[$this->nowTurn] - 1000;
 					
 					sendToSocketAll($this->clientSockets, "PLAYBGM", "horror");

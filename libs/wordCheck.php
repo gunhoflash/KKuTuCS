@@ -8,7 +8,7 @@ defined('PROJECT_ROOT') or exit('No direct script access allowed');
 // Check validity of the word with regular expression.
 function isValid($mode, $word)
 {
-	if (strlen($word) <= 1)
+	if (mb_strlen($word, "utf-8") <= 1)
 		return FALSE;
 
 	if ($mode == "en")
