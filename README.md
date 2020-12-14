@@ -69,7 +69,7 @@ You should have 147023 rows with english db and 430053 with korean db.
   └ server.php
 ```
 
-## We refered to:
+## We referred to:
 * PHP
   * Document: [php.net](http://php.net/)
 * Websocket(server - PHP)
